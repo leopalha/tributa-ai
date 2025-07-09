@@ -1,22 +1,14 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTC } from '@/hooks/useTC';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
-import { TC } from '@/types/tc';
+import { TituloDeCredito } from '@/types/tc';
 
 interface TCRiskAnalysisProps {
-  tc: TC | null;
+  tc: TituloDeCredito | null;
 }
 
 export function TCRiskAnalysis({ tc }: TCRiskAnalysisProps) {
@@ -39,7 +31,7 @@ export function TCRiskAnalysis({ tc }: TCRiskAnalysisProps) {
 
   const loadRiskAnalysis = async () => {
     if (!tc) return;
-    
+
     try {
       setLoading(true);
       const data = await obterAnaliseRisco(tc.id);
@@ -81,7 +73,7 @@ export function TCRiskAnalysis({ tc }: TCRiskAnalysisProps) {
         <CardContent className="py-6">
           <div className="text-center">
             <h3 className="text-lg font-medium">Selecione um título de crédito</h3>
-            <p className="text-muted-foreground">
+            <p className="text-[hsl(var(--muted-foreground))]">
               Para visualizar a análise de risco, selecione um TC na lista
             </p>
           </div>
@@ -118,9 +110,7 @@ export function TCRiskAnalysis({ tc }: TCRiskAnalysisProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>Análise de Risco</CardTitle>
-            <CardDescription>
-              Avaliação de risco baseada em múltiplos fatores
-            </CardDescription>
+            <CardDescription>Avaliação de risco baseada em múltiplos fatores</CardDescription>
           </div>
           <Badge className={getRiskColor(riskData.nivelRisco)}>
             <div className="flex items-center gap-2">
@@ -144,8 +134,8 @@ export function TCRiskAnalysis({ tc }: TCRiskAnalysisProps) {
                 riskData.pontuacao < 30
                   ? 'bg-green-500'
                   : riskData.pontuacao < 70
-                  ? 'bg-yellow-500'
-                  : 'bg-red-500'
+                    ? 'bg-yellow-500'
+                    : 'bg-red-500'
               }
             />
           </div>
@@ -155,13 +145,17 @@ export function TCRiskAnalysis({ tc }: TCRiskAnalysisProps) {
             {riskData.fatores.map((fator, index) => (
               <Alert
                 key={index}
-                variant={fator.impacto > 7 ? 'destructive' : fator.impacto > 4 ? 'default' : 'success'}
+                variant={
+                  fator.impacto > 7 ? 'destructive' : fator.impacto > 4 ? 'default' : 'success'
+                }
               >
                 <AlertTitle>Fator {index + 1}</AlertTitle>
                 <AlertDescription className="flex items-center justify-between">
                   <span>{fator.descricao}</span>
                   <Badge
-                    variant={fator.impacto > 7 ? 'destructive' : fator.impacto > 4 ? 'default' : 'success'}
+                    variant={
+                      fator.impacto > 7 ? 'destructive' : fator.impacto > 4 ? 'default' : 'success'
+                    }
                   >
                     Impacto: {fator.impacto}/10
                   </Badge>
@@ -175,7 +169,8 @@ export function TCRiskAnalysis({ tc }: TCRiskAnalysisProps) {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Atenção</AlertTitle>
               <AlertDescription>
-                Este TC apresenta alto risco. Recomenda-se uma análise detalhada antes de prosseguir com qualquer operação.
+                Este TC apresenta alto risco. Recomenda-se uma análise detalhada antes de prosseguir
+                com qualquer operação.
               </AlertDescription>
             </Alert>
           )}
@@ -183,4 +178,4 @@ export function TCRiskAnalysis({ tc }: TCRiskAnalysisProps) {
       </CardContent>
     </Card>
   );
-} 
+}

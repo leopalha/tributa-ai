@@ -1,6 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
+// Schema simplificado apenas para autenticação em desenvolvimento
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,165 +12,1026 @@ enum UserRole {
   ADMIN
   USER
   EMPRESA
-}
-
-enum TCType {
-  PRECATORIO
-  HONORARIOS
-  CONTRATO_EXTRAJUDICIAL
-  EXCEDENTE_TRIBUTARIO
-  CREDITO_TRIBUTARIO
-  OUTROS
-}
-
-enum TCStatus {
-  PENDENTE
-  APROVADO
-  REJEITADO
-  EXPIRADO
-  ATIVO
-}
-
-enum TipoNegociacao {
-  LEILAO
-  NEGOCIACAO_DIRETA
-  VENDA_DIRETA
-}
-
-enum TipoGarantia {
-  FIANCA
-  SEGURO
-  HIPOTECA
-  PENHOR
-}
-
-enum FormaPagamento {
-  TRANSFERENCIA_BANCARIA
-  BOLETO
-  PIX
+  PROFISSIONAL_TRIBUTARIO
+  INVESTIDOR_QUALIFICADO
 }
 
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  emailVerified DateTime?
+  emailVerified DateTime? @map("email_verified")
   image         String?
   password      String?
   role          UserRole  @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  empresa       Empresa?  @relation("EmpresaToUser")
-  tcs          TC[]      @relation("UserToTC")
-  anuncios     Anuncio[] @relation("UserToAnuncio")
-  propostas    Proposta[] @relation("UserToProposta")
-  transacoes   Transacao[] @relation("UserToTransacao")
+  accounts Account[]
+  sessions Session[]
+
+  issuedCredits CreditTitle[] @relation("IssuedCredits")
+  ownedCredits  CreditTitle[] @relation("OwnedCredits")
+
+  documents Document[] @relation("UploadedDocuments")
+  offers    Offer[] @relation("UserOffers")
+  bids      Bid[] @relation("UserBids")
+  
+  transactionsAsSeller Transaction[] @relation("SellerTransactions")
+  transactionsAsBuyer  Transaction[] @relation("BuyerTransactions")
+  createdTransactions  Transaction[] @relation("CreatedTransactions")
+  
+  auctionsAsSeller    Auction[]     @relation("SellerAuctions")
+  auctionsAsWinner    Auction[]     @relation("WinnerAuctions")
+  settlementParticipants SettlementParticipant[]
+  notifications Notification[]
+  auditLogs   AuditLog[]
+  fiscalObligations FiscalObligation[]
+
+  // Add inverse relation for Empresa
+  empresasRepresentadas Empresa[]
+
+  // Adicionar nova relação
+  analisesCriadas AnaliseObrigacoes[] @relation("AnalisesCriadas")
+
+  // Compliance relations
+  documentValidations DocumentValidation[]
+  disclaimerAcceptances DisclaimerAcceptance[]
+  complianceAudits ComplianceAudit[]
+
+  @@index([email])
 }
 
 model Empresa {
-  id            String   @id @default(cuid())
-  razaoSocial   String
-  nomeFantasia  String?
-  cnpj          String   @unique
-  inscEstadual  String?
-  inscMunicipal String?
-  endereco      Json
-  telefone      String?
-  email         String?
-  website       String?
-  status        String   @default("ATIVO")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                     String  @id @default(cuid())
+  razaoSocial            String  @map("razao_social")
+  nomeFantasia           String? @map("nome_fantasia")
+  cnpj                   String  @unique
+  inscEstadual           String? @map("insc_estadual")
+  inscMunicipal          String? @map("insc_municipal")
+  endereco               String? // Consider using a JSON type or a separate Address model
+  telefone               String?
+  email                  String? @unique
+  website                String?
+  status                 String  // Example: ACTIVE, INACTIVE, PENDING_APPROVAL
+  
+  representantePrincipalId String  @map("representante_principal_id")
+  representantePrincipal User    @relation(fields: [representantePrincipalId], references: [id])
 
-  user          User     @relation("EmpresaToUser", fields: [userId], references: [id])
-  userId        String   @unique
-  tcs           TC[]     @relation("EmpresaToTC")
+  // Add relations if Empresas can own/issue credits, etc.
+  // Example:
+  // creditTitles   CreditTitle[] @relation("EmpresaCredits") 
+  // debitosFiscais DebitoFiscal[] // Assuming DebitoFiscal model exists
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Compliance relations
+  perdcompGenerations PerdcompGeneration[]
+  complianceMetrics ComplianceMetrics[]
+  complianceAudits ComplianceAudit[]
+
+  @@index([representantePrincipalId])
+  @@index([status])
+  @@map("empresas")
 }
 
-model TC {
-  id            String   @id @default(cuid())
-  valor         Float
-  dataEmissao   DateTime
-  dataVencimento DateTime
-  status        TCStatus
-  tipo          TCType
-  origem        TCType
-  documentos    Json[]
-  historico     Json[]
-  garantias     Json[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
-  user          User     @relation("UserToTC", fields: [userId], references: [id])
-  userId        String
-  empresa       Empresa  @relation("EmpresaToTC", fields: [empresaId], references: [id])
-  empresaId     String
-  anuncios      Anuncio[] @relation("TCToAnuncio")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
-model Anuncio {
-  id                  String   @id @default(cuid())
-  titulo              String
-  descricao          String
-  valorOriginal      Float
-  valorMinimo        Float
-  valorSugerido      Float
-  tipoNegociacao     TipoNegociacao
-  status             TCStatus
-  dataPublicacao     DateTime
-  dataExpiracao      DateTime
-  visualizacoes      Int      @default(0)
-  interessados       Int      @default(0)
-  origemTC           TCType
-  documentosNecessarios String[]
-  garantias          Json[]
-  restricoes         Json
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  tc                TC       @relation("TCToAnuncio", fields: [tcId], references: [id])
-  tcId              String
-  vendedor          User     @relation("UserToAnuncio", fields: [vendedorId], references: [id])
-  vendedorId        String
-  propostas         Proposta[] @relation("AnuncioToProposta")
-  transacoes        Transacao[] @relation("AnuncioToTransacao")
+  @@map("sessions")
 }
 
-model Proposta {
-  id            String   @id @default(cuid())
-  valor         Float
-  condicoes     Json
-  mensagem      String
-  status        String
-  dataExpiracao DateTime
-  documentos    Json[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-  anuncio       Anuncio  @relation("AnuncioToProposta", fields: [anuncioId], references: [id])
-  anuncioId     String
-  comprador     User     @relation("UserToProposta", fields: [compradorId], references: [id])
-  compradorId   String
-  transacao     Transacao? @relation("PropostaToTransacao")
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }
 
-model Transacao {
-  id            String   @id @default(cuid())
-  valor         Float
-  status        String
-  formaPagamento Json
-  documentos    Json[]
-  timeline      Json[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+// --- TRIBUTA.AI Marketplace Models ---
 
-  anuncio       Anuncio  @relation("AnuncioToTransacao", fields: [anuncioId], references: [id])
-  anuncioId     String
-  vendedor      User     @relation("UserToTransacao", fields: [vendedorId], references: [id])
-  vendedorId    String
-  comprador     User     @relation("UserToTransacao", fields: [compradorId], references: [id])
-  compradorId   String
-  proposta      Proposta @relation("PropostaToTransacao", fields: [propostaId], references: [id])
-  propostaId    String   @unique
+// Use the enums defined in src/types/credit-types.ts conceptually
+// Prisma Enums need to be defined directly here.
+
+enum CreditCategory {
+  TRIBUTARIO
+  COMERCIAL
+  FINANCEIRO
+  JUDICIAL
+  RURAL
+  IMOBILIARIO
+  AMBIENTAL
+  ESPECIAL
+}
+
+// Example: Combine all sub-types into one enum for simplicity in Prisma,
+// or use separate enums and relations if needed.
+// For now, using a simple string for subType.
+// A better approach might involve JSON type or separate tables.
+enum CreditStatus {
+  DRAFT                // Rascunho, ainda não submetido
+  PENDING_VALIDATION   // Aguardando validação da documentação
+  VALIDATED            // Documentação validada, pronto para tokenizar/listar
+  REJECTED             // Documentação rejeitada
+  PENDING_TOKENIZATION // Aguardando processo de tokenização
+  TOKENIZED            // Tokenizado na blockchain
+  LISTED_FOR_SALE      // Listado para venda no marketplace
+  IN_NEGOTIATION       // Em processo de negociação (ex: leilão, proposta aceita)
+  NEGOTIATED           // Negociação concluída, aguardando liquidação
+  SETTLEMENT_PENDING   // Aguardando confirmação final da liquidação
+  SETTLED              // Liquidado/Transferido com sucesso
+  EXPIRED              // Crédito expirou
+  CANCELLED            // Emissão/Listagem cancelada pelo usuário
+}
+
+enum TCTributarioFederal {
+  IRPJ
+  CSLL
+  PIS_PASEP
+  COFINS
+  IPI
+  IOF
+}
+
+enum TCTributarioEstadual {
+  ICMS
+  IPVA
+  ITCMD
+}
+
+enum TCTributarioMunicipal {
+  ISSQN
+  IPTU
+  ITBI
+  TAXAS_MUNICIPAIS
+}
+
+// Note: Prisma doesn't directly support enum unions like TypeScript.
+// We'll store the specific subtype in the category-specific table.
+
+enum TCComercial {
+  DUPLICATA_MERCANTIL
+  DUPLICATA_SERVICO
+  NOTA_PROMISSORIA
+  LETRA_CAMBIO
+}
+
+enum TCFinanceiro {
+  DEBENTURE_SIMPLES
+  DEBENTURE_INCENTIVADA
+  CCB // Cédula de Crédito Bancário
+  CRI // Certificado de Recebíveis Imobiliários
+  CRA // Certificado de Recebíveis do Agronegócio
+}
+
+enum TCJudicial {
+  PRECATORIO_COMUM
+  PRECATORIO_ALIMENTAR
+  CREDITORIO_PRE_JUDICIAL
+  HONORARIO_ADVOCATICIO
+  HONORARIO_PERICIAL
+  HONORARIO_MEDICO
+  HONORARIO_ENGENHARIA
+}
+
+enum TCRural {
+  CCR_CUSTEIO
+  CCR_INVESTIMENTO
+  CPR_FISICA
+  CPR_FINANCEIRA
+  CPR_ELETRONICA
+  NCR // Nota de Crédito Rural
+}
+
+enum TCImobiliario {
+  FINANCIAMENTO_SBPE
+  FINANCIAMENTO_PMCMV
+  CONTRATO_GARANTIA_HIPOTECA
+  CONTRATO_GARANTIA_ALIENACAO
+}
+
+enum TCAmbiental {
+  CREDITO_CARBONO_VOLUNTARIO
+  CREDITO_CARBONO_REGULATORIO
+  CREDITO_BIODIVERSIDADE
+  CREDITO_HIDRICO
+}
+
+enum TCEspecial {
+  RECUPERACAO_JUDICIAL_TRABALHISTA
+  RECUPERACAO_JUDICIAL_FISCAL
+  RECUPERACAO_JUDICIAL_BANCARIO
+  CONSORCIO_NAO_CONTEMPLADO
+  CONSORCIO_SALDO_RESIDUAL
+  PLANO_ECONOMICO_RESSARCIMENTO
+  ROYALTY_PROPRIEDADE_INTELECTUAL
+  ROYALTY_RECURSOS_NATURAIS
+  SEGURO_SINISTRO
+  SEGURO_INDENIZACAO
+  BENEFICIO_PREVIDENCIARIO
+  FRETE_RODOVIARIO
+  FRETE_MARITIMO
+  FRETE_AEREO
+  ENERGIA_GERACAO_DISTRIBUIDA
+  LEASING_ARRENDAMENTO
+}
+
+// --- End Credit Title Enums ---
+
+model CreditTitle {
+  id            String    @id @default(cuid())
+  category      CreditCategory // Categoria Principal
+  valueNominal  Float          @map("value_nominal") // Renamed from value
+  valueCurrent  Float          @map("value_current") // Added for current market/liquid value
+  issueDate     DateTime       @map("issue_date") // Data de emissão/origem
+  expiryDate    DateTime?      @map("expiry_date") // Data de vencimento/expiração
+
+  issuerId      String         @map("issuer_id")
+  issuer        User           @relation("IssuedCredits", fields: [issuerId], references: [id])
+
+  ownerId       String         @map("owner_id")
+  owner         User           @relation("OwnedCredits", fields: [ownerId], references: [id])
+
+  status        CreditStatus   @default(DRAFT)
+
+  // Tokenization Info
+  tokenId       String?        @unique @map("token_id")
+  tokenStandard String?        @map("token_standard")
+  blockchainTxHash String?      @map("blockchain_tx_hash")
+
+  // Marketplace Info
+  isListed      Boolean        @default(false) @map("is_listed")
+  listingPrice  Float?         @map("listing_price")
+  listingDate   DateTime?      @map("listing_date")
+
+  // Timestamps
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  // Relations to specific details
+  detailsTributario   CreditTitleTributario?   @relation("DetailsTributario")
+  detailsComercial    CreditTitleComercial?    @relation("DetailsComercial")
+  detailsFinanceiro   CreditTitleFinanceiro?   @relation("DetailsFinanceiro")
+  detailsJudicial     CreditTitleJudicial?     @relation("DetailsJudicial")
+  detailsRural        CreditTitleRural?        @relation("DetailsRural")
+  detailsImobiliario  CreditTitleImobiliario?  @relation("DetailsImobiliario")
+  detailsAmbiental    CreditTitleAmbiental?    @relation("DetailsAmbiental")
+  detailsEspecial     CreditTitleEspecial?     @relation("DetailsEspecial")
+
+  // Other Relations
+  documents     Document[]
+  offers        Offer[]
+  transactions  Transaction[]
+  auctions      Auction[]
+
+  // Adicionar nova relação
+  creditoIdentificado CreditoIdentificado? @relation("CreditoIdentificado")
+
+  @@index([issuerId])
+  @@index([ownerId])
+  @@index([category])
+  @@index([status])
+  @@index([isListed])
+  @@map("credit_titles") // Optional: map to a specific table name
+}
+
+// --- Category Specific Models ---
+
+// 1. Tributario Details
+model CreditTitleTributario {
+  id            String    @id @default(cuid())
+  creditTitleId String    @unique @map("credit_title_id")
+  creditTitle   CreditTitle @relation("DetailsTributario", fields: [creditTitleId], references: [id], onDelete: Cascade)
+
+  // Can store specific enum based on esfera, or just the combined string
+  // Storing the specific subtype is cleaner:
+  subTypeFederal    TCTributarioFederal?   @map("subtype_federal")
+  subTypeEstadual   TCTributarioEstadual?  @map("subtype_estadual")
+  subTypeMunicipal  TCTributarioMunicipal? @map("subtype_municipal")
+  
+  // Redundant esfera field if using specific subtype enums?
+  esfera        String // FEDERAL, ESTADUAL, MUNICIPAL (Can be derived)
+  nomeTributo   String @map("nome_tributo")
+  periodoApuracaoInicio DateTime @map("periodo_apuracao_inicio")
+  periodoApuracaoFim    DateTime @map("periodo_apuracao_fim")
+  numeroProcessoAdministrativo String? @map("numero_processo_administrativo")
+  numeroProcessoJudicial       String? @map("numero_processo_judicial")
+
+  @@index([creditTitleId])
+  @@map("credit_title_tributario")
+}
+
+// TODO: Define models for other categories (Comercial, Financeiro, etc.)
+model CreditTitleComercial {
+  id            String    @id @default(cuid())
+  creditTitleId String    @unique @map("credit_title_id")
+  creditTitle   CreditTitle @relation("DetailsComercial", fields: [creditTitleId], references: [id], onDelete: Cascade)
+  subType       TCComercial @map("subtype")
+  sacadoNome    String      @map("sacado_nome")
+  sacadoDocumento String    @map("sacado_documento")
+  // ... other fields
+  @@map("credit_title_comercial")
+}
+
+model CreditTitleFinanceiro {
+  id            String    @id @default(cuid())
+  creditTitleId String    @unique @map("credit_title_id")
+  creditTitle   CreditTitle @relation("DetailsFinanceiro", fields: [creditTitleId], references: [id], onDelete: Cascade)
+  subType       TCFinanceiro @map("subtype")
+  indexador     String?      @map("indexador")
+  taxaJurosAnual Float?      @map("taxa_juros_anual")
+  rating        String?      @map("rating")
+  // ... other fields
+  @@map("credit_title_financeiro")
+}
+
+// TODO: Define models for other categories (Comercial, Financeiro, etc.)
+model CreditTitleJudicial {
+  id            String    @id @default(cuid())
+  creditTitleId String    @unique @map("credit_title_id")
+  creditTitle   CreditTitle @relation("DetailsJudicial", fields: [creditTitleId], references: [id], onDelete: Cascade)
+  subType       TCJudicial @map("subtype")
+  numeroProcesso String   @map("numero_processo")
+  tribunalOrigem String   @map("tribunal_origem")
+  varaOrigem    String?  @map("vara_origem")
+  natureza      String   @map("natureza") // ALIMENTAR | COMUM
+  enteDevedor   String?  @map("ente_devedor")
+  // ... other fields
+  @@map("credit_title_judicial")
+}
+
+model CreditTitleRural {
+  id            String    @id @default(cuid())
+  creditTitleId String    @unique @map("credit_title_id")
+  creditTitle   CreditTitle @relation("DetailsRural", fields: [creditTitleId], references: [id], onDelete: Cascade)
+  subType       TCRural  @map("subtype")
+  safra         String?  @map("safra")
+  produtoAgricola String? @map("produto_agricola")
+  areaFinanciadaHectares Float? @map("area_financiada_hectares")
+  registroImovelRural String? @map("registro_imovel_rural")
+  // ... other fields
+  @@map("credit_title_rural")
+}
+
+model CreditTitleImobiliario {
+  id            String    @id @default(cuid())
+  creditTitleId String    @unique @map("credit_title_id")
+  creditTitle   CreditTitle @relation("DetailsImobiliario", fields: [creditTitleId], references: [id], onDelete: Cascade)
+  subType       TCImobiliario @map("subtype")
+  matriculaImovel String    @map("matricula_imovel")
+  // Store address components directly or use JSON
+  enderecoLogradouro String  @map("endereco_logradouro")
+  enderecoNumero     String  @map("endereco_numero")
+  enderecoComplemento String? @map("endereco_complemento")
+  enderecoBairro     String  @map("endereco_bairro")
+  enderecoCidade     String  @map("endereco_cidade")
+  enderecoEstado     String  @map("endereco_estado")
+  enderecoCep        String  @map("endereco_cep")
+  tipoGarantia  String?  @map("tipo_garantia") // HIPOTECA | ALIENACAO_FIDUCIARIA
+  // ... other fields
+  @@map("credit_title_imobiliario")
+}
+
+model CreditTitleAmbiental {
+  id            String    @id @default(cuid())
+  creditTitleId String    @unique @map("credit_title_id")
+  creditTitle   CreditTitle @relation("DetailsAmbiental", fields: [creditTitleId], references: [id], onDelete: Cascade)
+  subType       TCAmbiental @map("subtype")
+  projetoVinculado        String? @map("projeto_vinculado")
+  metodologiaCertificacao String? @map("metodologia_certificacao")
+  toneladasCO2Equivalente Float?  @map("toneladas_co2_equivalente")
+  hectaresConservados     Float?  @map("hectares_conservados")
+  volumeAguaEconomizadoM3 Float?  @map("volume_agua_economizado_m3")
+  // ... other fields
+  @@map("credit_title_ambiental")
+}
+
+model CreditTitleEspecial {
+  id            String    @id @default(cuid())
+  creditTitleId String    @unique @map("credit_title_id")
+  creditTitle   CreditTitle @relation("DetailsEspecial", fields: [creditTitleId], references: [id], onDelete: Cascade)
+  subType       TCEspecial @map("subtype")
+  // Add specific fields as needed, potentially using optional fields or JSON
+  processoRecuperacaoJudicial String? @map("processo_recuperacao_judicial")
+  credorOriginal              String? @map("credor_original")
+  classeCreditoRJ           String? @map("classe_credito_rj") // TRABALHISTA | GARANTIA_REAL | etc.
+  administradoraConsorcio    String? @map("administradora_consorcio")
+  grupoConsorcio             String? @map("grupo_consorcio")
+  cotaConsorcio               String? @map("cota_consorcio")
+  // ... other fields based on TCEspecial subtypes
+  @@map("credit_title_especial")
+}
+
+// Documentos
+model Document {
+  id              String    @id @default(cuid())
+  name            String
+  type            String    // CONTRACT, CERTIFICATE, STATEMENT, INVOICE, LEGAL, TECHNICAL, OTHER
+  description     String?
+  isPublic        Boolean   @default(false)
+  mimeType        String
+  size            Int
+  storageLocation String
+  hash            String?
+  
+  creditTitleId   String
+  creditTitle     CreditTitle @relation(fields: [creditTitleId], references: [id], onDelete: Cascade)
+  
+  uploadedById    String
+  uploadedBy      User     @relation("UploadedDocuments", fields: [uploadedById], references: [id])
+  uploadedAt      DateTime @default(now())
+
+  // Compliance relations
+  documentValidation DocumentValidation?
+
+  @@index([creditTitleId])
+  @@index([uploadedById])
+}
+
+// Ofertas
+enum OfferType {
+  DIRECT
+  AUCTION
+  NEGOTIABLE
+}
+
+enum OfferStatus {
+  ACTIVE
+  PAUSED
+  EXPIRED
+  COMPLETED
+  CANCELED
+}
+
+model Offer {
+  id                String     @id @default(cuid())
+  creditTitleId     String
+  creditTitle       CreditTitle @relation(fields: [creditTitleId], references: [id])
+  sellerId          String
+  seller            User        @relation("UserOffers", fields: [sellerId], references: [id])
+  price             Float
+  expiryDate        DateTime?
+  terms             String?
+  quantityAvailable Int         @default(1)
+  offerType         OfferType   @default(DIRECT)
+  minBidIncrement   Float?
+  reservePrice      Float?
+  allowPartialPurchase Boolean  @default(false)
+  status            OfferStatus @default(ACTIVE)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  bids              Bid[]
+  transactions      Transaction[]
+
+  @@index([creditTitleId])
+  @@index([sellerId])
+  @@index([status])
+}
+
+enum BidStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+model Bid {
+  id          String    @id @default(cuid())
+  offerId     String
+  offer       Offer     @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  bidderId    String
+  bidder      User      @relation("UserBids", fields: [bidderId], references: [id])
+  amount      Float
+  quantity    Int       @default(1)
+  notes       String?
+  status      BidStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  transactions Transaction[]
+
+  @@index([offerId])
+  @@index([bidderId])
+}
+
+// Transações
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  CANCELED
+  FAILED
+  DISPUTE
+}
+
+enum TransactionType {
+  DIRECT
+  MARKETPLACE
+  AUCTION
+  OTC
+  SYSTEM
+}
+
+model Transaction {
+  id              String            @id @default(cuid())
+  creditTitleId   String
+  creditTitle     CreditTitle       @relation(fields: [creditTitleId], references: [id])
+  sellerId        String
+  seller          User              @relation("SellerTransactions", fields: [sellerId], references: [id])
+  buyerId         String
+  buyer           User              @relation("BuyerTransactions", fields: [buyerId], references: [id])
+  price           Float
+  quantity        Int               @default(1)
+  offerId         String?
+  offer           Offer?            @relation(fields: [offerId], references: [id])
+  bidId           String?
+  bid             Bid?              @relation(fields: [bidId], references: [id])
+  type            TransactionType
+  status          TransactionStatus @default(PENDING)
+  notes           String?
+  blockchainData  String?
+  createdById     String?
+  createdBy       User?             @relation("CreatedTransactions", fields: [createdById], references: [id])
+  updatedById     String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Compliance relations
+  siscoafReporting SiscoafReporting?
+
+  @@index([creditTitleId])
+  @@index([sellerId])
+  @@index([buyerId])
+  @@index([offerId])
+  @@index([bidId])
+}
+
+// Leilões
+model Auction {
+  id          String   @id @default(cuid())
+  creditId    String
+  credit      CreditTitle @relation(fields: [creditId], references: [id])
+  sellerId    String
+  seller      User     @relation("SellerAuctions", fields: [sellerId], references: [id])
+  type        String   // TRADITIONAL, REVERSE, DUTCH
+  startPrice  Float
+  minPrice    Float?
+  startDate   DateTime
+  endDate     DateTime
+  status      String   // PENDING, ACTIVE, COMPLETED, CANCELLED
+  winnerId    String?
+  winner      User?    @relation("WinnerAuctions", fields: [winnerId], references: [id])
+  finalPrice  Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([creditId])
+  @@index([sellerId])
+  @@index([winnerId])
+}
+
+// Compensações
+model Settlement {
+  id          String   @id @default(cuid())
+  type        String   // DIRECT, MULTILATERAL
+  status      String   // PENDING, COMPLETED, FAILED
+  totalValue  Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  participants SettlementParticipant[]
+}
+
+// Participantes da Compensação
+model SettlementParticipant {
+  id          String   @id @default(cuid())
+  settlementId String
+  settlement   Settlement @relation(fields: [settlementId], references: [id])
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  role        String   // CREDITOR, DEBTOR
+  value       Float
+  status      String   // PENDING, CONFIRMED, REJECTED
+
+  @@index([settlementId])
+  @@index([userId])
+}
+
+// Notificações
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // SYSTEM, TRANSACTION, OFFER, AUCTION
+  title       String
+  message     String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Logs de Auditoria
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  action      String
+  entityType  String
+  entityId    String
+  details     String   // JSON com detalhes da ação
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+}
+
+model FiscalObligation {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  type        String
+  status      String
+  amount      Float
+  currency    String
+  dueDate     DateTime
+  taxCode     String?
+  taxName     String?
+  taxType     String?
+  taxPeriod   String?
+  taxBase     Float?
+  taxRate     Float?
+  taxValue    Float?
+  taxInterest Float?
+  taxFine     Float?
+  taxTotal    Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Análise de Obrigações e Créditos Identificados
+model AnaliseObrigacoes {
+  id                  String    @id @default(cuid())
+  cnpjEmpresa         String    @map("cnpj_empresa")
+  razaoSocialEmpresa  String    @map("razao_social_empresa")
+  nomeFantasiaEmpresa String?   @map("nome_fantasia_empresa")
+  regimeTributario    String    @map("regime_tributario")
+  
+  // Dados da análise
+  statusAnalise       String    @default("PENDENTE") @map("status_analise") // PENDENTE, PROCESSANDO, CONCLUIDO, ERRO
+  dataInicioAnalise   DateTime? @map("data_inicio_analise")
+  dataConclusaoAnalise DateTime? @map("data_conclusao_analise")
+  
+  // Estatísticas da análise
+  totalDocumentos     Int       @default(0) @map("total_documentos")
+  totalItensProcessados Int     @default(0) @map("total_itens_processados")
+  totalReceitasSegregadas Float @default(0) @map("total_receitas_segregadas")
+  valorTotalCreditos  Float     @default(0) @map("valor_total_creditos")
+  
+  // Metadados
+  criadoPorId         String    @map("criado_por_id")
+  criadoPor           User      @relation("AnalisesCriadas", fields: [criadoPorId], references: [id])
+  criadoEm            DateTime  @default(now()) @map("criado_em")
+  atualizadoEm        DateTime  @updatedAt @map("atualizado_em")
+  
+  // Relacionamentos
+  creditosIdentificados CreditoIdentificado[]
+  documentosAnalise     DocumentoAnalise[]
+  
+  @@index([cnpjEmpresa])
+  @@index([criadoPorId])
+  @@index([statusAnalise])
+  @@map("analise_obrigacoes")
+}
+
+model CreditoIdentificado {
+  id                    String    @id @default(cuid())
+  analiseObrigacoesId   String    @map("analise_obrigacoes_id")
+  analiseObrigacoes     AnaliseObrigacoes @relation(fields: [analiseObrigacoesId], references: [id], onDelete: Cascade)
+  
+  // Dados do crédito
+  tipo                  String    @map("tipo") // "PIS/COFINS", "ICMS", "IRPJ/CSLL", etc.
+  descricao             String    @map("descricao")
+  valorNominal          Float     @map("valor_nominal")
+  valorAtual            Float     @map("valor_atual")
+  valorEconomia         Float     @map("valor_economia")
+  
+  // Períodos
+  periodoInicio         DateTime  @map("periodo_inicio")
+  periodoFim            DateTime  @map("periodo_fim")
+  
+  // Status
+  statusCredito         String    @default("IDENTIFICADO") @map("status_credito") // IDENTIFICADO, PROCESSANDO, COMPENSADO, APROVADO
+  podeCompensar         Boolean   @default(true) @map("pode_compensar")
+  
+  // Metadados fiscais
+  tribunalOrigem        String?   @map("tribunal_origem")
+  numeroProcesso        String?   @map("numero_processo")
+  baseCalculoDetalhada  String?   @map("base_calculo_detalhada") // JSON com detalhes
+  
+  // Relacionamento com crédito oficial (se tokenizado)
+  creditTitleId         String?   @unique @map("credit_title_id")
+  creditTitle           CreditTitle? @relation("CreditoIdentificado", fields: [creditTitleId], references: [id])
+  
+  // Timestamps
+  criadoEm              DateTime  @default(now()) @map("criado_em")
+  atualizadoEm          DateTime  @updatedAt @map("atualizado_em")
+  
+  @@index([analiseObrigacoesId])
+  @@index([tipo])
+  @@index([statusCredito])
+  @@map("credito_identificado")
+}
+
+model DocumentoAnalise {
+  id                    String    @id @default(cuid())
+  analiseObrigacoesId   String    @map("analise_obrigacoes_id")
+  analiseObrigacoes     AnaliseObrigacoes @relation(fields: [analiseObrigacoesId], references: [id], onDelete: Cascade)
+  
+  // Dados do documento
+  nomeArquivo           String    @map("nome_arquivo")
+  tipoDocumento         String    @map("tipo_documento") // "DCTF", "EFD", "PGDAS", "SPED", etc.
+  tamanhoBytes          Int       @map("tamanho_bytes")
+  hashArquivo           String?   @map("hash_arquivo")
+  caminhoArmazenamento  String    @map("caminho_armazenamento")
+  
+  // Status do processamento
+  statusProcessamento   String    @default("PENDENTE") @map("status_processamento") // PENDENTE, PROCESSANDO, CONCLUIDO, ERRO
+  dataUpload            DateTime  @default(now()) @map("data_upload")
+  dataProcessamento     DateTime? @map("data_processamento")
+  
+  // Resultados da análise
+  itensEncontrados      Int       @default(0) @map("itens_encontrados")
+  creditosIdentificados Int       @default(0) @map("creditos_identificados")
+  valorTotalEncontrado  Float     @default(0) @map("valor_total_encontrado")
+  
+  @@index([analiseObrigacoesId])
+  @@index([tipoDocumento])
+  @@index([statusProcessamento])
+  @@map("documento_analise")
+}
+
+// === COMPLIANCE MODELS ===
+
+// SISCOAF - Sistema de Controle de Atividades Financeiras
+model SiscoafReporting {
+  id                String    @id @default(cuid())
+  transactionId     String    @unique @map("transaction_id")
+  transaction       Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  
+  // Dados da transação
+  valorTransacao    Float     @map("valor_transacao")
+  tipoTransacao     String    @map("tipo_transacao") // MARKETPLACE, TOKENIZATION, SETTLEMENT
+  dataTransacao     DateTime  @map("data_transacao")
+  
+  // Dados dos envolvidos
+  operadorCpf       String    @map("operador_cpf")
+  operadorNome      String    @map("operador_nome")
+  beneficiarioCpf   String?   @map("beneficiario_cpf")
+  beneficiarioNome  String?   @map("beneficiario_nome")
+  
+  // Status do relatório
+  statusRelatorio   String    @default("PENDENTE") @map("status_relatorio") // PENDENTE, PROCESSANDO, ENVIADO, ERRO
+  protocoloCoaf     String?   @map("protocolo_coaf")
+  dataEnvio         DateTime? @map("data_envio")
+  
+  // Dados automáticos
+  deteccaoAutomatica Boolean  @default(true) @map("deteccao_automatica")
+  formularioPreenchido Boolean @default(false) @map("formulario_preenchido")
+  backupRealizado   Boolean   @default(false) @map("backup_realizado")
+  
+  // Timestamps
+  criadoEm          DateTime  @default(now()) @map("criado_em")
+  atualizadoEm      DateTime  @updatedAt @map("atualizado_em")
+  
+  @@index([valorTransacao])
+  @@index([statusRelatorio])
+  @@index([dataTransacao])
+  @@map("siscoaf_reporting")
+}
+
+// Validação de Documentos Inteligente
+model DocumentValidation {
+  id                String    @id @default(cuid())
+  documentoId       String    @unique @map("documento_id")
+  documento         Document  @relation(fields: [documentoId], references: [id], onDelete: Cascade)
+  
+  // Dados da validação
+  statusValidacao   String    @default("PENDENTE") @map("status_validacao") // PENDENTE, PROCESSANDO, APROVADO, REJEITADO
+  tipoValidacao     String    @map("tipo_validacao") // OCR, RECEITA_FEDERAL, MANUAL
+  
+  // Dados extraídos via OCR
+  cpfCnpjExtraido   String?   @map("cpf_cnpj_extraido")
+  valorExtraido     Float?    @map("valor_extraido")
+  dataExtraida      DateTime? @map("data_extraida")
+  
+  // Validação cruzada
+  validacaoRF       Boolean   @default(false) @map("validacao_rf")
+  resultadoValidacaoRF String? @map("resultado_validacao_rf") // JSON com dados da RF
+  
+  // Aprovação automática
+  aprovacaoAutomatica Boolean @default(false) @map("aprovacao_automatica")
+  pontuacaoConfianca  Float?   @map("pontuacao_confianca") // 0-100
+  
+  // Dados do operador (se validação manual)
+  validadoPorId     String?   @map("validado_por_id")
+  validadoPor       User?     @relation(fields: [validadoPorId], references: [id])
+  dataValidacao     DateTime? @map("data_validacao")
+  observacoes       String?   @map("observacoes")
+  
+  // Timestamps
+  criadoEm          DateTime  @default(now()) @map("criado_em")
+  atualizadoEm      DateTime  @updatedAt @map("atualizado_em")
+  
+  @@index([statusValidacao])
+  @@index([tipoValidacao])
+  @@index([aprovacaoAutomatica])
+  @@map("document_validation")
+}
+
+// PERDCOMP - Sistema de Geração de Arquivos
+model PerdcompGeneration {
+  id                String    @id @default(cuid())
+  empresaId         String    @map("empresa_id")
+  empresa           Empresa   @relation(fields: [empresaId], references: [id])
+  
+  // Dados do arquivo
+  tipoArquivo       String    @map("tipo_arquivo") // PER, DCOMP
+  periodoApuracao   String    @map("periodo_apuracao") // MM/YYYY
+  
+  // Status da geração
+  statusGeracao     String    @default("PENDENTE") @map("status_geracao") // PENDENTE, PROCESSANDO, CONCLUIDO, ERRO
+  arquivoGerado     String?   @map("arquivo_gerado") // Path do arquivo gerado
+  hashArquivo       String?   @map("hash_arquivo")
+  
+  // Dados preenchidos automaticamente
+  camposPreenchidos Json      @map("campos_preenchidos") // JSON com todos os campos
+  totalCreditos     Float     @default(0) @map("total_creditos")
+  totalDebitos      Float     @default(0) @map("total_debitos")
+  
+  // Download e uso
+  baixadoEm         DateTime? @map("baixado_em")
+  utilizadoEcac     Boolean   @default(false) @map("utilizado_ecac")
+  
+  // Timestamps
+  criadoEm          DateTime  @default(now()) @map("criado_em")
+  atualizadoEm      DateTime  @updatedAt @map("atualizado_em")
+  
+  @@index([empresaId])
+  @@index([statusGeracao])
+  @@index([periodoApuracao])
+  @@map("perdcomp_generation")
+}
+
+// Disclaimers e Avisos Legais
+model LegalDisclaimer {
+  id                String    @id @default(cuid())
+  tipo              String    @map("tipo") // COMPENSACAO, MARKETPLACE, TOKENIZATION, GERAL
+  titulo            String    @map("titulo")
+  conteudo          String    @map("conteudo") // Texto do disclaimer
+  versao            String    @map("versao")
+  
+  // Configurações de exibição
+  obrigatorio       Boolean   @default(true) @map("obrigatorio")
+  exibirTodasTelas  Boolean   @default(false) @map("exibir_todas_telas")
+  telaEspecifica    String?   @map("tela_especifica")
+  
+  // Status
+  ativo             Boolean   @default(true) @map("ativo")
+  dataVigencia      DateTime  @default(now()) @map("data_vigencia")
+  dataExpiracao     DateTime? @map("data_expiracao")
+  
+  // Timestamps
+  criadoEm          DateTime  @default(now()) @map("criado_em")
+  atualizadoEm      DateTime  @updatedAt @map("atualizado_em")
+  
+  // Relacionamentos
+  aceites           DisclaimerAcceptance[]
+  
+  @@index([tipo])
+  @@index([ativo])
+  @@index([dataVigencia])
+  @@map("legal_disclaimer")
+}
+
+// Aceitação de Disclaimers pelos usuários
+model DisclaimerAcceptance {
+  id                String    @id @default(cuid())
+  disclaimerId      String    @map("disclaimer_id")
+  disclaimer        LegalDisclaimer @relation(fields: [disclaimerId], references: [id])
+  
+  userId            String    @map("user_id")
+  user              User      @relation(fields: [userId], references: [id])
+  
+  // Dados da aceitação
+  dataAceite        DateTime  @default(now()) @map("data_aceite")
+  ipAddress         String?   @map("ip_address")
+  userAgent         String?   @map("user_agent")
+  versaoDisclaimer  String    @map("versao_disclaimer")
+  
+  @@unique([disclaimerId, userId])
+  @@index([userId])
+  @@index([dataAceite])
+  @@map("disclaimer_acceptance")
+}
+
+// Dashboard de Compliance
+model ComplianceMetrics {
+  id                String    @id @default(cuid())
+  empresaId         String?   @map("empresa_id")
+  empresa           Empresa?  @relation(fields: [empresaId], references: [id])
+  
+  // Métricas gerais
+  dataReferencia    DateTime  @map("data_referencia")
+  totalTransacoes   Int       @default(0) @map("total_transacoes")
+  totalSiscoaf      Int       @default(0) @map("total_siscoaf")
+  totalDocumentos   Int       @default(0) @map("total_documentos")
+  totalValidacoes   Int       @default(0) @map("total_validacoes")
+  
+  // Percentuais de automação
+  percentualAutomatizacao Float @default(0) @map("percentual_automatizacao")
+  percentualAprovacao     Float @default(0) @map("percentual_aprovacao")
+  
+  // Alertas e vencimentos
+  alertasVencimento  Int      @default(0) @map("alertas_vencimento")
+  obrigacoesPendentes Int     @default(0) @map("obrigacoes_pendentes")
+  
+  // Compliance score
+  scoreCompliance    Float    @default(0) @map("score_compliance") // 0-100
+  statusCompliance   String   @default("REGULAR") @map("status_compliance") // REGULAR, ATENCAO, CRITICO
+  
+  // Timestamps
+  criadoEm          DateTime  @default(now()) @map("criado_em")
+  atualizadoEm      DateTime  @updatedAt @map("atualizado_em")
+  
+  @@index([empresaId])
+  @@index([dataReferencia])
+  @@index([scoreCompliance])
+  @@map("compliance_metrics")
+}
+
+// Auditoria de Compliance
+model ComplianceAudit {
+  id                String    @id @default(cuid())
+  empresaId         String?   @map("empresa_id")
+  empresa           Empresa?  @relation(fields: [empresaId], references: [id])
+  
+  userId            String    @map("user_id")
+  user              User      @relation(fields: [userId], references: [id])
+  
+  // Dados da auditoria
+  tipoAuditoria     String    @map("tipo_auditoria") // SISCOAF, DOCUMENTO, PERDCOMP, GERAL
+  entidadeId        String    @map("entidade_id") // ID da entidade auditada
+  entidadeTipo      String    @map("entidade_tipo") // TRANSACTION, DOCUMENT, etc.
+  
+  // Detalhes da ação
+  acao              String    @map("acao") // CREATED, UPDATED, DELETED, VALIDATED, SENT
+  dadosAnteriores   Json?     @map("dados_anteriores")
+  dadosAtuais       Json?     @map("dados_atuais")
+  
+  // Resultado
+  resultado         String    @map("resultado") // SUCCESS, FAILURE, PARTIAL
+  observacoes       String?   @map("observacoes")
+  
+  // Timestamps
+  criadoEm          DateTime  @default(now()) @map("criado_em")
+  
+  @@index([empresaId])
+  @@index([userId])
+  @@index([tipoAuditoria])
+  @@index([criadoEm])
+  @@map("compliance_audit")
 } 

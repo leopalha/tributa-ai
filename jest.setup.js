@@ -38,4 +38,19 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
-})) 
+}))
+
+// Mock do @auth/prisma-adapter to avoid ESM/transform issues
+jest.mock('@auth/prisma-adapter', () => ({
+  PrismaAdapter: jest.fn().mockImplementation(() => {
+    // Return a basic mock object representing the adapter instance
+    // Add mock methods here if needed by the code under test
+    return {
+      // Example mock method (add real ones based on usage):
+      // getUser: jest.fn(), 
+      // linkAccount: jest.fn(),
+      // createSession: jest.fn(),
+      // etc...
+    };
+  }),
+})); 

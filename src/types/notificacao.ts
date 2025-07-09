@@ -1,28 +1,13 @@
-export type TipoNotificacao = 
-  | 'alerta'
-  | 'aviso'
-  | 'info'
-  | 'sucesso'
-  | 'erro';
+export type TipoNotificacao = 'obrigacao' | 'declaracao' | 'pagamento' | 'sistema';
 
-export type PrioridadeNotificacao = 
-  | 'baixa'
-  | 'media'
-  | 'alta'
-  | 'urgente';
+export type PrioridadeNotificacao = 'baixa' | 'media' | 'alta' | 'urgente';
 
-export type StatusNotificacao = 
-  | 'nao_lida'
-  | 'lida'
-  | 'arquivada'
-  | 'excluida';
+export type StatusNotificacao =
+  | 'notificacao_nao_lida'
+  | 'notificacao_lida'
+  | 'notificacao_arquivada';
 
-export type CanalNotificacao = 
-  | 'app'
-  | 'email'
-  | 'sms'
-  | 'push'
-  | 'telegram';
+export type CanalNotificacao = 'app' | 'email' | 'sms' | 'push' | 'telegram';
 
 export interface AcaoNotificacao {
   texto: string;
@@ -40,17 +25,57 @@ export interface DestinatarioNotificacao {
 export interface Notificacao {
   id: string;
   tipo: TipoNotificacao;
+  status: StatusNotificacao;
   titulo: string;
   mensagem: string;
-  prioridade: PrioridadeNotificacao;
-  canais: CanalNotificacao[];
-  acoes?: AcaoNotificacao[];
-  destinatarios: DestinatarioNotificacao[];
-  dataEnvio: string;
-  dataExpiracao?: string;
+  data: string;
+  destinatario?: string;
+  link?: string;
   dados?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
+}
+
+export interface NotificacaoFiltros {
+  status?: StatusNotificacao;
+  tipo?: TipoNotificacao;
+  dataInicio?: string;
+  dataFim?: string;
+  destinatario?: string;
+}
+
+export interface NotificacaoCreate {
+  tipo: TipoNotificacao;
+  titulo: string;
+  mensagem: string;
+  destinatario?: string;
+  link?: string;
+  dados?: Record<string, unknown>;
+}
+
+export interface NotificacaoUpdate {
+  status?: StatusNotificacao;
+  titulo?: string;
+  mensagem?: string;
+  link?: string;
+  dados?: Record<string, unknown>;
+}
+
+export interface NotificacaoPreferencias {
+  email: boolean;
+  sms: boolean;
+  push: boolean;
+  tipos: TipoNotificacao[];
+}
+
+export interface NotificacaoQuantidade {
+  quantidade: number;
+}
+
+export interface NotificacaoEmail extends Omit<NotificacaoCreate, 'tipo'> {
+  destinatario: string;
+}
+
+export interface NotificacaoSMS extends Omit<NotificacaoCreate, 'tipo' | 'titulo'> {
+  destinatario: string;
 }
 
 export interface ConfiguracaoNotificacao {
@@ -62,4 +87,4 @@ export interface ConfiguracaoNotificacao {
     fim: string;
   };
   diasPermitidos?: number[];
-} 
+}

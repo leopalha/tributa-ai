@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -119,15 +117,9 @@ export function TCEmissao() {
                 <FormItem>
                   <FormLabel>Valor Total</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Digite o valor total do crédito"
-                      {...field}
-                    />
+                    <Input type="number" placeholder="Digite o valor total do crédito" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Valor total do crédito em reais (R$).
-                  </FormDescription>
+                  <FormDescription>Valor total do crédito em reais (R$).</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -140,14 +132,9 @@ export function TCEmissao() {
                 <FormItem>
                   <FormLabel>Emissor</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Digite o nome do emissor"
-                      {...field}
-                    />
+                    <Input placeholder="Digite o nome do emissor" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Nome da empresa ou pessoa emissora do título.
-                  </FormDescription>
+                  <FormDescription>Nome da empresa ou pessoa emissora do título.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -160,10 +147,7 @@ export function TCEmissao() {
                 <FormItem>
                   <FormLabel>Origem do Crédito</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Digite a origem do crédito"
-                      {...field}
-                    />
+                    <Input placeholder="Digite a origem do crédito" {...field} />
                   </FormControl>
                   <FormDescription>
                     Descreva a origem do crédito (ex: restituição, compensação, etc).
@@ -180,10 +164,7 @@ export function TCEmissao() {
                 <FormItem>
                   <FormLabel>Tipo de Tributo</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Digite o tipo de tributo"
-                      {...field}
-                    />
+                    <Input placeholder="Digite o tipo de tributo" {...field} />
                   </FormControl>
                   <FormDescription>
                     Especifique o tipo de tributo relacionado ao crédito.
@@ -200,14 +181,9 @@ export function TCEmissao() {
                 <FormItem>
                   <FormLabel>Processo Administrativo</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Digite o número do processo administrativo"
-                      {...field}
-                    />
+                    <Input placeholder="Digite o número do processo administrativo" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Número do processo administrativo (se houver).
-                  </FormDescription>
+                  <FormDescription>Número do processo administrativo (se houver).</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -220,14 +196,9 @@ export function TCEmissao() {
                 <FormItem>
                   <FormLabel>Processo Judicial</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Digite o número do processo judicial"
-                      {...field}
-                    />
+                    <Input placeholder="Digite o número do processo judicial" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Número do processo judicial (se houver).
-                  </FormDescription>
+                  <FormDescription>Número do processo judicial (se houver).</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

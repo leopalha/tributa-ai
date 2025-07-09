@@ -1,26 +1,25 @@
-const nextJest = require("next/jest")
-
-const createJestConfig = nextJest({
-  dir: "./",
-})
-
-/** @type {import('jest').Config} */
-const config = {
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-  testEnvironment: "jest-environment-jsdom",
-  preset: "ts-jest",
-  moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  moduleNameMapping: {
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
-  collectCoverageFrom: [
-    "src/**/*.{ts,tsx}",
-    "!src/**/*.d.ts",
-    "!src/**/*.stories.{ts,tsx}",
-    "!src/**/*.test.{ts,tsx}",
-    "!src/**/*.spec.{ts,tsx}",
-    "!src/**/__tests__/**",
-    "!src/**/__mocks__/**",
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  transform: {
+    '^.+\\.(ts|tsx)$': 'ts-jest',
+  },
+  testMatch: [
+    '<rootDir>/src/**/__tests__/**/*.(ts|tsx|js)',
+    '<rootDir>/src/**/?(*.)(spec|test).(ts|tsx|js)',
   ],
-}
-
-module.exports = createJestConfig(config) 
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/main.tsx',
+    '!src/vite-env.d.ts',
+  ],
+  coverageReporters: ['text', 'lcov', 'html'],
+  coverageDirectory: 'coverage',
+  testTimeout: 10000,
+} 

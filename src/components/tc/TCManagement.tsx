@@ -1,28 +1,26 @@
-'use client';
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TCList } from "./TCList";
-import { TCEmissao } from "./TCEmissao";
-import { TCDetails } from "./TCDetails";
-import { TCTransactions } from "./TCTransactions";
-import { useTC } from "@/hooks/useTC";
-import { TC } from "@/types/tc";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TCList } from './TCList';
+import { TCEmissao } from './TCEmissao';
+import { TCDetails } from './TCDetails';
+import { TCTransactions } from './TCTransactions';
+import { useTC } from '@/hooks/useTC';
+import { TituloDeCredito } from '@/types/tc';
 
 interface TCManagementProps {
   initialTab?: string;
   onTabChange?: (tab: string) => void;
-  selectedTC?: TC | null;
-  onTCSelect?: (tc: TC) => void;
+  selectedTC?: TituloDeCredito | null;
+  onTCSelect?: (tc: TituloDeCredito) => void;
 }
 
-export function TCManagement({ 
-  initialTab = "lista",
+export function TCManagement({
+  initialTab = 'lista',
   onTabChange,
   selectedTC,
-  onTCSelect
+  onTCSelect,
 }: TCManagementProps) {
   const [activeTab, setActiveTab] = useState(initialTab);
 
@@ -31,9 +29,9 @@ export function TCManagement({
     onTabChange?.(value);
   };
 
-  const handleTCSelect = (tc: TC) => {
+  const handleTCSelect = (tc: TituloDeCredito) => {
     onTCSelect?.(tc);
-    handleTabChange("detalhes");
+    handleTabChange('detalhes');
   };
 
   return (
@@ -70,4 +68,4 @@ export function TCManagement({
       )}
     </Tabs>
   );
-} 
+}

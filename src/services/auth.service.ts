@@ -51,11 +51,15 @@ class AuthService {
     return api.post(`${this.baseUrl}/recuperar-senha`, { email });
   }
 
-  public async redefinirSenha(token: string, novaSenha: string, confirmacaoSenha: string): Promise<void> {
+  public async redefinirSenha(
+    token: string,
+    novaSenha: string,
+    confirmacaoSenha: string
+  ): Promise<void> {
     return api.post(`${this.baseUrl}/redefinir-senha`, {
       token,
       novaSenha,
-      confirmacaoSenha
+      confirmacaoSenha,
     });
   }
 
@@ -91,8 +95,13 @@ class AuthService {
     return api.put(`${this.baseUrl}/preferencias`, preferencias);
   }
 
-  public async uploadFoto(arquivo: File, onProgress?: (progress: number) => void): Promise<Usuario> {
-    return api.upload(`${this.baseUrl}/foto`, arquivo, onProgress);
+  public async uploadFoto(
+    arquivo: File,
+    onProgress?: (progress: number) => void
+  ): Promise<Usuario> {
+    const formData = new FormData();
+    formData.append('foto', arquivo);
+    return api.upload(`${this.baseUrl}/foto`, formData, onProgress);
   }
 
   public async excluirConta(senha: string): Promise<void> {
@@ -100,13 +109,15 @@ class AuthService {
     this.limparTokens();
   }
 
-  public async obterSessoes(): Promise<{
-    id: string;
-    dispositivo: string;
-    ip: string;
-    ultimoAcesso: string;
-    atual: boolean;
-  }[]> {
+  public async obterSessoes(): Promise<
+    {
+      id: string;
+      dispositivo: string;
+      ip: string;
+      ultimoAcesso: string;
+      atual: boolean;
+    }[]
+  > {
     return api.get(`${this.baseUrl}/sessoes`);
   }
 
@@ -121,12 +132,12 @@ class AuthService {
   private setTokens(token: TokenAutenticacao): void {
     setCookie(undefined, 'tributa.ai.token', token.accessToken, {
       maxAge: 60 * 60 * 24 * 7, // 7 dias
-      path: '/'
+      path: '/',
     });
 
     setCookie(undefined, 'tributa.ai.refreshToken', token.refreshToken, {
       maxAge: 60 * 60 * 24 * 30, // 30 dias
-      path: '/'
+      path: '/',
     });
   }
 
@@ -141,4 +152,4 @@ class AuthService {
   }
 }
 
-export const authService = AuthService.getInstance(); 
+export const authService = AuthService.getInstance();

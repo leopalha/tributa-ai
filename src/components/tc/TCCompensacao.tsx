@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,7 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useTC } from '@/hooks/useTC';
 import { useToast } from '@/components/ui/use-toast';
 import { formatCurrency } from '@/lib/utils';
-import { TC } from '@/types/tc';
+import { TituloDeCredito } from '@/types/tc';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 
 const compensacaoSchema = z.object({
@@ -33,7 +31,7 @@ const compensacaoSchema = z.object({
 type CompensacaoFormData = z.infer<typeof compensacaoSchema>;
 
 interface TCCompensacaoProps {
-  tc: TC | null;
+  tc: TituloDeCredito | null;
 }
 
 export function TCCompensacao({ tc }: TCCompensacaoProps) {
@@ -58,7 +56,7 @@ export function TCCompensacao({ tc }: TCCompensacaoProps) {
 
   const handleSimular = async (valor: number) => {
     if (!tc) return;
-    
+
     try {
       const resultado = await simularCompensacao(tc.id, valor);
       setSimulacao(resultado);
@@ -74,7 +72,7 @@ export function TCCompensacao({ tc }: TCCompensacaoProps) {
 
   const onSubmit = async (data: CompensacaoFormData) => {
     if (!tc) return;
-    
+
     try {
       setLoading(true);
       await compensar(tc.id, data);
@@ -101,7 +99,7 @@ export function TCCompensacao({ tc }: TCCompensacaoProps) {
         <CardContent className="py-6">
           <div className="text-center">
             <h3 className="text-lg font-medium">Selecione um título de crédito</h3>
-            <p className="text-muted-foreground">
+            <p className="text-[hsl(var(--muted-foreground))]">
               Para realizar compensações, selecione um TC na lista
             </p>
           </div>
@@ -123,7 +121,7 @@ export function TCCompensacao({ tc }: TCCompensacaoProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Valor Disponível</h3>
-              <p className="text-2xl font-bold">{formatCurrency(tc.valorDisponivel)}</p>
+              <p className="text-2xl font-bold">{formatCurrency(tc.valor)}</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">Status</h3>
@@ -158,15 +156,13 @@ export function TCCompensacao({ tc }: TCCompensacaoProps) {
                         type="number"
                         step="0.01"
                         {...field}
-                        onChange={(e) => {
+                        onChange={e => {
                           field.onChange(parseFloat(e.target.value));
                           handleSimular(parseFloat(e.target.value));
                         }}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Informe o valor que deseja compensar
-                    </FormDescription>
+                    <FormDescription>Informe o valor que deseja compensar</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -181,9 +177,7 @@ export function TCCompensacao({ tc }: TCCompensacaoProps) {
                     <FormControl>
                       <Input {...field} placeholder="Ex: ICMS, IPI, etc." />
                     </FormControl>
-                    <FormDescription>
-                      Informe o tributo a ser compensado
-                    </FormDescription>
+                    <FormDescription>Informe o tributo a ser compensado</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -198,9 +192,7 @@ export function TCCompensacao({ tc }: TCCompensacaoProps) {
                     <FormControl>
                       <Input {...field} placeholder="Ex: 01/2024" />
                     </FormControl>
-                    <FormDescription>
-                      Informe o período de referência do tributo
-                    </FormDescription>
+                    <FormDescription>Informe o período de referência do tributo</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -232,4 +224,4 @@ export function TCCompensacao({ tc }: TCCompensacaoProps) {
       </Card>
     </div>
   );
-} 
+}

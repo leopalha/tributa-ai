@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 
 export function TailwindIndicator() {
@@ -33,4 +31,4 @@ export function TailwindIndicator() {
       <div className="hidden 2xl:block">2xl</div>
     </div>
   );
-} 
+}

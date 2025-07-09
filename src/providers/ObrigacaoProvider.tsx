@@ -1,5 +1,3 @@
-"use client";
-
 import React, { createContext, useState, useEffect } from 'react';
 import { api } from '@/services/api';
 
@@ -80,7 +78,7 @@ export function ObrigacaoProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const response = await api.put<Obrigacao>(`/obrigacoes/${id}`, data);
-      setObrigacoes(prev => prev.map(obrigacao => obrigacao.id === id ? response : obrigacao));
+      setObrigacoes(prev => prev.map(obrigacao => (obrigacao.id === id ? response : obrigacao)));
       if (selectedObrigacao?.id === id) {
         setSelectedObrigacao(response);
       }
@@ -115,12 +113,8 @@ export function ObrigacaoProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       const formData = new FormData();
       formData.append('file', file);
-      const response = await api.post<Obrigacao>(`/obrigacoes/${id}/anexos`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setObrigacoes(prev => prev.map(obrigacao => obrigacao.id === id ? response : obrigacao));
+      const response = await api.upload(`/obrigacoes/${id}/anexos`, formData);
+      setObrigacoes(prev => prev.map(obrigacao => (obrigacao.id === id ? response : obrigacao)));
       if (selectedObrigacao?.id === id) {
         setSelectedObrigacao(response);
       }
@@ -137,7 +131,7 @@ export function ObrigacaoProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const response = await api.delete<Obrigacao>(`/obrigacoes/${id}/anexos/${anexoId}`);
-      setObrigacoes(prev => prev.map(obrigacao => obrigacao.id === id ? response : obrigacao));
+      setObrigacoes(prev => prev.map(obrigacao => (obrigacao.id === id ? response : obrigacao)));
       if (selectedObrigacao?.id === id) {
         setSelectedObrigacao(response);
       }
@@ -173,4 +167,4 @@ export function ObrigacaoProvider({ children }: { children: React.ReactNode }) {
       {children}
     </ObrigacaoContext.Provider>
   );
-} 
+}

@@ -1,10 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Eye, AlertTriangle, CheckCircle2, Clock } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { FileText, Download, Eye, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
 
 interface Document {
   id: string;
@@ -25,8 +25,8 @@ const mockDocuments: Document[] = [
     status: 'processado',
     data: new Date(),
     empresa: 'Tech Solutions LTDA',
-    valor: 15750.50,
-    numero: '000123456'
+    valor: 15750.5,
+    numero: '000123456',
   },
   {
     id: '2',
@@ -35,8 +35,8 @@ const mockDocuments: Document[] = [
     status: 'pendente',
     data: new Date(),
     empresa: 'Serviços Online LTDA',
-    valor: 8500.00,
-    numero: '000000789'
+    valor: 8500.0,
+    numero: '000000789',
   },
   {
     id: '3',
@@ -46,7 +46,7 @@ const mockDocuments: Document[] = [
     data: new Date(),
     empresa: 'Transportes Rápidos LTDA',
     valor: 2350.75,
-    numero: '000012345'
+    numero: '000012345',
   },
   {
     id: '4',
@@ -55,8 +55,8 @@ const mockDocuments: Document[] = [
     status: 'processado',
     data: new Date(),
     empresa: 'Logística Express S.A.',
-    valor: 4500.00,
-    numero: '000000456'
+    valor: 4500.0,
+    numero: '000000456',
   },
   {
     id: '5',
@@ -66,8 +66,8 @@ const mockDocuments: Document[] = [
     data: new Date(),
     empresa: 'Comércio Digital S.A.',
     valor: 750.25,
-    numero: '000789123'
-  }
+    numero: '000789123',
+  },
 ];
 
 const getTipoColor = (tipo: Document['tipo']) => {
@@ -114,10 +114,10 @@ export function DocumentsSummary() {
       <CardContent>
         <ScrollArea className="h-[400px] pr-4">
           <div className="space-y-4">
-            {sortedDocuments.map((doc) => (
+            {sortedDocuments.map(doc => (
               <div
                 key={doc.id}
-                className="flex items-start gap-4 p-4 rounded-lg border hover:bg-accent/5 transition-colors"
+                className="flex items-start gap-4 p-4 rounded-lg border hover:bg-[hsl(var(--accent))]/5 transition-colors"
               >
                 <div className="flex-1 space-y-2">
                   <div className="flex items-start justify-between">
@@ -126,18 +126,14 @@ export function DocumentsSummary() {
                         <h4 className="font-medium">{doc.title}</h4>
                         {getStatusIcon(doc.status)}
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {doc.empresa}
-                      </p>
+                      <p className="text-sm text-[hsl(var(--muted-foreground))]">{doc.empresa}</p>
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                      <Badge variant="outline">
-                        Nº {formatDocumentNumber(doc.numero)}
-                      </Badge>
+                      <Badge variant="outline">Nº {formatDocumentNumber(doc.numero)}</Badge>
                       <span className="text-sm font-medium">
                         {new Intl.NumberFormat('pt-BR', {
                           style: 'currency',
-                          currency: 'BRL'
+                          currency: 'BRL',
                         }).format(doc.valor)}
                       </span>
                     </div>
@@ -145,10 +141,8 @@ export function DocumentsSummary() {
 
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
-                      <Badge className={getTipoColor(doc.tipo)}>
-                        {doc.tipo.toUpperCase()}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
+                      <Badge className={getTipoColor(doc.tipo)}>{doc.tipo.toUpperCase()}</Badge>
+                      <span className="text-xs text-[hsl(var(--muted-foreground))]">
                         {format(doc.data, "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
                       </span>
                     </div>
@@ -169,4 +163,4 @@ export function DocumentsSummary() {
       </CardContent>
     </Card>
   );
-} 
+}

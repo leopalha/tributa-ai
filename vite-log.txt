@@ -1,0 +1,27 @@
+
+> tributa-ai-web@0.1.0 dev
+> vite
+
+
+  [32m[1mVITE[22m v5.4.19[39m  [2mready in [0m[1m1368[22m[2m[0m ms[22m
+
+  [32mÔ×£[39m  [1mLocal[22m:   [36mhttp://localhost:[1m3000[22m/[39m
+  [32mÔ×£[39m  [1mNetwork[22m: [36mhttp://10.5.0.2:[1m3000[22m/[39m
+  [32mÔ×£[39m  [1mNetwork[22m: [36mhttp://192.168.0.220:[1m3000[22m/[39m
+  [32mÔ×£[39m  [1mNetwork[22m: [36mhttp://172.27.112.1:[1m3000[22m/[39m
+[2m[32m  Ô×£[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+[Failed to load PostCSS config: Failed to load PostCSS config (searchPath: D:/NEG├ôCIOS/TRIBUT.AI/Plataforma/tributa-ai-web-new): [ReferenceError] module is not defined in ES module scope
+This file is being treated as an ES module because it has a '.js' file extension and 'D:\NEG├ôCIOS\TRIBUT.AI\Plataforma\tributa-ai-web-new\package.json' contains "type": "module". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.
+ReferenceError: module is not defined in ES module scope
+This file is being treated as an ES module because it has a '.js' file extension and 'D:\NEG├ôCIOS\TRIBUT.AI\Plataforma\tributa-ai-web-new\package.json' contains "type": "module". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.
+    at file:///D:/NEG%C3%93CIOS/TRIBUT.AI/Plataforma/tributa-ai-web-new/postcss.config.js:1:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:271:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26)
+    at async importDefault (file:///D:/NEG%C3%93CIOS/TRIBUT.AI/Plataforma/tributa-ai-web-new/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:33759:18)
+    at async Object.search (file:///D:/NEG%C3%93CIOS/TRIBUT.AI/Plataforma/tributa-ai-web-new/node_modules/vite/dist/node/chunks/dep-C6uTJdX2.js:25915:23)]
+
+Node.js v22.14.0

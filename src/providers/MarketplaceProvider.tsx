@@ -1,202 +1,230 @@
-"use client";
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-import React, { createContext, useState, useEffect } from 'react';
-import { marketplaceService } from '@/services/marketplace.service';
-import { MarketplaceItem, CarrinhoItem, Pedido, Avaliacao } from '@/types/marketplace';
-
-interface MarketplaceContextData {
-  items: MarketplaceItem[];
-  carrinho: CarrinhoItem[];
-  pedidos: Pedido[];
-  selectedItem: MarketplaceItem | null;
-  loading: boolean;
-  error: Error | null;
-  fetchItems: (filters?: any) => Promise<void>;
-  selectItem: (item: MarketplaceItem) => void;
-  addToCarrinho: (itemId: string, quantidade: number) => Promise<void>;
-  updateCarrinhoItem: (itemId: string, quantidade: number) => Promise<void>;
-  removeFromCarrinho: (itemId: string) => Promise<void>;
-  clearCarrinho: () => Promise<void>;
-  createPedido: (data: {
-    itens: { itemId: string; quantidade: number }[];
-    enderecoEntrega?: any;
-    metodoPagamento: 'cartao' | 'pix' | 'boleto';
-  }) => Promise<void>;
-  fetchPedidos: () => Promise<void>;
-  createAvaliacao: (itemId: string, data: { nota: number; comentario: string }) => Promise<Avaliacao>;
-  fetchAvaliacoes: (itemId: string) => Promise<Avaliacao[]>;
+// Tipos básicos para Marketplace
+interface Oferta {
+  id: string;
+  tcId: string;
+  tipo: 'venda' | 'compra';
+  preco: number;
+  quantidade: number;
+  vendedor: string;
+  comprador?: string;
+  status: 'ativa' | 'executada' | 'cancelada';
+  dataExpiracao: Date;
+  createdAt: Date;
 }
 
-export const MarketplaceContext = createContext<MarketplaceContextData>({} as MarketplaceContextData);
+interface Transacao {
+  id: string;
+  tcId: string;
+  vendedor: string;
+  comprador: string;
+  preco: number;
+  quantidade: number;
+  status: 'pendente' | 'confirmada' | 'falhou';
+  txHash?: string;
+  createdAt: Date;
+}
 
-export function MarketplaceProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<MarketplaceItem[]>([]);
-  const [carrinho, setCarrinho] = useState<CarrinhoItem[]>([]);
-  const [pedidos, setPedidos] = useState<Pedido[]>([]);
-  const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+interface MarketplaceStats {
+  volumeTotal: number;
+  numeroTransacoes: number;
+  tcsAtivos: number;
+  precoMedio: number;
+}
 
-  const fetchItems = async (filters?: any) => {
+interface MarketplaceContextType {
+  ofertas: Oferta[];
+  transacoes: Transacao[];
+  stats: MarketplaceStats;
+  loading: boolean;
+  error: string | null;
+  criarOferta: (oferta: Omit<Oferta, 'id' | 'createdAt'>) => Promise<void>;
+  cancelarOferta: (id: string) => Promise<void>;
+  executarTransacao: (ofertaId: string, quantidade: number) => Promise<void>;
+  buscarOfertas: (filtros?: any) => Promise<void>;
+  atualizarStats: () => Promise<void>;
+}
+
+const MarketplaceContext = createContext<MarketplaceContextType | undefined>(undefined);
+
+export function MarketplaceProvider({ children }: { children: ReactNode }) {
+  const [ofertas, setOfertas] = useState<Oferta[]>([]);
+  const [transacoes, setTransacoes] = useState<Transacao[]>([]);
+  const [stats, setStats] = useState<MarketplaceStats>({
+    volumeTotal: 0,
+    numeroTransacoes: 0,
+    tcsAtivos: 0,
+    precoMedio: 0,
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const criarOferta = async (novaOferta: Omit<Oferta, 'id' | 'createdAt'>) => {
     try {
       setLoading(true);
-      const response = await marketplaceService.getItems(filters);
-      setItems(response);
       setError(null);
+
+      // Simulação - posteriormente conectar com smart contract
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      const oferta: Oferta = {
+        ...novaOferta,
+        id: Date.now().toString(),
+        createdAt: new Date(),
+      };
+
+      setOfertas(prev => [...prev, oferta]);
     } catch (err) {
-      setError(err as Error);
+      setError(err instanceof Error ? err.message : 'Erro ao criar oferta');
     } finally {
       setLoading(false);
     }
   };
 
-  const selectItem = (item: MarketplaceItem) => {
-    setSelectedItem(item);
-  };
-
-  const addToCarrinho = async (itemId: string, quantidade: number) => {
+  const cancelarOferta = async (id: string) => {
     try {
       setLoading(true);
-      const response = await marketplaceService.addToCarrinho(itemId, quantidade);
-      setCarrinho(prev => [...prev, response]);
       setError(null);
+
+      // Simulação
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setOfertas(prev =>
+        prev.map(oferta =>
+          oferta.id === id ? { ...oferta, status: 'cancelada' as const } : oferta
+        )
+      );
     } catch (err) {
-      setError(err as Error);
-      throw err;
+      setError(err instanceof Error ? err.message : 'Erro ao cancelar oferta');
     } finally {
       setLoading(false);
     }
   };
 
-  const updateCarrinhoItem = async (itemId: string, quantidade: number) => {
+  const executarTransacao = async (ofertaId: string, quantidade: number) => {
     try {
       setLoading(true);
-      const response = await marketplaceService.updateCarrinhoItem(itemId, quantidade);
-      setCarrinho(prev => prev.map(item => item.item.id === itemId ? response : item));
       setError(null);
+
+      // Simulação - posteriormente executar smart contract
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const oferta = ofertas.find(o => o.id === ofertaId);
+      if (!oferta) {
+        throw new Error('Oferta não encontrada');
+      }
+
+      const transacao: Transacao = {
+        id: Date.now().toString(),
+        tcId: oferta.tcId,
+        vendedor: oferta.vendedor,
+        comprador: 'Usuario Atual', // Posteriormente pegar do contexto de auth
+        preco: oferta.preco,
+        quantidade,
+        status: 'confirmada',
+        txHash: `0x${Date.now().toString(16)}`,
+        createdAt: new Date(),
+      };
+
+      setTransacoes(prev => [...prev, transacao]);
+
+      // Atualizar oferta
+      setOfertas(prev =>
+        prev.map(o =>
+          o.id === ofertaId
+            ? {
+                ...o,
+                quantidade: o.quantidade - quantidade,
+                status: o.quantidade === quantidade ? ('executada' as const) : o.status,
+              }
+            : o
+        )
+      );
     } catch (err) {
-      setError(err as Error);
-      throw err;
+      setError(err instanceof Error ? err.message : 'Erro ao executar transação');
     } finally {
       setLoading(false);
     }
   };
 
-  const removeFromCarrinho = async (itemId: string) => {
+  const buscarOfertas = async (filtros?: any) => {
     try {
       setLoading(true);
-      await marketplaceService.removeFromCarrinho(itemId);
-      setCarrinho(prev => prev.filter(item => item.item.id !== itemId));
       setError(null);
+
+      // Simulação
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const mockOfertas: Oferta[] = [
+        {
+          id: '1',
+          tcId: '1',
+          tipo: 'venda',
+          preco: 14500.0,
+          quantidade: 1,
+          vendedor: 'Empresa Demo LTDA',
+          status: 'ativa',
+          dataExpiracao: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          createdAt: new Date(),
+        },
+      ];
+
+      setOfertas(mockOfertas);
     } catch (err) {
-      setError(err as Error);
-      throw err;
+      setError(err instanceof Error ? err.message : 'Erro ao buscar ofertas');
     } finally {
       setLoading(false);
     }
   };
 
-  const clearCarrinho = async () => {
+  const atualizarStats = async () => {
     try {
       setLoading(true);
-      await marketplaceService.clearCarrinho();
-      setCarrinho([]);
-      setError(null);
+
+      // Calcular stats baseado nas transações e ofertas
+      const volumeTotal = transacoes.reduce((total, t) => total + t.preco * t.quantidade, 0);
+      const numeroTransacoes = transacoes.length;
+      const tcsAtivos = ofertas.filter(o => o.status === 'ativa').length;
+      const precoMedio =
+        tcsAtivos > 0 ? ofertas.reduce((total, o) => total + o.preco, 0) / tcsAtivos : 0;
+
+      setStats({
+        volumeTotal,
+        numeroTransacoes,
+        tcsAtivos,
+        precoMedio,
+      });
     } catch (err) {
-      setError(err as Error);
-      throw err;
+      setError(err instanceof Error ? err.message : 'Erro ao atualizar estatísticas');
     } finally {
       setLoading(false);
     }
   };
 
-  const createPedido = async (data: {
-    itens: { itemId: string; quantidade: number }[];
-    enderecoEntrega?: any;
-    metodoPagamento: 'cartao' | 'pix' | 'boleto';
-  }) => {
-    try {
-      setLoading(true);
-      const response = await marketplaceService.createPedido(data);
-      setPedidos(prev => [...prev, response]);
-      await clearCarrinho();
-      setError(null);
-    } catch (err) {
-      setError(err as Error);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
+  const contextValue: MarketplaceContextType = {
+    ofertas,
+    transacoes,
+    stats,
+    loading,
+    error,
+    criarOferta,
+    cancelarOferta,
+    executarTransacao,
+    buscarOfertas,
+    atualizarStats,
   };
 
-  const fetchPedidos = async () => {
-    try {
-      setLoading(true);
-      const response = await marketplaceService.getPedidos();
-      setPedidos(response);
-      setError(null);
-    } catch (err) {
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  return <MarketplaceContext.Provider value={contextValue}>{children}</MarketplaceContext.Provider>;
+}
 
-  const createAvaliacao = async (itemId: string, data: { nota: number; comentario: string }) => {
-    try {
-      setLoading(true);
-      const response = await marketplaceService.createAvaliacao(itemId, data);
-      setError(null);
-      return response;
-    } catch (err) {
-      setError(err as Error);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+export const useMarketplace = () => {
+  const context = useContext(MarketplaceContext);
+  if (context === undefined) {
+    throw new Error('useMarketplace must be used within a MarketplaceProvider');
+  }
+  return context;
+};
 
-  const fetchAvaliacoes = async (itemId: string) => {
-    try {
-      setLoading(true);
-      const response = await marketplaceService.getAvaliacoes(itemId);
-      setError(null);
-      return response;
-    } catch (err) {
-      setError(err as Error);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchItems();
-    fetchPedidos();
-  }, []);
-
-  return (
-    <MarketplaceContext.Provider
-      value={{
-        items,
-        carrinho,
-        pedidos,
-        selectedItem,
-        loading,
-        error,
-        fetchItems,
-        selectItem,
-        addToCarrinho,
-        updateCarrinhoItem,
-        removeFromCarrinho,
-        clearCarrinho,
-        createPedido,
-        fetchPedidos,
-        createAvaliacao,
-        fetchAvaliacoes,
-      }}
-    >
-      {children}
-    </MarketplaceContext.Provider>
-  );
-} 
+// Export dos tipos para uso em outros lugares
+export type { Oferta, Transacao, MarketplaceStats };

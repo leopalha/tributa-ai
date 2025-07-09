@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { Bot, Send, X, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,15 +16,15 @@ const initialMessages: Message[] = [
     id: 1,
     type: 'assistant',
     content: 'Olá! Sou o assistente virtual da Tributa.ai. Como posso ajudar você hoje?',
-    timestamp: new Date()
-  }
+    timestamp: new Date(),
+  },
 ];
 
 const suggestedQuestions = [
   'Como declarar notas fiscais de serviço?',
   'Qual o prazo para envio da DCTF?',
   'Como gerar guia do Simples Nacional?',
-  'Quais documentos preciso para SPED Fiscal?'
+  'Quais documentos preciso para SPED Fiscal?',
 ];
 
 export function AIAssistant() {
@@ -42,7 +40,7 @@ export function AIAssistant() {
       id: messages.length + 1,
       type: 'user',
       content: input,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -55,7 +53,7 @@ export function AIAssistant() {
         id: messages.length + 2,
         type: 'assistant',
         content: 'Entendi sua dúvida. Vou ajudar você com isso...',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
       setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
@@ -81,10 +79,10 @@ export function AIAssistant() {
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 w-96 shadow-xl bg-background/95 backdrop-blur-sm border-2">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-background/90">
+    <Card className="fixed bottom-4 right-4 w-96 shadow-xl bg-[hsl(var(--background))]/95 backdrop-blur-sm border-2">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-[hsl(var(--background))]/90">
         <div className="flex items-center space-x-2">
-          <Bot className="h-5 w-5 text-primary" />
+          <Bot className="h-5 w-5 text-[hsl(var(--primary))]" />
           <CardTitle className="text-sm font-semibold">Assistente Virtual</CardTitle>
         </div>
         <div className="flex items-center space-x-2">
@@ -109,17 +107,15 @@ export function AIAssistant() {
       <CardContent className="p-0">
         <div className="flex flex-col h-[400px]">
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/95">
-            {messages.map((message) => (
+            {messages.map(message => (
               <div
                 key={message.id}
-                className={`flex ${
-                  message.type === 'user' ? 'justify-end' : 'justify-start'
-                }`}
+                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
                   className={`max-w-[80%] rounded-lg px-4 py-2 shadow-sm ${
                     message.type === 'user'
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-[hsl(var(--primary))] text-[hsl(var(--primary))]-foreground'
                       : 'bg-white border'
                   }`}
                 >
@@ -141,7 +137,7 @@ export function AIAssistant() {
 
           {messages.length === 1 && (
             <div className="p-4 border-t bg-gray-50/90">
-              <p className="text-xs text-muted-foreground mb-2">Sugestões:</p>
+              <p className="text-xs text-[hsl(var(--muted-foreground))] mb-2">Sugestões:</p>
               <div className="flex flex-wrap gap-2">
                 {suggestedQuestions.map((question, index) => (
                   <Button
@@ -161,11 +157,11 @@ export function AIAssistant() {
             </div>
           )}
 
-          <div className="p-4 border-t bg-background/90">
+          <div className="p-4 border-t bg-[hsl(var(--background))]/90">
             <div className="flex items-center space-x-2">
               <Input
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={e => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Digite sua mensagem..."
                 className="flex-1 bg-white"
@@ -179,4 +175,4 @@ export function AIAssistant() {
       </CardContent>
     </Card>
   );
-} 
+}

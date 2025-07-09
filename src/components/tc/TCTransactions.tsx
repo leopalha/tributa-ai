@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
 import {
   Table,
@@ -9,67 +7,37 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TC, Transaction, TransactionType, TransactionStatus } from '@/types/tc';
+import { TituloDeCredito, TCTransaction, TipoTransacao, StatusTransacao } from '@/types/tc';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { ArrowUpDown, CheckCircle, XCircle, AlertCircle, Clock } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { tcService } from '@/services/tc.service';
 import { Badge } from '@/components/ui/badge';
-import { TituloDeCredito, TCTransaction, TCTransactionType, TCTransactionStatus } from '@/types/tc';
 
 interface TCTransactionsProps {
   tc: TituloDeCredito;
   transactions: TCTransaction[];
+  loading?: boolean;
 }
 
-export function TCTransactions({ tc, transactions }: TCTransactionsProps) {
+export function TCTransactions({ tc, transactions, loading = false }: TCTransactionsProps) {
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [sortField, setSortField] = useState<keyof Transaction>('dataTransacao');
+  const [sortField, setSortField] = useState<keyof TCTransaction>('dataTransacao');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [filterType, setFilterType] = useState<TransactionType | ''>('');
-  const [filterStatus, setFilterStatus] = useState<TransactionStatus | ''>('');
+  const [filterType, setFilterType] = useState<TipoTransacao | ''>('');
+  const [filterStatus, setFilterStatus] = useState<StatusTransacao | ''>('');
 
-  useEffect(() => {
-    if (tc) {
-      loadTransactions();
-    }
-  }, [tc]);
-
-  const loadTransactions = async () => {
-    if (!tc) return;
-    
-    try {
-      setLoading(true);
-      if (tc.transacoes && tc.transacoes.length > 0) {
-        setTransactions(tc.transacoes);
-      } else {
-        const data = await tcService.obterTransacoes(tc.id);
-        setTransactions(data);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar transações:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSort = (field: keyof Transaction) => {
+  const handleSort = (field: keyof TCTransaction) => {
     if (field === sortField) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -80,71 +48,70 @@ export function TCTransactions({ tc, transactions }: TCTransactionsProps) {
 
   const handleCancel = async (transactionId: string) => {
     if (!tc) return;
-    
+
     try {
       await tcService.cancelarTransacao(tc.id, transactionId);
-      await loadTransactions();
       toast({
-        title: "Transação cancelada",
-        description: "A transação foi cancelada com sucesso.",
+        title: 'Transação cancelada',
+        description: 'A transação foi cancelada com sucesso.',
       });
     } catch (error) {
       console.error('Erro ao cancelar transação:', error);
       toast({
-        title: "Erro",
-        description: "Não foi possível cancelar a transação.",
-        variant: "destructive"
+        title: 'Erro',
+        description: 'Não foi possível cancelar a transação.',
+        variant: 'destructive',
       });
     }
   };
 
-  const getStatusIcon = (status: TransactionStatus) => {
-  switch (status) {
-      case 'CONCLUIDA':
+  const getStatusIcon = (status: StatusTransacao) => {
+    switch (status) {
+      case 'concluída':
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'CANCELADA':
+      case 'cancelada':
         return <XCircle className="h-4 w-4 text-red-500" />;
-      case 'REJEITADA':
+      case 'erro':
         return <AlertCircle className="h-4 w-4 text-yellow-500" />;
       default:
         return <Clock className="h-4 w-4 text-blue-500" />;
     }
   };
 
-  const getTransactionTypeLabel = (type: TransactionType) => {
-    const labels: Record<TransactionType, string> = {
-      'COMPENSACAO': 'Compensação',
-      'TRANSFERENCIA': 'Transferência',
-      'VENDA': 'Venda',
-      'CANCELAMENTO': 'Cancelamento'
+  const getTransactionTypeLabel = (type: TipoTransacao) => {
+    const labels: Record<TipoTransacao, string> = {
+      compensação: 'Compensação',
+      transferência: 'Transferência',
+      venda: 'Venda',
+      cancelamento: 'Cancelamento',
     };
     return labels[type] || type;
   };
 
-  const getTransactionTypeColor = (type: TCTransactionType) => {
+  const getTransactionTypeColor = (type: TipoTransacao) => {
     switch (type) {
-      case 'COMPENSACAO':
+      case 'compensação':
         return 'bg-blue-100 text-blue-800';
-      case 'TRANSFERENCIA':
+      case 'transferência':
         return 'bg-purple-100 text-purple-800';
-      case 'VENDA':
-      return 'bg-green-100 text-green-800';
-      case 'CANCELAMENTO':
-      return 'bg-red-100 text-red-800';
+      case 'venda':
+        return 'bg-green-100 text-green-800';
+      case 'cancelamento':
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
-  }
-};
+    }
+  };
 
-  const getTransactionStatusColor = (status: TCTransactionStatus) => {
-  switch (status) {
-      case 'PENDENTE':
+  const getTransactionStatusColor = (status: StatusTransacao) => {
+    switch (status) {
+      case 'pendente':
         return 'bg-yellow-100 text-yellow-800';
-      case 'CONCLUIDA':
+      case 'concluída':
         return 'bg-green-100 text-green-800';
-      case 'CANCELADA':
+      case 'cancelada':
         return 'bg-red-100 text-red-800';
-      case 'REJEITADA':
+      case 'erro':
         return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -162,15 +129,15 @@ export function TCTransactions({ tc, transactions }: TCTransactionsProps) {
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         return aValue.localeCompare(bValue) * direction;
       }
-      
+
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         return (aValue - bValue) * direction;
       }
-      
+
       if (aValue instanceof Date && bValue instanceof Date) {
         return (aValue.getTime() - bValue.getTime()) * direction;
       }
-      
+
       return 0;
     });
 
@@ -180,7 +147,7 @@ export function TCTransactions({ tc, transactions }: TCTransactionsProps) {
         <CardContent className="py-6">
           <div className="text-center">
             <h3 className="text-lg font-medium">Selecione um título de crédito</h3>
-            <p className="text-muted-foreground">
+            <p className="text-[hsl(var(--muted-foreground))]">
               Para visualizar as transações, selecione um TC na lista
             </p>
           </div>
@@ -198,37 +165,36 @@ export function TCTransactions({ tc, transactions }: TCTransactionsProps) {
         <div className="flex gap-4 mb-4">
           <Select
             value={filterType}
-            onValueChange={(value) => setFilterType(value as TransactionType | '')}
+            onValueChange={value => setFilterType(value as TipoTransacao | '')}
           >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Filtrar por tipo" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="">Todos os tipos</SelectItem>
-              <SelectItem value="EMISSAO">Emissão</SelectItem>
-              <SelectItem value="COMPRA">Compra</SelectItem>
-              <SelectItem value="VENDA">Venda</SelectItem>
-              <SelectItem value="COMPENSACAO_DIRETA">Compensação Direta</SelectItem>
-              <SelectItem value="COMPENSACAO_INDIRETA">Compensação Indireta</SelectItem>
+              <SelectItem value="compensação">Compensação</SelectItem>
+              <SelectItem value="transferência">Transferência</SelectItem>
+              <SelectItem value="venda">Venda</SelectItem>
+              <SelectItem value="cancelamento">Cancelamento</SelectItem>
             </SelectContent>
           </Select>
 
           <Select
             value={filterStatus}
-            onValueChange={(value) => setFilterStatus(value as TransactionStatus | '')}
+            onValueChange={value => setFilterStatus(value as StatusTransacao | '')}
           >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Filtrar por status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="">Todos os status</SelectItem>
-              <SelectItem value="PENDENTE">Pendente</SelectItem>
-              <SelectItem value="CONCLUIDA">Concluída</SelectItem>
-              <SelectItem value="CANCELADA">Cancelada</SelectItem>
-              <SelectItem value="FALHA">Falha</SelectItem>
+              <SelectItem value="pendente">Pendente</SelectItem>
+              <SelectItem value="concluída">Concluída</SelectItem>
+              <SelectItem value="cancelada">Cancelada</SelectItem>
+              <SelectItem value="erro">Erro</SelectItem>
             </SelectContent>
           </Select>
-                  </div>
+        </div>
 
         <div className="rounded-md border">
           <Table>
@@ -256,12 +222,12 @@ export function TCTransactions({ tc, transactions }: TCTransactionsProps) {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAndSortedTransactions.map((transaction) => (
+                filteredAndSortedTransactions.map(transaction => (
                   <TableRow key={transaction.id}>
                     <TableCell>{formatDate(transaction.dataTransacao)}</TableCell>
                     <TableCell>
                       <Badge className={getTransactionTypeColor(transaction.tipo)}>
-                        {transaction.tipo}
+                        {getTransactionTypeLabel(transaction.tipo)}
                       </Badge>
                     </TableCell>
                     <TableCell>{formatCurrency(transaction.valorTotal)}</TableCell>
@@ -269,18 +235,22 @@ export function TCTransactions({ tc, transactions }: TCTransactionsProps) {
                     <TableCell>
                       <Badge className={getTransactionStatusColor(transaction.status)}>
                         {transaction.status}
-                    </Badge>
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       {transaction.detalhesCompensacao && (
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-[hsl(var(--muted-foreground))]">
                           <p>Tributo: {transaction.detalhesCompensacao.tipoTributo}</p>
                           {transaction.detalhesCompensacao.numeroDebito && (
                             <p>Débito: {transaction.detalhesCompensacao.numeroDebito}</p>
                           )}
-                          <p>Valor: {formatCurrency(transaction.detalhesCompensacao.valorDebito)}</p>
-                          <p>Vencimento: {formatDate(transaction.detalhesCompensacao.dataVencimento)}</p>
-                  </div>
+                          <p>
+                            Valor: {formatCurrency(transaction.detalhesCompensacao.valorDebito)}
+                          </p>
+                          <p>
+                            Vencimento: {formatDate(transaction.detalhesCompensacao.dataVencimento)}
+                          </p>
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>
@@ -288,8 +258,8 @@ export function TCTransactions({ tc, transactions }: TCTransactionsProps) {
               )}
             </TableBody>
           </Table>
-          </div>
+        </div>
       </CardContent>
     </Card>
   );
-} 
+}

@@ -1,36 +1,168 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tributa.AI - Plataforma de Gestão de Créditos Fiscais
 
-## Getting Started
+## Visão Geral
 
-First, run the development server:
+Tributa.AI é uma plataforma completa para gestão, tokenização e negociação de créditos fiscais. A plataforma integra tecnologias modernas como blockchain, inteligência artificial e análise de dados para oferecer uma solução completa para empresas que desejam otimizar sua gestão tributária.
+
+## Principais Funcionalidades
+
+- **Carteira Digital**: Gerenciamento de saldo, depósitos, saques e tokenização de ativos
+- **Sistema de Compensação**: Compensação bilateral e multilateral de créditos fiscais
+- **Marketplace**: Plataforma para compra e venda de créditos fiscais tokenizados
+- **Tokenização**: Conversão de créditos fiscais em tokens na blockchain
+- **Análise Avançada**: Dashboards e relatórios detalhados sobre créditos e obrigações fiscais
+
+## Tecnologias Utilizadas
+
+- **Frontend**: React, TypeScript, Tailwind CSS, Radix UI
+- **Backend**: Node.js, Express, Prisma
+- **Blockchain**: Ethereum, Ethers.js
+- **Banco de Dados**: PostgreSQL, Supabase
+- **Testes**: Vitest, Jest
+
+## Pré-requisitos
+
+- Node.js (v18 ou superior)
+- npm (v9 ou superior)
+- PostgreSQL (v14 ou superior)
+- MetaMask ou outra carteira Ethereum (para funcionalidades blockchain)
+
+## Instalação
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/sua-organizacao/tributa-ai-web.git
+cd tributa-ai-web
+```
+
+2. Instale as dependências:
+```bash
+npm install
+```
+
+3. Configure as variáveis de ambiente:
+```bash
+cp .env.example .env
+```
+
+4. Edite o arquivo `.env` com suas configurações:
+```bash
+DATABASE_URL="postgresql://user:password@localhost:5432/tributa_ai"
+NEXT_PUBLIC_API_URL="http://localhost:3000/api"
+BLOCKCHAIN_RPC_URL="https://mainnet.infura.io/v3/your-infura-key"
+```
+
+5. Execute as migrações do banco de dados:
+```bash
+npm run db:push
+```
+
+6. Popule o banco de dados com dados iniciais:
+```bash
+npm run db:seed
+```
+
+## Executando a Aplicação
+
+### Modo de Desenvolvimento
+
+Para iniciar o servidor de desenvolvimento:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A aplicação estará disponível em [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Modo de Produção
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Para construir e executar a aplicação em modo de produção:
 
-## Learn More
+```bash
+npm run build
+npm run deploy
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Estrutura do Projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+tributa-ai-web/
+├── src/                    # Código-fonte principal
+│   ├── components/         # Componentes React
+│   │   ├── wallet/         # Componentes da carteira digital
+│   │   ├── marketplace/    # Componentes do marketplace
+│   │   ├── compensacao/    # Componentes do sistema de compensação
+│   │   └── ui/             # Componentes de UI reutilizáveis
+│   ├── pages/              # Páginas da aplicação
+│   ├── services/           # Serviços e lógica de negócio
+│   ├── hooks/              # Hooks personalizados
+│   ├── types/              # Definições de tipos TypeScript
+│   └── utils/              # Funções utilitárias
+├── prisma/                 # Schema e migrações do Prisma
+├── docs/                   # Documentação do projeto
+│   └── plataforma/         # Documentação da plataforma
+│       ├── desenvolvimento/ # Guias de desenvolvimento
+│       └── status/         # Status do projeto
+├── scripts/                # Scripts utilitários
+└── tests/                  # Testes automatizados
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Módulos Principais
 
-## Deploy on Vercel
+### Carteira Digital (Wallet)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+A carteira digital permite aos usuários gerenciar seus fundos, realizar transações financeiras, tokenizar ativos e interagir com a blockchain.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Para acessar a carteira, navegue até `/dashboard/wallet` após fazer login.
+
+### Sistema de Compensação
+
+O sistema de compensação permite a compensação de créditos e débitos fiscais, tanto de forma bilateral (entre créditos e débitos de uma mesma empresa) quanto multilateral (entre múltiplas empresas).
+
+Para acessar o sistema de compensação, navegue até `/dashboard/recuperacao/compensacao-bilateral` ou `/dashboard/recuperacao/compensacao-multilateral`.
+
+### Marketplace
+
+O marketplace permite a compra e venda de créditos fiscais tokenizados, com funcionalidades de negociação, lances e análise de mercado.
+
+Para acessar o marketplace, navegue até `/dashboard/marketplace`.
+
+## Testes
+
+### Executando Testes Unitários
+
+```bash
+npm run test
+```
+
+### Executando Testes de Integração Blockchain
+
+```bash
+node scripts/test-blockchain.js
+```
+
+## Documentação
+
+A documentação completa do projeto está disponível na pasta `docs/plataforma/`. Os principais documentos são:
+
+- [WALLET_IMPLEMENTATION_GUIDE.md](docs/plataforma/desenvolvimento/WALLET_IMPLEMENTATION_GUIDE.md) - Guia de implementação da carteira digital
+- [WALLET_BLOCKCHAIN_INTEGRATION.md](docs/plataforma/desenvolvimento/WALLET_BLOCKCHAIN_INTEGRATION.md) - Documentação da integração blockchain
+- [SISTEMA_COMPENSACAO.md](docs/plataforma/desenvolvimento/SISTEMA_COMPENSACAO.md) - Documentação do sistema de compensação
+- [PADRONIZACAO_MARKETPLACE.md](docs/plataforma/desenvolvimento/PADRONIZACAO_MARKETPLACE.md) - Guia de padronização do marketplace
+- [STATUS_PROJETO_ATUAL.md](docs/plataforma/status/STATUS_PROJETO_ATUAL.md) - Status atual do projeto
+
+## Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Faça commit das suas alterações (`git commit -m 'Adiciona nova feature'`)
+4. Faça push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+## Licença
+
+Este projeto é propriedade da Tributa.AI e não pode ser redistribuído sem autorização.
+
+---
+
+© 2024 Tributa.AI - Todos os direitos reservados. 

@@ -1,4 +1,4 @@
-export type TipoEvento = 
+export type TipoEvento =
   | 'criacao'
   | 'atualizacao'
   | 'exclusao'
@@ -8,11 +8,7 @@ export type TipoEvento =
   | 'autenticacao'
   | 'autorizacao';
 
-export type NivelRisco = 
-  | 'baixo'
-  | 'medio'
-  | 'alto'
-  | 'critico';
+export type NivelRisco = 'baixo' | 'medio' | 'alto' | 'critico';
 
 export interface AlteracaoCampo {
   campo: string;
@@ -86,4 +82,4 @@ export interface RelatorioAuditoria {
   };
   geradoEm: string;
   geradoPor: string;
-} 
+}

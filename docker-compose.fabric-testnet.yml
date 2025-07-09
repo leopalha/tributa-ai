@@ -1,0 +1,113 @@
+version: '3.7'
+
+# Rede Docker para comunicação entre os containers
+networks:
+  tributa_fabric_net:
+    name: tributa_fabric_net
+
+services:
+  # Autoridade Certificadora (CA) para a Organização 1
+  ca_org1:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-org1
+      # Credenciais do admin da CA (bootstrap)
+      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.tributa.ai-cert.pem
+      - FABRIC_CA_SERVER_TLS_ENABLED=true # Habilitar TLS
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.tributa.ai-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/priv_sk # Nome padrão gerado internamente
+    ports:
+      - "7054:7054" # Porta padrão da CA
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d' # Usuário/senha admin bootstrap
+    volumes:
+      # Mapear pasta para certificados (será criada se não existir, mas idealmente pré-gerada)
+      - ./organizations/fabric-ca/org1:/etc/hyperledger/fabric-ca-server-config 
+      # Volume para persistir estado da CA
+      - ca_org1_volume:/etc/hyperledger/fabric-ca-server 
+    container_name: ca.org1.tributa.ai
+    networks:
+      - tributa_fabric_net
+
+  # Serviço de Ordenação (Orderer)
+  orderer:
+    image: hyperledger/fabric-orderer:latest
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050 # Porta do Orderer
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP # ID do MSP do Orderer
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # TLS habilitado
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt] # CA raiz para TLS
+      # Configuração do Genesis Block (bloco inicial da rede)
+      - ORDERER_GENERAL_GENESISMETHOD=file 
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      # Diretório de trabalho
+      - ORDERER_FILELEDGER_LOCATION=/var/hyperledger/orderer/ledger 
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+        # Mapear arquivos de configuração pré-gerados (genesis block, MSP, TLS)
+      - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./organizations/ordererOrganizations/tributa.ai/orderers/orderer.tributa.ai/msp:/var/hyperledger/orderer/msp
+      - ./organizations/ordererOrganizations/tributa.ai/orderers/orderer.tributa.ai/tls/:/var/hyperledger/orderer/tls
+      # Volume para persistir o ledger do Orderer
+      - orderer_volume:/var/hyperledger/orderer/ledger
+    ports:
+      - "7050:7050" # Porta do Orderer
+    container_name: orderer.tributa.ai
+    networks:
+      - tributa_fabric_net
+
+  # Peer 0 da Organização 1
+  peer0_org1:
+    image: hyperledger/fabric-peer:latest
+    environment:
+      # Configurações básicas do Peer
+      - CORE_PEER_ID=peer0.org1.tributa.ai
+      - CORE_PEER_ADDRESS=peer0.org1.tributa.ai:7051 # Endereço do Peer
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.org1.tributa.ai:7052 # Endereço para chaincode
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.tributa.ai:7051 # Peer inicial para Gossip
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.tributa.ai:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP # ID do MSP da Org1
+      # TLS habilitado
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt # CA raiz para TLS
+      # Configuração do MSP local
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp 
+      # Operações (para métricas, opcional)
+      - CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:9443 
+      - FABRIC_LOGGING_SPEC=INFO
+      # State Database (CouchDB ou GoLevelDB) - Usando GoLevelDB por padrão
+      - CORE_LEDGER_STATE_STATEDATABASE=goleveldb 
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    volumes:
+        # Mapear arquivos de configuração pré-gerados (MSP, TLS)
+      - ./organizations/peerOrganizations/org1.tributa.ai/peers/peer0.org1.tributa.ai/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/org1.tributa.ai/peers/peer0.org1.tributa.ai/tls:/etc/hyperledger/fabric/tls
+      # Volume para persistir o ledger e state database do Peer
+      - peer0_org1_volume:/var/hyperledger/production 
+    ports:
+      - "7051:7051" # Porta do Peer
+      - "9443:9443" # Porta de Operações
+    container_name: peer0.org1.tributa.ai
+    networks:
+      - tributa_fabric_net
+    # Depende do Orderer estar pronto (não garante 100%, mas ajuda)
+    depends_on: 
+      - orderer
+
+# Definição dos volumes Docker para persistência
+volumes:
+  ca_org1_volume:
+  orderer_volume:
+  peer0_org1_volume: 

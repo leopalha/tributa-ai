@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARIA - Teste Estático</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .chat {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            height: 400px;
+            padding: 15px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .input-area button {
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .input-area button:hover {
+            background: #0056b3;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .message.user {
+            background: #007bff;
+            color: white;
+            margin-left: 50px;
+        }
+        .message.assistant {
+            background: #e9ecef;
+            color: #333;
+            margin-right: 50px;
+        }
+        .action-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 5px 0 0;
+            font-size: 14px;
+        }
+        .action-button:hover {
+            background: #1e7e34;
+        }
+        .status {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 ARIA - Assistente Inteligente</h1>
+            <p>Seu braço operacional para toda a plataforma Tributa.AI</p>
+        </div>
+
+        <div class="status">
+            ✅ <strong>Sistema Funcionando!</strong><br>
+            • Servidor rodando na porta 3000<br>
+            • ARIA operacional<br>
+            • Pronto para receber comandos
+        </div>
+
+        <div class="chat" id="chat">
+            <div class="message assistant">
+                <strong>ARIA:</strong> Olá! Sou ARIA, seu assistente operacional. Posso ajudar com criação de TCs, compensações, marketplace, análises e muito mais. O que você precisa fazer hoje?
+                <br><br>
+                <button class="action-button" onclick="executarAcao('criar-tc')">🎯 Criar TC</button>
+                <button class="action-button" onclick="executarAcao('compensacao')">⚖️ Compensação</button>
+                <button class="action-button" onclick="executarAcao('marketplace')">🛒 Marketplace</button>
+                <button class="action-button" onclick="executarAcao('analise')">📊 Análise</button>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Digite um comando para ARIA..." 
+                   onkeypress="if(event.key==='Enter') enviarMensagem()">
+            <button onclick="enviarMensagem()">🚀 Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        function enviarMensagem() {
+            const input = document.getElementById('messageInput');
+            const chat = document.getElementById('chat');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Adicionar mensagem do usuário
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `<strong>Você:</strong> ${message}`;
+            chat.appendChild(userMsg);
+
+            // Limpar input
+            input.value = '';
+
+            // Simular resposta da ARIA
+            setTimeout(() => {
+                const ariateRes = processarComando(message);
+                const ariaMsg = document.createElement('div');
+                ariaMsg.className = 'message assistant';
+                ariaMsg.innerHTML = ariateRes;
+                chat.appendChild(ariaMsg);
+                chat.scrollTop = chat.scrollHeight;
+            }, 1000);
+
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function processarComando(comando) {
+            const cmd = comando.toLowerCase();
+            
+            if (cmd.includes('criar') && cmd.includes('tc')) {
+                return `<strong>ARIA:</strong> 🎯 Entendi! Vou criar um novo título de crédito. 
+                       <br><br><button class="action-button" onclick="simularExecucao('TC criado com sucesso! ID: TC-${Date.now()}')">✅ Criar TC</button>`;
+            }
+            
+            if (cmd.includes('compensar') || cmd.includes('compensação')) {
+                return `<strong>ARIA:</strong> ⚖️ Analisando suas possibilidades de compensação... Você tem R$ 191.000 em créditos disponíveis. 
+                       <br><br><button class="action-button" onclick="simularExecucao('Compensação processada! Protocolo: COMP-${Date.now().toString().slice(-6)}')">✅ Executar Compensação</button>`;
+            }
+            
+            if (cmd.includes('marketplace') || cmd.includes('vender') || cmd.includes('listar')) {
+                return `<strong>ARIA:</strong> 🛒 Vou listar seu TC no marketplace. Isso pode gerar liquidez imediata! 
+                       <br><br><button class="action-button" onclick="simularExecucao('Listagem criada no marketplace! ID: LIST-${Date.now()}')">✅ Listar no Marketplace</button>`;
+            }
+            
+            if (cmd.includes('análise') || cmd.includes('relatório') || cmd.includes('dashboard')) {
+                return `<strong>ARIA:</strong> 📊 Gerando análise completa... Identifiquei 3 oportunidades que podem economizar R$ 67.000. 
+                       <br><br><button class="action-button" onclick="simularExecucao('Relatório gerado com sucesso! 3 oportunidades identificadas.')">✅ Gerar Relatório</button>`;
+            }
+            
+            return `<strong>ARIA:</strong> 🤖 Entendi sua solicitação: "${comando}". Como posso ajudar especificamente? 
+                   <br><br>Posso ajudar com:
+                   <br>• Criar títulos de crédito
+                   <br>• Executar compensações
+                   <br>• Gerenciar marketplace
+                   <br>• Gerar análises e relatórios`;
+        }
+
+        function executarAcao(acao) {
+            const mensagens = {
+                'criar-tc': 'criar um título de crédito de ICMS de R$ 25.000',
+                'compensacao': 'executar compensação automática',
+                'marketplace': 'listar TC no marketplace',
+                'analise': 'gerar relatório fiscal completo'
+            };
+            
+            document.getElementById('messageInput').value = mensagens[acao];
+            enviarMensagem();
+        }
+
+        function simularExecucao(resultado) {
+            const chat = document.getElementById('chat');
+            const sucessoMsg = document.createElement('div');
+            sucessoMsg.className = 'message assistant';
+            sucessoMsg.innerHTML = `<strong>ARIA:</strong> ✅ ${resultado}`;
+            chat.appendChild(sucessoMsg);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        // Log para debug
+        console.log('🚀 ARIA Test Page carregada com sucesso!');
+        console.log('✅ JavaScript funcionando');
+        console.log('✅ Interface responsiva');
+        console.log('✅ Simulação de IA operacional');
+    </script>
+</body>
+</html> 

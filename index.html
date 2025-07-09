@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tributa.AI - Plataforma de Tokenização de Créditos Tributários</title>
+    <meta name="description" content="Plataforma inovadora para tokenização e negociação de créditos tributários com blockchain" />
+    <meta name="keywords" content="tributos, créditos tributários, blockchain, tokenização, marketplace" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- POLYFILLS COMPLETOS PARA NODE.JS APIs -->
+    <script>
+      // Global polyfills
+      if (typeof global === 'undefined') {
+        window.global = window.globalThis || window;
+      }
+      
+      // setImmediate polyfill
+      if (typeof setImmediate === 'undefined') {
+        window.setImmediate = function(fn, ...args) { 
+          return setTimeout(() => fn(...args), 0); 
+        };
+        window.clearImmediate = function(id) { 
+          return clearTimeout(id); 
+        };
+      }
+      
+      // Process polyfill
+      if (typeof process === 'undefined') {
+        window.process = {
+          env: {},
+          version: 'v18.0.0',
+          platform: 'browser',
+          nextTick: function(fn, ...args) { 
+            setTimeout(() => fn(...args), 0); 
+          },
+          cwd: function() { return '/'; },
+          exit: function() {},
+          argv: [],
+          pid: 1,
+          ppid: 0,
+          title: 'browser',
+          browser: true
+        };
+      }
+      
+      // Buffer polyfill básico
+      if (typeof Buffer === 'undefined') {
+        window.Buffer = {
+          from: function(data) {
+            if (typeof data === 'string') {
+              return { toString: () => data };
+            }
+            return data;
+          },
+          alloc: function(size) {
+            return new ArrayBuffer(size);
+          }
+        };
+      }
+      
+      console.log('✅ Polyfills Node.js carregados com sucesso');
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html> 

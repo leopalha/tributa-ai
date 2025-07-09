@@ -1,9 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Building2, AlertTriangleIcon } from "lucide-react";
-import { addDays, format, differenceInDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Clock, Building2, AlertTriangleIcon } from 'lucide-react';
+import { addDays, format, differenceInDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface Deadline {
   id: string;
@@ -23,7 +23,7 @@ const mockDeadlines: Deadline[] = [
     empresa: 'Tech Solutions LTDA',
     tipo: 'federal',
     prioridade: 'alta',
-    status: 'pendente'
+    status: 'pendente',
   },
   {
     id: '2',
@@ -32,7 +32,7 @@ const mockDeadlines: Deadline[] = [
     empresa: 'Comércio Digital S.A.',
     tipo: 'estadual',
     prioridade: 'alta',
-    status: 'atrasado'
+    status: 'atrasado',
   },
   {
     id: '3',
@@ -41,7 +41,7 @@ const mockDeadlines: Deadline[] = [
     empresa: 'Serviços Online LTDA',
     tipo: 'municipal',
     prioridade: 'media',
-    status: 'em_andamento'
+    status: 'em_andamento',
   },
   {
     id: '4',
@@ -50,7 +50,7 @@ const mockDeadlines: Deadline[] = [
     empresa: 'Tech Solutions LTDA',
     tipo: 'federal',
     prioridade: 'media',
-    status: 'pendente'
+    status: 'pendente',
   },
   {
     id: '5',
@@ -59,8 +59,8 @@ const mockDeadlines: Deadline[] = [
     empresa: 'Micro Empresa ME',
     tipo: 'federal',
     prioridade: 'baixa',
-    status: 'pendente'
-  }
+    status: 'pendente',
+  },
 ];
 
 const getPrioridadeColor = (prioridade: Deadline['prioridade']) => {
@@ -121,24 +121,24 @@ export function DeadlinesSummary() {
       <CardContent>
         <ScrollArea className="h-[400px] pr-4">
           <div className="space-y-4">
-            {sortedDeadlines.map((deadline) => {
+            {sortedDeadlines.map(deadline => {
               const daysUntil = differenceInDays(deadline.date, new Date());
               const isOverdue = daysUntil < 0;
 
               return (
                 <div
                   key={deadline.id}
-                  className="flex items-start gap-4 p-4 rounded-lg border hover:bg-accent/5 transition-colors"
+                  className="flex items-start gap-4 p-4 rounded-lg border hover:bg-[hsl(var(--accent))]/5 transition-colors"
                 >
                   <div className={`p-2 rounded-full ${getStatusColor(deadline.status)}`}>
                     {getStatusIcon(deadline.status)}
                   </div>
-                  
+
                   <div className="flex-1 space-y-2">
                     <div className="flex items-start justify-between">
                       <div>
                         <h4 className="font-medium">{deadline.title}</h4>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1 text-sm text-[hsl(var(--muted-foreground))]">
                           <Building2 className="h-4 w-4" />
                           <span>{deadline.empresa}</span>
                         </div>
@@ -147,18 +147,16 @@ export function DeadlinesSummary() {
                         <Badge variant="outline">
                           {format(deadline.date, "dd 'de' MMMM", { locale: ptBR })}
                         </Badge>
-                        <span className={`text-sm ${isOverdue ? 'text-red-500' : 'text-muted-foreground'}`}>
-                          {isOverdue
-                            ? `${Math.abs(daysUntil)} dias atrás`
-                            : `em ${daysUntil} dias`}
+                        <span
+                          className={`text-sm ${isOverdue ? 'text-red-500' : 'text-[hsl(var(--muted-foreground))]'}`}
+                        >
+                          {isOverdue ? `${Math.abs(daysUntil)} dias atrás` : `em ${daysUntil} dias`}
                         </span>
                       </div>
                     </div>
 
                     <div className="flex gap-2">
-                      <Badge className={getTipoColor(deadline.tipo)}>
-                        {deadline.tipo}
-                      </Badge>
+                      <Badge className={getTipoColor(deadline.tipo)}>{deadline.tipo}</Badge>
                       <Badge className={getPrioridadeColor(deadline.prioridade)}>
                         {deadline.prioridade}
                       </Badge>
@@ -172,4 +170,4 @@ export function DeadlinesSummary() {
       </CardContent>
     </Card>
   );
-} 
+}

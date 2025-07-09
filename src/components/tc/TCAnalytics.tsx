@@ -1,13 +1,5 @@
-"use client";
-
 import React, { useState, useEffect } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -116,8 +108,9 @@ export function TCAnalytics({ tc }: TCAnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.totalCreditos)}</div>
-            <p className="text-xs text-muted-foreground">
-              +{((stats.totalCreditos / stats.volumeNegociado - 1) * 100).toFixed(1)}% em relação ao período anterior
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
+              +{((stats.totalCreditos / stats.volumeNegociado - 1) * 100).toFixed(1)}% em relação ao
+              período anterior
             </p>
           </CardContent>
         </Card>
@@ -128,7 +121,7 @@ export function TCAnalytics({ tc }: TCAnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.totalCompensacoes)}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
               {stats.totalCompensacoes} compensações realizadas
             </p>
           </CardContent>
@@ -140,7 +133,7 @@ export function TCAnalytics({ tc }: TCAnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.volumeNegociado)}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
               {stats.totalTransacoes} transações
             </p>
           </CardContent>
@@ -152,7 +145,10 @@ export function TCAnalytics({ tc }: TCAnalyticsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.mediaNegociacao)}</div>
-            <Progress value={stats.mediaNegociacao / stats.volumeNegociado * 100} className="h-2" />
+            <Progress
+              value={(stats.mediaNegociacao / stats.volumeNegociado) * 100}
+              className="h-2"
+            />
           </CardContent>
         </Card>
       </div>
@@ -192,9 +188,7 @@ export function TCAnalytics({ tc }: TCAnalyticsProps) {
         <Card>
           <CardHeader>
             <CardTitle>Histórico de Transações</CardTitle>
-            <CardDescription>
-              Volume de transações ao longo do tempo
-            </CardDescription>
+            <CardDescription>Volume de transações ao longo do tempo</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -212,4 +206,4 @@ export function TCAnalytics({ tc }: TCAnalyticsProps) {
       </div>
     </div>
   );
-} 
+}

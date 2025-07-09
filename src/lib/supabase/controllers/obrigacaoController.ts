@@ -36,11 +36,7 @@ export const obrigacaoController = {
   },
 
   async create(obrigacao: Omit<Obrigacao, 'id' | 'created_at' | 'updated_at'>): Promise<Obrigacao> {
-    const { data, error } = await supabase
-      .from('obrigacoes')
-      .insert([obrigacao])
-      .select()
-      .single();
+    const { data, error } = await supabase.from('obrigacoes').insert([obrigacao]).select().single();
 
     if (error) throw error;
     return data;
@@ -59,20 +55,14 @@ export const obrigacaoController = {
   },
 
   async updateStatus(id: string, status: Obrigacao['status']): Promise<void> {
-    const { error } = await supabase
-      .from('obrigacoes')
-      .update({ status })
-      .eq('id', id);
+    const { error } = await supabase.from('obrigacoes').update({ status }).eq('id', id);
 
     if (error) throw error;
   },
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('obrigacoes')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('obrigacoes').delete().eq('id', id);
 
     if (error) throw error;
-  }
-}; 
+  },
+};

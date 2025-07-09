@@ -9,29 +9,46 @@ export type NavItem = {
 };
 
 export const siteConfig = {
-  name: 'Tributa.AI',
-  description: 'Plataforma de automação tributária',
+  name: 'Tributa.AI - Plataforma de Gestão Tributária',
+  description:
+    'Sistema completo para gestão tributária com foco em recuperação de créditos e automação fiscal.',
   url: 'https://tributa.ai',
+  ogImage: 'https://tributa.ai/og.jpg',
+  links: {
+    twitter: 'https://twitter.com/tributaai',
+    github: 'https://github.com/tributa-ai',
+  },
+  defaultTitle: 'Tributa.AI - Plataforma de Gestão Tributária',
+  defaultMetaDescription:
+    'Sistema completo para gestão tributária com foco em recuperação de créditos e automação fiscal.',
   mainNav: [
     {
-      title: 'Início',
+      title: 'Dashboard',
       href: '/',
     },
     {
-      title: 'Serviços',
-      href: '/servicos',
+      title: 'TCs',
+      href: '/tc',
     },
     {
-      title: 'Preços',
-      href: '/precos',
+      title: 'Marketplace',
+      href: '/marketplace',
     },
     {
-      title: 'Sobre',
-      href: '/sobre',
+      title: 'Empresas',
+      href: '/empresas',
     },
     {
-      title: 'Contato',
-      href: '/contato',
+      title: 'Declarações',
+      href: '/declaracoes',
+    },
+    {
+      title: 'Obrigações',
+      href: '/obrigacoes',
+    },
+    {
+      title: 'Usuários',
+      href: '/usuarios',
     },
   ] as NavItem[],
   dashboardNav: [
@@ -146,4 +163,4 @@ export const siteConfig = {
       ],
     },
   ],
-}; 
+};

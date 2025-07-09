@@ -1,0 +1,416 @@
+# Tributa.AI - Production Deployment Configuration
+# Cloud Infrastructure Setup (AWS/Azure/GCP)
+
+version: '3.8'
+
+services:
+  # Frontend (React + Vite)
+  tributa-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "443:443"
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=https://api.tributa.ai
+      - VITE_BLOCKCHAIN_RPC=https://blockchain.tributa.ai
+    volumes:
+      - ./ssl:/etc/ssl/certs
+    networks:
+      - tributa-network
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API (Node.js + Express)
+  tributa-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://user:pass@postgres:5432/tributa_production
+      - JWT_SECRET=${JWT_SECRET}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - RECEITA_FEDERAL_API_KEY=${RECEITA_FEDERAL_API_KEY}
+      - SEFAZ_API_KEY=${SEFAZ_API_KEY}
+      - SERPRO_API_KEY=${SERPRO_API_KEY}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - tributa-network
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Database (PostgreSQL)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: tributa_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: tributa_production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - tributa-network
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tributa_user"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Cache (Redis)
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - tributa-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Hyperledger Fabric Peer
+  hyperledger-peer:
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile.peer
+    environment:
+      - CORE_PEER_ID=peer0.org1.tributa.ai
+      - CORE_PEER_ADDRESS=peer0.org1.tributa.ai:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer0.org1.tributa.ai:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.tributa.ai:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.tributa.ai:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+    volumes:
+      - hyperledger_data:/var/hyperledger/production
+      - ./blockchain/crypto-config:/etc/hyperledger/fabric/msp
+    ports:
+      - "7051:7051"
+    networks:
+      - tributa-network
+
+  # Hyperledger Fabric Orderer
+  hyperledger-orderer:
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile.orderer
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+    volumes:
+      - hyperledger_orderer:/var/hyperledger/production/orderer
+      - ./blockchain/channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+      - ./blockchain/crypto-config/ordererOrganizations/tributa.ai/orderers/orderer.tributa.ai/msp:/var/hyperledger/orderer/msp
+    ports:
+      - "7050:7050"
+    networks:
+      - tributa-network
+
+  # Load Balancer (NGINX)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/ssl/certs
+    depends_on:
+      - tributa-frontend
+      - tributa-backend
+    networks:
+      - tributa-network
+
+  # Monitoring (Prometheus)
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - tributa-network
+
+  # Monitoring (Grafana)
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - tributa-network
+
+  # Logging (Elasticsearch)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - tributa-network
+
+  # Logging (Kibana)
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - tributa-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  hyperledger_data:
+  hyperledger_orderer:
+  prometheus_data:
+  grafana_data:
+  elasticsearch_data:
+
+networks:
+  tributa-network:
+    driver: overlay
+    attachable: true
+
+# Kubernetes Configuration (Alternative)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tributa-frontend
+  namespace: tributa-ai
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tributa-frontend
+  template:
+    metadata:
+      labels:
+        app: tributa-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: tributa-ai/frontend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: VITE_API_URL
+          value: "https://api.tributa.ai"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tributa-frontend-service
+  namespace: tributa-ai
+spec:
+  selector:
+    app: tributa-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tributa-backend
+  namespace: tributa-ai
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: tributa-backend
+  template:
+    metadata:
+      labels:
+        app: tributa-backend
+    spec:
+      containers:
+      - name: backend
+        image: tributa-ai/backend:latest
+        ports:
+        - containerPort: 3001
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: tributa-secrets
+              key: database-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: tributa-secrets
+              key: jwt-secret
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+
+---
+# HPA (Horizontal Pod Autoscaler)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: tributa-backend-hpa
+  namespace: tributa-ai
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: tributa-backend
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+# Production Environment Variables
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tributa-secrets
+  namespace: tributa-ai
+type: Opaque
+data:
+  database-url: <base64-encoded-database-url>
+  jwt-secret: <base64-encoded-jwt-secret>
+  openai-api-key: <base64-encoded-openai-key>
+  anthropic-api-key: <base64-encoded-anthropic-key>
+  receita-federal-api-key: <base64-encoded-receita-key>
+  sefaz-api-key: <base64-encoded-sefaz-key>
+  serpro-api-key: <base64-encoded-serpro-key>
+
+---
+# SSL Certificate (Let's Encrypt)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tributa-tls
+  namespace: tributa-ai
+type: kubernetes.io/tls
+data:
+  tls.crt: <base64-encoded-certificate>
+  tls.key: <base64-encoded-private-key>
+
+---
+# Ingress Configuration
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tributa-ingress
+  namespace: tributa-ai
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+spec:
+  tls:
+  - hosts:
+    - tributa.ai
+    - api.tributa.ai
+    - blockchain.tributa.ai
+    secretName: tributa-tls
+  rules:
+  - host: tributa.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tributa-frontend-service
+            port:
+              number: 80
+  - host: api.tributa.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tributa-backend-service
+            port:
+              number: 3001 

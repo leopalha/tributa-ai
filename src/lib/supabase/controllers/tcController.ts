@@ -47,23 +47,14 @@ export const tcController = {
   },
 
   async create(tc: Omit<TC, 'id' | 'created_at' | 'updated_at'>): Promise<TC> {
-    const { data, error } = await supabase
-      .from('tcs')
-      .insert([tc])
-      .select()
-      .single();
+    const { data, error } = await supabase.from('tcs').insert([tc]).select().single();
 
     if (error) throw error;
     return data;
   },
 
   async update(id: string, tc: Partial<TC>): Promise<TC> {
-    const { data, error } = await supabase
-      .from('tcs')
-      .update(tc)
-      .eq('id', id)
-      .select()
-      .single();
+    const { data, error } = await supabase.from('tcs').update(tc).eq('id', id).select().single();
 
     if (error) throw error;
     return data;
@@ -82,18 +73,18 @@ export const tcController = {
   },
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('tcs')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('tcs').delete().eq('id', id);
 
     if (error) throw error;
   },
 
-  async addTransaction(tcId: string, transaction: Omit<Transaction, 'id' | 'created_at'>): Promise<Transaction> {
+  async addTransaction(
+    tcId: string,
+    transaction: Omit<Transaction, 'id' | 'created_at'>
+  ): Promise<Transaction> {
     const transactionWithTcId = {
       ...transaction,
-      tc_id: tcId
+      tc_id: tcId,
     };
 
     const { data, error } = await supabase
@@ -104,5 +95,5 @@ export const tcController = {
 
     if (error) throw error;
     return data;
-  }
-}; 
+  },
+};

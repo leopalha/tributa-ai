@@ -1,12 +1,18 @@
-'use client';
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Brain, TrendingUp, TrendingDown, AlertTriangleIcon, LineChart, Target, ArrowRight } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { HELP_MESSAGES } from "@/constants/help-messages";
-import { CustomTooltip } from "@/components/ui/custom-tooltip";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Brain,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangleIcon,
+  LineChart,
+  Target,
+  ArrowRight,
+} from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { HELP_MESSAGES } from '@/constants/help-messages';
+import { CustomTooltip } from '@/components/ui/custom-tooltip';
+import { Button } from '@/components/ui/button';
 
 interface Prediction {
   id: string;
@@ -24,7 +30,8 @@ const mockPredictions: Prediction[] = [
   {
     id: '1',
     title: 'Aumento na Carga Tributária',
-    description: 'Previsão de aumento significativo na carga tributária do ICMS no próximo trimestre',
+    description:
+      'Previsão de aumento significativo na carga tributária do ICMS no próximo trimestre',
     impact: 'alto',
     trend: 'up',
     confidence: 85,
@@ -33,13 +40,14 @@ const mockPredictions: Prediction[] = [
     actions: [
       'Revisar planejamento tributário',
       'Avaliar benefícios fiscais disponíveis',
-      'Preparar fluxo de caixa'
-    ]
+      'Preparar fluxo de caixa',
+    ],
   },
   {
     id: '2',
     title: 'Redução em Créditos Fiscais',
-    description: 'Tendência de redução nos créditos fiscais disponíveis devido a mudanças na legislação',
+    description:
+      'Tendência de redução nos créditos fiscais disponíveis devido a mudanças na legislação',
     impact: 'medio',
     trend: 'down',
     confidence: 75,
@@ -48,8 +56,8 @@ const mockPredictions: Prediction[] = [
     actions: [
       'Otimizar aproveitamento de créditos',
       'Documentar processos fiscais',
-      'Avaliar alternativas legais'
-    ]
+      'Avaliar alternativas legais',
+    ],
   },
   {
     id: '3',
@@ -60,11 +68,7 @@ const mockPredictions: Prediction[] = [
     confidence: 90,
     category: 'regulatorio',
     timeframe: 'Imediato',
-    actions: [
-      'Atualizar procedimentos internos',
-      'Treinar equipe',
-      'Implementar novos controles'
-    ]
+    actions: ['Atualizar procedimentos internos', 'Treinar equipe', 'Implementar novos controles'],
   },
   {
     id: '4',
@@ -78,8 +82,8 @@ const mockPredictions: Prediction[] = [
     actions: [
       'Mapear processos atuais',
       'Avaliar ferramentas de automação',
-      'Desenvolver plano de implementação'
-    ]
+      'Desenvolver plano de implementação',
+    ],
   },
   {
     id: '5',
@@ -93,9 +97,9 @@ const mockPredictions: Prediction[] = [
     actions: [
       'Planejar reserva financeira',
       'Negociar prazos com fornecedores',
-      'Revisar cronograma de pagamentos'
-    ]
-  }
+      'Revisar cronograma de pagamentos',
+    ],
+  },
 ];
 
 const getImpactColor = (impact: Prediction['impact']) => {
@@ -144,17 +148,17 @@ export function PredictiveAnalysis() {
             content={HELP_MESSAGES.PREDICTIVE.ANALYSIS.content}
           />
         </div>
-        <Badge variant="outline" className="bg-primary/10">
+        <Badge variant="outline" className="bg-[hsl(var(--primary))]/10">
           IA
         </Badge>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[500px] pr-4">
           <div className="space-y-6">
-            {mockPredictions.map((prediction) => (
+            {mockPredictions.map(prediction => (
               <div
                 key={prediction.id}
-                className="rounded-lg border p-4 hover:bg-accent/5 transition-colors"
+                className="rounded-lg border p-4 hover:bg-[hsl(var(--accent))]/5 transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -169,20 +173,16 @@ export function PredictiveAnalysis() {
                       <Badge className={getCategoryColor(prediction.category)}>
                         {prediction.category}
                       </Badge>
-                      <Badge variant="outline">
-                        {prediction.timeframe}
-                      </Badge>
+                      <Badge variant="outline">{prediction.timeframe}</Badge>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Target className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">
-                      {prediction.confidence}% confiança
-                    </span>
+                    <Target className="h-4 w-4 text-[hsl(var(--muted-foreground))]" />
+                    <span className="text-sm font-medium">{prediction.confidence}% confiança</span>
                   </div>
                 </div>
 
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4">
                   {prediction.description}
                 </p>
 
@@ -193,7 +193,7 @@ export function PredictiveAnalysis() {
                       {prediction.actions.map((action, index) => (
                         <div
                           key={index}
-                          className="flex items-center gap-2 text-sm text-muted-foreground"
+                          className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]"
                         >
                           <ArrowRight className="h-4 w-4" />
                           <span>{action}</span>
@@ -209,4 +209,4 @@ export function PredictiveAnalysis() {
       </CardContent>
     </Card>
   );
-} 
+}

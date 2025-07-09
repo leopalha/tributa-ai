@@ -1,17 +1,37 @@
-"use client";
-
 import React, { useState } from 'react';
 import { useMarketplace } from '@/hooks/useMarketplace';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ShoppingCart, Trash2, Plus, Minus, CreditCard, Barcode, QrCode } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SafeImage } from '@/components/ui/image';
 
 export function Cart() {
-  const { carrinho, loading, error, updateCarrinhoItem, removeFromCarrinho, clearCarrinho, createPedido } = useMarketplace();
+  const {
+    carrinho,
+    loading,
+    error,
+    updateCarrinhoItem,
+    removeFromCarrinho,
+    clearCarrinho,
+    createPedido,
+  } = useMarketplace();
   const [metodoPagamento, setMetodoPagamento] = useState<'cartao' | 'pix' | 'boleto'>('cartao');
   const [enderecoEntrega, setEnderecoEntrega] = useState({
     logradouro: '',
@@ -23,7 +43,12 @@ export function Cart() {
     cep: '',
   });
 
-  const valorTotal = carrinho.reduce((total, item) => total + (item.item.preco * item.quantidade), 0);
+  // Verificação de segurança para evitar erro quando carrinho for undefined
+  const carrinhoSeguro = carrinho || [];
+  const valorTotal = carrinhoSeguro.reduce(
+    (total, item) => total + item.item.preco * item.quantidade,
+    0
+  );
 
   const handleUpdateQuantity = async (itemId: string, quantidade: number) => {
     try {
@@ -52,7 +77,7 @@ export function Cart() {
   const handleCheckout = async () => {
     try {
       await createPedido({
-        itens: carrinho.map(item => ({
+        itens: carrinhoSeguro.map(item => ({
           itemId: item.item.id,
           quantidade: item.quantidade,
         })),
@@ -68,7 +93,7 @@ export function Cart() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[hsl(var(--primary))]"></div>
       </div>
     );
   }
@@ -87,7 +112,7 @@ export function Cart() {
     );
   }
 
-  if (carrinho.length === 0) {
+  if (carrinhoSeguro.length === 0) {
     return (
       <Card className="w-full">
         <CardHeader>
@@ -95,7 +120,7 @@ export function Cart() {
           <CardDescription>Adicione itens ao seu carrinho para continuar</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button className="w-full" onClick={() => window.location.href = '/marketplace'}>
+          <Button className="w-full" onClick={() => (window.location.href = '/marketplace')}>
             <ShoppingCart className="mr-2 h-4 w-4" />
             Ir para o marketplace
           </Button>
@@ -109,12 +134,12 @@ export function Cart() {
       <Card>
         <CardHeader>
           <CardTitle>Carrinho de compras</CardTitle>
-          <CardDescription>{carrinho.length} itens</CardDescription>
+          <CardDescription>{carrinhoSeguro.length} itens</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {carrinho.map(item => (
+          {carrinhoSeguro.map(item => (
             <div key={item.item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-              <img
+              <SafeImage
                 src={item.item.imagens[0]?.url || '/placeholder.png'}
                 alt={item.item.imagens[0]?.alt || item.item.nome}
                 className="w-20 h-20 object-cover rounded"
@@ -127,7 +152,9 @@ export function Cart() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleUpdateQuantity(item.item.id, Math.max(1, item.quantidade - 1))}
+                      onClick={() =>
+                        handleUpdateQuantity(item.item.id, Math.max(1, item.quantidade - 1))
+                      }
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
@@ -135,7 +162,7 @@ export function Cart() {
                       type="number"
                       min="1"
                       value={item.quantidade}
-                      onChange={(e) => handleUpdateQuantity(item.item.id, parseInt(e.target.value))}
+                      onChange={e => handleUpdateQuantity(item.item.id, parseInt(e.target.value))}
                       className="w-16 text-center"
                     />
                     <Button
@@ -147,7 +174,9 @@ export function Cart() {
                     </Button>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span className="font-bold">R$ {(item.item.preco * item.quantidade).toFixed(2)}</span>
+                    <span className="font-bold">
+                      R$ {(item.item.preco * item.quantidade).toFixed(2)}
+                    </span>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -182,37 +211,39 @@ export function Cart() {
             <Input
               placeholder="Logradouro"
               value={enderecoEntrega.logradouro}
-              onChange={(e) => setEnderecoEntrega({ ...enderecoEntrega, logradouro: e.target.value })}
+              onChange={e => setEnderecoEntrega({ ...enderecoEntrega, logradouro: e.target.value })}
             />
             <Input
               placeholder="Número"
               value={enderecoEntrega.numero}
-              onChange={(e) => setEnderecoEntrega({ ...enderecoEntrega, numero: e.target.value })}
+              onChange={e => setEnderecoEntrega({ ...enderecoEntrega, numero: e.target.value })}
             />
             <Input
               placeholder="Complemento"
               value={enderecoEntrega.complemento}
-              onChange={(e) => setEnderecoEntrega({ ...enderecoEntrega, complemento: e.target.value })}
+              onChange={e =>
+                setEnderecoEntrega({ ...enderecoEntrega, complemento: e.target.value })
+              }
             />
             <Input
               placeholder="Bairro"
               value={enderecoEntrega.bairro}
-              onChange={(e) => setEnderecoEntrega({ ...enderecoEntrega, bairro: e.target.value })}
+              onChange={e => setEnderecoEntrega({ ...enderecoEntrega, bairro: e.target.value })}
             />
             <Input
               placeholder="Cidade"
               value={enderecoEntrega.cidade}
-              onChange={(e) => setEnderecoEntrega({ ...enderecoEntrega, cidade: e.target.value })}
+              onChange={e => setEnderecoEntrega({ ...enderecoEntrega, cidade: e.target.value })}
             />
             <Input
               placeholder="Estado"
               value={enderecoEntrega.estado}
-              onChange={(e) => setEnderecoEntrega({ ...enderecoEntrega, estado: e.target.value })}
+              onChange={e => setEnderecoEntrega({ ...enderecoEntrega, estado: e.target.value })}
             />
             <Input
               placeholder="CEP"
               value={enderecoEntrega.cep}
-              onChange={(e) => setEnderecoEntrega({ ...enderecoEntrega, cep: e.target.value })}
+              onChange={e => setEnderecoEntrega({ ...enderecoEntrega, cep: e.target.value })}
             />
           </div>
         </CardContent>
@@ -224,7 +255,10 @@ export function Cart() {
           <CardDescription>Escolha como deseja pagar</CardDescription>
         </CardHeader>
         <CardContent>
-          <Select value={metodoPagamento} onValueChange={(value) => setMetodoPagamento(value as 'cartao' | 'pix' | 'boleto')}>
+          <Select
+            value={metodoPagamento}
+            onValueChange={value => setMetodoPagamento(value as 'cartao' | 'pix' | 'boleto')}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Selecione o método de pagamento" />
             </SelectTrigger>
@@ -258,4 +292,4 @@ export function Cart() {
       </Card>
     </div>
   );
-} 
+}

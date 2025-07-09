@@ -1,22 +1,43 @@
 import axios from 'axios';
-import { parseCookies } from 'nookies';
 
-export function getAPIClient(ctx?: any) {
-  const { 'tributaai.token': token } = parseCookies(ctx);
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 15000,
+});
 
-  const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-  });
-
-  api.interceptors.request.use((config) => {
+// Add request interceptor for authentication
+api.interceptors.request.use(
+  config => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
     return config;
-  });
-
-  if (token) {
-    api.defaults.headers['Authorization'] = `Bearer ${token}`;
+  },
+  error => {
+    return Promise.reject(error);
   }
+);
 
-  return api;
-}
+// Add response interceptor for error handling
+api.interceptors.response.use(
+  response => {
+    return response.data;
+  },
+  error => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
-export const api = getAPIClient(); 
+export { api };
+export default api;

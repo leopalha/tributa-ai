@@ -1,7 +1,5 @@
-"use client"
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,20 +9,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Bell, Settings, LogOut, User } from "lucide-react"
+} from '@/components/ui/dropdown-menu';
+import { Bell, Settings, LogOut, User } from 'lucide-react';
 
 export function UserNav() {
   return (
     <div className="flex items-center gap-4">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="relative"
-        aria-label="Notificações"
-      >
+      <Button variant="ghost" size="icon" className="relative" aria-label="Notificações">
         <Bell className="h-4 w-4" />
-        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[hsl(var(--primary))] text-[10px] text-[hsl(var(--primary))]-foreground">
           3
         </span>
       </Button>
@@ -41,7 +34,7 @@ export function UserNav() {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">João Silva</p>
-              <p className="text-xs leading-none text-muted-foreground">
+              <p className="text-xs leading-none text-[hsl(var(--muted-foreground))]">
                 joao.silva@empresa.com
               </p>
             </div>
@@ -68,5 +61,5 @@ export function UserNav() {
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
-} 
+  );
+}

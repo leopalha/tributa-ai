@@ -1,148 +1,131 @@
-import { api } from './api';
-import { 
-  Obrigacao, 
-  TipoObrigacao, 
-  StatusObrigacao, 
+import { api } from '@/services/api';
+import {
+  Obrigacao,
+  ObrigacaoCreate,
+  ObrigacaoUpdate,
+  ObrigacaoFiltros,
+  ObrigacaoEstatisticas,
+  ObrigacaoPendencias,
+  ObrigacaoCalendario,
   AnexoObrigacao,
-  ValidacaoObrigacao 
+  HistoricoObrigacao,
 } from '@/types/obrigacao';
+import { StatusObrigacao } from '@/types/common/status';
+import { mapToBaseStatus, isStatusInState } from '@/types/common/status';
 
-export interface ObrigacaoFiltros {
-  tipo?: TipoObrigacao;
-  status?: StatusObrigacao;
-  empresaId?: string;
-  periodoInicio?: string;
-  periodoFim?: string;
-  vencimentoInicio?: string;
-  vencimentoFim?: string;
-  responsavel?: string;
-  page?: number;
-  limit?: number;
-  sort?: string;
-  order?: 'asc' | 'desc';
-}
-
-export interface ObrigacaoPaginada {
-  items: Obrigacao[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-class ObrigacaoService {
-  private static instance: ObrigacaoService;
-  private baseUrl = '/obrigacoes';
-
-  private constructor() {}
-
-  public static getInstance(): ObrigacaoService {
-    if (!ObrigacaoService.instance) {
-      ObrigacaoService.instance = new ObrigacaoService();
-    }
-    return ObrigacaoService.instance;
+export class ObrigacaoService {
+  async listar(filtros?: ObrigacaoFiltros): Promise<Obrigacao[]> {
+    const response = await api.get('/obrigacoes', { params: filtros });
+    return response.data;
   }
 
-  public async listar(filtros?: ObrigacaoFiltros): Promise<ObrigacaoPaginada> {
-    return api.get(this.baseUrl, filtros);
+  async obter(id: string): Promise<Obrigacao> {
+    const response = await api.get(`/obrigacoes/${id}`);
+    return response.data;
   }
 
-  public async obterPorId(id: string): Promise<Obrigacao> {
-    return api.get(`${this.baseUrl}/${id}`);
+  async criar(obrigacao: ObrigacaoCreate): Promise<Obrigacao> {
+    const response = await api.post('/obrigacoes', obrigacao);
+    return response.data;
   }
 
-  public async criar(obrigacao: Omit<Obrigacao, 'id'>): Promise<Obrigacao> {
-    return api.post(this.baseUrl, obrigacao);
+  async atualizar(id: string, obrigacao: ObrigacaoUpdate): Promise<Obrigacao> {
+    const response = await api.put(`/obrigacoes/${id}`, obrigacao);
+    return response.data;
   }
 
-  public async atualizar(id: string, obrigacao: Partial<Obrigacao>): Promise<Obrigacao> {
-    return api.put(`${this.baseUrl}/${id}`, obrigacao);
+  async excluir(id: string): Promise<void> {
+    await api.delete(`/obrigacoes/${id}`);
   }
 
-  public async excluir(id: string): Promise<void> {
-    return api.delete(`${this.baseUrl}/${id}`);
+  async atualizarStatus(id: string, status: StatusObrigacao): Promise<Obrigacao> {
+    const response = await api.patch(`/obrigacoes/${id}/status`, { status });
+    return response.data;
   }
 
-  public async validar(id: string): Promise<ValidacaoObrigacao[]> {
-    return api.post(`${this.baseUrl}/${id}/validar`);
+  async atribuirResponsavel(id: string, responsavelId: string): Promise<Obrigacao> {
+    const response = await api.patch(`/obrigacoes/${id}/responsavel`, { responsavelId });
+    return response.data;
   }
 
-  public async uploadAnexo(
-    id: string,
-    arquivo: File,
-    onProgress?: (progress: number) => void
-  ): Promise<AnexoObrigacao> {
-    return api.upload(`${this.baseUrl}/${id}/anexos`, arquivo, onProgress);
+  async uploadAnexo(id: string, arquivo: File): Promise<AnexoObrigacao> {
+    const formData = new FormData();
+    formData.append('arquivo', arquivo);
+    const response = await api.upload(`/obrigacoes/${id}/anexos`, formData);
+    return response.data;
   }
 
-  public async excluirAnexo(id: string, anexoId: string): Promise<void> {
-    return api.delete(`${this.baseUrl}/${id}/anexos/${anexoId}`);
+  async excluirAnexo(id: string, anexoId: string): Promise<void> {
+    await api.delete(`/obrigacoes/${id}/anexos/${anexoId}`);
   }
 
-  public async baixarAnexo(id: string, anexoId: string): Promise<void> {
-    return api.download(`${this.baseUrl}/${id}/anexos/${anexoId}`, `anexo-${anexoId}`);
+  async baixarAnexo(id: string, anexoId: string): Promise<Blob> {
+    const response = await api.get(`/obrigacoes/${id}/anexos/${anexoId}`, {
+      responseType: 'blob',
+    });
+    return response.data;
   }
 
-  public async atualizarStatus(id: string, status: StatusObrigacao, observacoes?: string): Promise<Obrigacao> {
-    return api.put(`${this.baseUrl}/${id}/status`, { status, observacoes });
+  async validar(id: string): Promise<{ valido: boolean; mensagens: string[] }> {
+    const response = await api.post(`/obrigacoes/${id}/validar`);
+    return response.data;
   }
 
-  public async atribuirResponsavel(id: string, usuarioId: string): Promise<Obrigacao> {
-    return api.put(`${this.baseUrl}/${id}/responsavel`, { usuarioId });
+  async obterHistorico(id: string): Promise<HistoricoObrigacao[]> {
+    const response = await api.get(`/obrigacoes/${id}/historico`);
+    return response.data;
   }
 
-  public async obterHistorico(id: string): Promise<{
-    data: string;
-    status: StatusObrigacao;
-    usuario: string;
-    observacoes?: string;
-  }[]> {
-    return api.get(`${this.baseUrl}/${id}/historico`);
+  async gerarRelatorio(
+    filtros?: ObrigacaoFiltros,
+    formato: 'csv' | 'pdf' | 'excel' = 'pdf'
+  ): Promise<Blob> {
+    const response = await api.get('/obrigacoes/relatorio', {
+      params: { ...filtros, formato },
+      responseType: 'blob',
+    });
+    return response.data;
   }
 
-  public async gerarRelatorio(filtros: ObrigacaoFiltros & {
-    formato: 'pdf' | 'excel' | 'csv';
-    agruparPor?: ('tipo' | 'status' | 'empresa' | 'responsavel')[];
-  }): Promise<void> {
-    return api.download(`${this.baseUrl}/relatorio`, `relatorio-obrigacoes.${filtros.formato}`);
+  async obterEstatisticas(empresaId: string): Promise<ObrigacaoEstatisticas> {
+    const response = await api.get(`/obrigacoes/estatisticas`, {
+      params: { empresaId },
+    });
+    return response.data;
   }
 
-  public async obterCalendario(mes: number, ano: number, empresaId?: string): Promise<{
-    data: string;
-    obrigacoes: {
-      id: string;
-      tipo: TipoObrigacao;
-      descricao: string;
-      status: StatusObrigacao;
-    }[];
-  }[]> {
-    return api.get(`${this.baseUrl}/calendario`, { mes, ano, empresaId });
+  async verificarPendencias(empresaId: string): Promise<ObrigacaoPendencias> {
+    const response = await api.get(`/obrigacoes/pendencias`, {
+      params: { empresaId },
+    });
+    return response.data;
   }
 
-  public async obterEstatisticas(empresaId?: string, periodo?: {
-    inicio: string;
-    fim: string;
-  }): Promise<{
-    totalObrigacoes: number;
-    obrigacoesPorStatus: Record<StatusObrigacao, number>;
-    obrigacoesPorTipo: Record<TipoObrigacao, number>;
-    prazoMedioEntrega: number;
-    taxaCumprimento: number;
-  }> {
-    return api.get(`${this.baseUrl}/estatisticas`, { empresaId, ...periodo });
+  async obterCalendario(empresaId: string, mes: number, ano: number): Promise<ObrigacaoCalendario> {
+    const response = await api.get(`/obrigacoes/calendario`, {
+      params: { empresaId, mes, ano },
+    });
+    return response.data;
   }
 
-  public async verificarPendencias(empresaId: string): Promise<{
-    temPendencias: boolean;
-    obrigacoesPendentes: {
-      id: string;
-      tipo: TipoObrigacao;
-      vencimento: string;
-      diasAtraso: number;
-    }[];
-  }> {
-    return api.get(`${this.baseUrl}/pendencias/${empresaId}`);
+  // Utility methods
+  isObrigacaoPendente(status: StatusObrigacao): boolean {
+    return isStatusInState('obrigacao', status, 'PENDENTE');
+  }
+
+  isObrigacaoEmAndamento(status: StatusObrigacao): boolean {
+    return isStatusInState('obrigacao', status, 'PROCESSANDO');
+  }
+
+  isObrigacaoConcluida(status: StatusObrigacao): boolean {
+    return isStatusInState('obrigacao', status, 'CONCLUIDO');
+  }
+
+  isObrigacaoAtrasada(status: StatusObrigacao): boolean {
+    return isStatusInState('obrigacao', status, 'REJEITADO');
+  }
+
+  isObrigacaoDispensada(status: StatusObrigacao): boolean {
+    return isStatusInState('obrigacao', status, 'CANCELADO');
   }
 }
-
-export const obrigacaoService = ObrigacaoService.getInstance(); 

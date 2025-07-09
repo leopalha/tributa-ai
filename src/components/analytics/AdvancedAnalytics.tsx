@@ -1,11 +1,25 @@
-'use client';
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { PieChart, BarChart2, TrendingUp, ArrowRight, Lightbulb, Target, AlertTriangleIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import {
+  PieChart,
+  BarChart2,
+  TrendingUp,
+  ArrowRight,
+  Lightbulb,
+  Target,
+  AlertTriangleIcon,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface AnalyticsInsight {
   id: string;
@@ -34,20 +48,20 @@ const mockInsights: AnalyticsInsight[] = [
         value: 75,
         target: 90,
         unit: '%',
-        trend: -5
+        trend: -5,
       },
       {
         label: 'Créditos Disponíveis',
         value: 150000,
         unit: 'BRL',
-        trend: 12
-      }
+        trend: 12,
+      },
     ],
     recommendations: [
       'Revisar processos de escrituração fiscal',
       'Implementar controles automatizados',
-      'Capacitar equipe em legislação específica'
-    ]
+      'Capacitar equipe em legislação específica',
+    ],
   },
   {
     id: '2',
@@ -59,21 +73,21 @@ const mockInsights: AnalyticsInsight[] = [
         label: 'ICMS',
         value: 45,
         unit: '%',
-        trend: 2
+        trend: 2,
       },
       {
         label: 'PIS/COFINS',
         value: 30,
         unit: '%',
-        trend: -1
+        trend: -1,
       },
       {
         label: 'ISS',
         value: 25,
         unit: '%',
-        trend: -1
-      }
-    ]
+        trend: -1,
+      },
+    ],
   },
   {
     id: '3',
@@ -86,14 +100,14 @@ const mockInsights: AnalyticsInsight[] = [
         value: 8.5,
         target: 3,
         unit: '%',
-        trend: 2.5
-      }
+        trend: 2.5,
+      },
     ],
     recommendations: [
       'Auditar registros com divergências',
       'Verificar parametrização do sistema',
-      'Reprocessar declarações afetadas'
-    ]
+      'Reprocessar declarações afetadas',
+    ],
   },
   {
     id: '4',
@@ -106,21 +120,21 @@ const mockInsights: AnalyticsInsight[] = [
         value: 65,
         target: 40,
         unit: '%',
-        trend: 15
+        trend: 15,
       },
       {
         label: 'Contingências',
         value: 250000,
         unit: 'BRL',
-        trend: 25
-      }
+        trend: 25,
+      },
     ],
     recommendations: [
       'Revisar procedimentos de compliance',
       'Atualizar políticas internas',
-      'Implementar monitoramento contínuo'
-    ]
-  }
+      'Implementar monitoramento contínuo',
+    ],
+  },
 ];
 
 const getCategoryColor = (category: AnalyticsInsight['category']) => {
@@ -153,7 +167,7 @@ const formatValue = (value: number, unit: string) => {
   if (unit === 'BRL') {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
-      currency: 'BRL'
+      currency: 'BRL',
     }).format(value);
   }
   if (unit === '%') {
@@ -179,10 +193,10 @@ export function AdvancedAnalytics() {
       <CardContent>
         <ScrollArea className="h-[500px] pr-4">
           <div className="space-y-6">
-            {mockInsights.map((insight) => (
+            {mockInsights.map(insight => (
               <div
                 key={insight.id}
-                className="rounded-lg border p-4 hover:bg-accent/5 transition-colors"
+                className="rounded-lg border p-4 hover:bg-[hsl(var(--accent))]/5 transition-colors"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -190,13 +204,11 @@ export function AdvancedAnalytics() {
                       {getCategoryIcon(insight.category)}
                       <h4 className="font-medium">{insight.title}</h4>
                     </div>
-                    <Badge className={getCategoryColor(insight.category)}>
-                      {insight.category}
-                    </Badge>
+                    <Badge className={getCategoryColor(insight.category)}>{insight.category}</Badge>
                   </div>
                 </div>
 
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4">
                   {insight.description}
                 </p>
 
@@ -204,27 +216,24 @@ export function AdvancedAnalytics() {
                   {insight.metrics.map((metric, index) => (
                     <div key={index} className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          {metric.label}
-                        </span>
+                        <span className="text-sm font-medium">{metric.label}</span>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-bold">
                             {formatValue(metric.value, metric.unit)}
                           </span>
-                          <span className={`text-xs ${
-                            metric.trend > 0 ? 'text-success' : 'text-destructive'
-                          }`}>
+                          <span
+                            className={`text-xs ${
+                              metric.trend > 0 ? 'text-success' : 'text-[hsl(var(--destructive))]'
+                            }`}
+                          >
                             {formatTrend(metric.trend)}
                           </span>
                         </div>
                       </div>
                       {metric.target && (
                         <div className="space-y-1">
-                          <Progress
-                            value={(metric.value / metric.target) * 100}
-                            className="h-2"
-                          />
-                          <div className="flex justify-between text-xs text-muted-foreground">
+                          <Progress value={(metric.value / metric.target) * 100} className="h-2" />
+                          <div className="flex justify-between text-xs text-[hsl(var(--muted-foreground))]">
                             <span>Atual</span>
                             <span>Meta: {formatValue(metric.target, metric.unit)}</span>
                           </div>
@@ -241,7 +250,7 @@ export function AdvancedAnalytics() {
                       {insight.recommendations.map((recommendation, index) => (
                         <div
                           key={index}
-                          className="flex items-center gap-2 text-sm text-muted-foreground"
+                          className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]"
                         >
                           <ArrowRight className="h-4 w-4" />
                           <span>{recommendation}</span>

@@ -1,0 +1,30 @@
+{
+  "name": "tributatoken-chaincode",
+  "version": "1.0.0",
+  "description": "Chaincode for managing Credit Tokens on Tributa.AI Fabric network",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "prestart": "npm run build",
+    "start": "fabric-chaincode-node start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=18",
+    "npm": ">=5"
+  },
+  "engineStrict": true,
+  "author": "Tributa.AI Dev Team",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "fabric-contract-api": "~2.5.0",
+    "fabric-shim": "~2.5.0",
+    "json-stringify-deterministic": "^1.0.1",
+    "sort-keys-recursive": "^2.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5"
+  }
+} 

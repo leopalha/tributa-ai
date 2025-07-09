@@ -1,7 +1,5 @@
-'use client';
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Line } from "react-chartjs-2";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -56,7 +54,20 @@ const options = {
 };
 
 const generateMonthlyData = () => {
-  const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  const months = [
+    'Jan',
+    'Fev',
+    'Mar',
+    'Abr',
+    'Mai',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Set',
+    'Out',
+    'Nov',
+    'Dez',
+  ];
   const currentMonth = new Date().getMonth();
   const labels = [...months.slice(currentMonth), ...months.slice(0, currentMonth)];
 
@@ -96,4 +107,4 @@ export function TaxObligationsChart() {
       </CardContent>
     </Card>
   );
-} 
+}

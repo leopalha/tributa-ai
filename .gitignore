@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+# yarn cache (manter cache local)
+# .yarn-cache
+
 # testing
 /coverage
 
@@ -40,3 +43,32 @@ next-env.d.ts
 .vscode
 *.swp
 *.swo
+
+# Blockchain/Chaincode
+/chaincode/**/node_modules
+/chaincode/**/.yarn-integrity
+/blockchain
+/__mocks__
+
+# Build files
+/dist
+/build
+*.log
+
+# Test files
+/coverage
+*.test.js.snap
+
+# Temporary files
+.server.pid
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+!.env.example

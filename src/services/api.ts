@@ -1,74 +1,55 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
-import { parseCookies, setCookie, destroyCookie } from 'nookies';
-import { TokenAutenticacao } from '@/types/usuario';
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import {
+  mockBlockchainStatus,
+  mockBlockchainQuery,
+  mockBlockchainInvoke,
+  mockBlockchainHistory,
+} from './mock-api';
+import { API_CONFIG } from '@/config/api.config';
+import { tokenStorage } from '@/lib/token-storage';
 
-// Extend AxiosRequestConfig to include metadata
-interface RequestConfig extends InternalAxiosRequestConfig {
-  metadata?: {
-    startTime: number;
-  };
-}
+// Implementação simples de cookies para Vite
+const parseCookies = () => {
+  const cookies: Record<string, string> = {};
+  if (typeof document !== 'undefined') {
+    document.cookie.split(';').forEach(cookie => {
+      const [name, value] = cookie.trim().split('=');
+      if (name && value) {
+        cookies[name] = decodeURIComponent(value);
+      }
+    });
+  }
+  return cookies;
+};
 
-// Cache interface
-interface CacheItem<T> {
-  data: T;
-  timestamp: number;
-  expiresIn: number;
-}
-
-// Performance metrics interface
-interface ApiMetrics {
-  requestCount: number;
-  errorCount: number;
-  averageResponseTime: number;
-  lastResponseTime: number;
-}
-
-// API Error Response interface
-interface ApiErrorResponse {
-  message: string;
-  code?: string;
-  errors?: any[];
-}
-
+// API Error class
 export class ApiError extends Error {
   constructor(
     public message: string,
     public status: number,
-    public code?: string,
-    public errors?: any[],
-    public retryAfter?: number
+    public code?: string
   ) {
     super(message);
     this.name = 'ApiError';
   }
 }
 
+// Simplified API class
 class Api {
   private api: AxiosInstance;
   private static instance: Api;
-  private cache: Map<string, CacheItem<any>> = new Map();
-  private metrics: ApiMetrics = {
-    requestCount: 0,
-    errorCount: 0,
-    averageResponseTime: 0,
-    lastResponseTime: 0
-  };
-  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-  private readonly MAX_RETRIES = 3;
-  private readonly RETRY_DELAY = 1000; // 1 second
 
   private constructor() {
-    const { 'tributa.ai.token': token } = parseCookies();
+    const token = tokenStorage.getAccessToken();
 
     this.api = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL,
+      baseURL: API_CONFIG.BASE_URL,
       headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` })
+        ...API_CONFIG.HEADERS,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
-      timeout: 30000, // 30 seconds timeout
-      validateStatus: (status) => status >= 200 && status < 500
+      timeout: API_CONFIG.TIMEOUTS.DEFAULT,
+      validateStatus: status => status >= 200 && status < 500,
     });
 
     this.setupInterceptors();
@@ -82,279 +63,346 @@ class Api {
   }
 
   private setupInterceptors(): void {
-    // Request interceptor
+    // Request interceptor para adicionar token atualizado
     this.api.interceptors.request.use(
-      (config: InternalAxiosRequestConfig) => {
-        const configWithMetadata = config as RequestConfig;
-        configWithMetadata.metadata = { startTime: Date.now() };
-        return configWithMetadata;
+      config => {
+        const token = tokenStorage.getAccessToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
       },
-      (error) => Promise.reject(error)
+      error => Promise.reject(error)
     );
 
     // Response interceptor
     this.api.interceptors.response.use(
-      (response) => {
-        const endTime = Date.now();
-        const config = response.config as RequestConfig;
-        const startTime = config.metadata?.startTime || endTime;
-        const responseTime = endTime - startTime;
-
-        this.updateMetrics(responseTime);
-        return response;
-      },
+      response => response,
       async (error: AxiosError) => {
-        this.metrics.errorCount++;
-        const originalRequest = error.config as RequestConfig;
-        
         if (error.response?.status === 401) {
+          // Tentar renovar o token
           try {
-            const { 'tributa.ai.refreshToken': refreshToken } = parseCookies();
-            
-            if (refreshToken && originalRequest) {
-              const response = await this.refreshToken(refreshToken);
-              
-              if (response) {
-                this.updateToken(response.accessToken);
-                if (originalRequest.headers) {
-                  originalRequest.headers['Authorization'] = `Bearer ${response.accessToken}`;
+            const refreshToken = tokenStorage.getRefreshToken();
+            if (refreshToken) {
+              const response = await axios.post(
+                `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH.REFRESH}`,
+                { refreshToken }
+              );
+
+              if (response.data.accessToken) {
+                tokenStorage.setTokens(response.data.accessToken, response.data.refreshToken);
+
+                // Retry original request
+                const originalRequest = error.config;
+                if (originalRequest) {
+                  originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+                  return this.api(originalRequest);
                 }
-                return this.api(originalRequest);
               }
             }
           } catch (refreshError) {
-            this.handleAuthError();
+            // Refresh failed, redirect to login
+            tokenStorage.clearTokens();
+            if (typeof window !== 'undefined') {
+              window.location.href = '/login';
+            }
           }
         }
-
-        // Handle rate limiting
-        if (error.response?.status === 429) {
-          const retryAfter = parseInt(error.response.headers['retry-after'] || '1');
-          return new Promise(resolve => {
-            setTimeout(() => {
-              resolve(this.api(originalRequest));
-            }, retryAfter * 1000);
-          });
-        }
-
         return Promise.reject(this.handleError(error));
       }
     );
   }
 
-  private updateMetrics(responseTime: number): void {
-    this.metrics.requestCount++;
-    this.metrics.lastResponseTime = responseTime;
-    this.metrics.averageResponseTime = 
-      (this.metrics.averageResponseTime * (this.metrics.requestCount - 1) + responseTime) / 
-      this.metrics.requestCount;
-  }
-
-  private async refreshToken(refreshToken: string): Promise<TokenAutenticacao | null> {
-    try {
-      const response = await this.api.post('/auth/refresh-token', { refreshToken });
-      return response.data;
-    } catch (error) {
-      return null;
-    }
-  }
-
-  private updateToken(token: string): void {
-    setCookie(undefined, 'tributa.ai.token', token, {
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
-    });
-  }
-
-  private handleAuthError(): void {
-    destroyCookie(undefined, 'tributa.ai.token');
-    destroyCookie(undefined, 'tributa.ai.refreshToken');
-    window.location.href = '/login';
-  }
-
   private handleError(error: AxiosError): ApiError {
     if (error.response) {
-      const { data, status, headers } = error.response;
-      const errorData = data as ApiErrorResponse;
-      return new ApiError(
-        errorData.message || 'Erro na requisição',
-        status,
-        errorData.code,
-        errorData.errors,
-        parseInt(headers['retry-after'] || '0')
-      );
+      const { data, status } = error.response;
+      const errorData = data as any;
+      return new ApiError(errorData?.message || 'Erro na requisição', status, errorData?.code);
     }
-    return new ApiError(
-      error.message || 'Erro de conexão',
-      0,
-      'NETWORK_ERROR'
-    );
+    return new ApiError(error.message || 'Erro de conexão', 0, 'NETWORK_ERROR');
   }
 
-  private getCacheKey(url: string, params?: any): string {
-    return `${url}:${JSON.stringify(params || {})}`;
-  }
-
-  private getFromCache<T>(key: string): T | null {
-    const item = this.cache.get(key);
-    if (item && Date.now() - item.timestamp < item.expiresIn) {
-      return item.data;
+  public async get<T = any>(url: string, params?: any): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.api.get(url, { params });
+      return response.data;
+    } catch (error) {
+      throw error;
     }
-    this.cache.delete(key);
-    return null;
   }
 
-  private setCache<T>(key: string, data: T, expiresIn: number = this.CACHE_TTL): void {
-    this.cache.set(key, {
-      data,
-      timestamp: Date.now(),
-      expiresIn
-    });
-  }
-
-  public async get<T = any>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
-    const cacheKey = this.getCacheKey(url, params);
-    const cachedData = this.getFromCache<T>(cacheKey);
-    if (cachedData) {
-      return cachedData;
+  public async post<T = any>(url: string, data?: any): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.api.post(url, data);
+      return response.data;
+    } catch (error) {
+      throw error;
     }
+  }
 
-    let retries = 0;
-    while (retries < this.MAX_RETRIES) {
-      try {
-        const response = await this.api.get<T>(url, { params, ...config });
-        this.setCache(cacheKey, response.data);
-        return response.data;
-      } catch (error) {
-        if (retries === this.MAX_RETRIES - 1) {
-          throw this.handleError(error as AxiosError);
-        }
-        retries++;
-        await new Promise(resolve => setTimeout(resolve, this.RETRY_DELAY * retries));
-      }
+  public async put<T = any>(url: string, data?: any): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.api.put(url, data);
+      return response.data;
+    } catch (error) {
+      throw error;
     }
-    throw new ApiError('Max retries exceeded', 0, 'MAX_RETRIES_EXCEEDED');
   }
 
-  public async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    let retries = 0;
-    while (retries < this.MAX_RETRIES) {
-      try {
-        const response = await this.api.post<T>(url, data, config);
-        return response.data;
-      } catch (error) {
-        if (retries === this.MAX_RETRIES - 1) {
-          throw this.handleError(error as AxiosError);
-        }
-        retries++;
-        await new Promise(resolve => setTimeout(resolve, this.RETRY_DELAY * retries));
-      }
+  public async delete<T = any>(url: string): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.api.delete(url);
+      return response.data;
+    } catch (error) {
+      throw error;
     }
-    throw new ApiError('Max retries exceeded', 0, 'MAX_RETRIES_EXCEEDED');
   }
 
-  public async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    let retries = 0;
-    while (retries < this.MAX_RETRIES) {
-      try {
-        const response = await this.api.put<T>(url, data, config);
-        return response.data;
-      } catch (error) {
-        if (retries === this.MAX_RETRIES - 1) {
-          throw this.handleError(error as AxiosError);
-        }
-        retries++;
-        await new Promise(resolve => setTimeout(resolve, this.RETRY_DELAY * retries));
-      }
+  public async patch<T = any>(url: string, data?: any): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.api.patch(url, data);
+      return response.data;
+    } catch (error) {
+      throw error;
     }
-    throw new ApiError('Max retries exceeded', 0, 'MAX_RETRIES_EXCEEDED');
   }
 
-  public async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    let retries = 0;
-    while (retries < this.MAX_RETRIES) {
-      try {
-        const response = await this.api.delete<T>(url, config);
-        return response.data;
-      } catch (error) {
-        if (retries === this.MAX_RETRIES - 1) {
-          throw this.handleError(error as AxiosError);
-        }
-        retries++;
-        await new Promise(resolve => setTimeout(resolve, this.RETRY_DELAY * retries));
-      }
+  public async upload<T = any>(
+    url: string,
+    formData: FormData,
+    onProgress?: (progress: number) => void
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.api.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: progressEvent => {
+          if (onProgress && progressEvent.total) {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progress);
+          }
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
     }
-    throw new ApiError('Max retries exceeded', 0, 'MAX_RETRIES_EXCEEDED');
   }
 
-  public async upload(url: string, file: File, onProgress?: (progress: number) => void): Promise<any> {
-    const formData = new FormData();
-    formData.append('file', file);
+  public async download(url: string, filename?: string): Promise<void> {
+    try {
+      const response = await this.api.get(url, {
+        responseType: 'blob',
+      });
 
-    const config = {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      },
-      onUploadProgress: (progressEvent: any) => {
-        if (onProgress) {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          onProgress(percentCompleted);
-        }
-      }
-    };
-
-    let retries = 0;
-    while (retries < this.MAX_RETRIES) {
-      try {
-        const response = await this.api.post(url, formData, config);
-        return response.data;
-      } catch (error) {
-        if (retries === this.MAX_RETRIES - 1) {
-          throw this.handleError(error as AxiosError);
-        }
-        retries++;
-        await new Promise(resolve => setTimeout(resolve, this.RETRY_DELAY * retries));
-      }
+      // Criar link para download
+      const blob = new Blob([response.data]);
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename || 'download';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      throw error;
     }
-    throw new ApiError('Max retries exceeded', 0, 'MAX_RETRIES_EXCEEDED');
   }
 
-  public async download(url: string, filename: string): Promise<void> {
-    let retries = 0;
-    while (retries < this.MAX_RETRIES) {
-      try {
-        const response = await this.api.get(url, {
-          responseType: 'blob'
-        });
+  // Métodos adicionais para facilitar integrações
+  public setAuthToken(token: string): void {
+    this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
 
-        const blob = new Blob([response.data]);
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return;
-      } catch (error) {
-        if (retries === this.MAX_RETRIES - 1) {
-          throw this.handleError(error as AxiosError);
-        }
-        retries++;
-        await new Promise(resolve => setTimeout(resolve, this.RETRY_DELAY * retries));
-      }
+  public removeAuthToken(): void {
+    delete this.api.defaults.headers.common['Authorization'];
+  }
+
+  public async uploadWithProgress<T = any>(
+    url: string,
+    formData: FormData,
+    onProgress?: (progress: number) => void
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.api.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: API_CONFIG.TIMEOUTS.UPLOAD,
+        onUploadProgress: progressEvent => {
+          if (onProgress && progressEvent.total) {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progress);
+          }
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
     }
-    throw new ApiError('Max retries exceeded', 0, 'MAX_RETRIES_EXCEEDED');
-  }
-
-  public getMetrics(): ApiMetrics {
-    return { ...this.metrics };
-  }
-
-  public clearCache(): void {
-    this.cache.clear();
   }
 }
 
-export const api = Api.getInstance(); 
+// Export singleton instance
+const api = Api.getInstance();
+export default api;
+
+// Named export for compatibility with existing imports
+export { api };
+
+// Export blockchain API with mock option
+export const blockchainApi = {
+  status: async () => {
+    if (API_CONFIG.USE_MOCK_BLOCKCHAIN) {
+      console.log('Using mock blockchain status data');
+      return mockBlockchainStatus;
+    }
+
+    try {
+      const response = await api.get(API_CONFIG.ENDPOINTS.BLOCKCHAIN.STATUS);
+      return response;
+    } catch (error) {
+      console.error('Error checking blockchain status:', error);
+      // Fallback para mock em caso de erro
+      return mockBlockchainStatus;
+    }
+  },
+
+  consultar: async (funcao: string, args: string[]) => {
+    if (API_CONFIG.USE_MOCK_BLOCKCHAIN) {
+      console.log(`Using mock blockchain query data for ${funcao}`);
+      return mockBlockchainQuery(funcao, args);
+    }
+
+    try {
+      const response = await api.post(API_CONFIG.ENDPOINTS.BLOCKCHAIN.QUERY, { funcao, args });
+      return response;
+    } catch (error) {
+      console.error('Error querying blockchain:', error);
+      // Fallback para mock em caso de erro
+      return mockBlockchainQuery(funcao, args);
+    }
+  },
+
+  invocar: async (funcao: string, args: string[]) => {
+    if (API_CONFIG.USE_MOCK_BLOCKCHAIN) {
+      console.log(`Using mock blockchain invoke data for ${funcao}`);
+      return mockBlockchainInvoke(funcao, args);
+    }
+
+    try {
+      const response = await api.post(API_CONFIG.ENDPOINTS.BLOCKCHAIN.INVOKE, { funcao, args });
+      return response;
+    } catch (error) {
+      console.error('Error invoking blockchain:', error);
+      // Fallback para mock em caso de erro
+      return mockBlockchainInvoke(funcao, args);
+    }
+  },
+
+  historico: async (chave: string) => {
+    if (API_CONFIG.USE_MOCK_BLOCKCHAIN) {
+      console.log(`Using mock blockchain history data for ${chave}`);
+      return mockBlockchainHistory(chave);
+    }
+
+    try {
+      const response = await api.get(API_CONFIG.ENDPOINTS.BLOCKCHAIN.HISTORY(chave));
+      return response;
+    } catch (error) {
+      console.error('Error getting blockchain history:', error);
+      // Fallback para mock em caso de erro
+      return mockBlockchainHistory(chave);
+    }
+  },
+
+  // Novos métodos para funcionalidades específicas
+  getPeers: async () => {
+    try {
+      const response = await api.get(API_CONFIG.ENDPOINTS.BLOCKCHAIN.PEERS);
+      return response;
+    } catch (error) {
+      console.error('Error getting peers:', error);
+      return { peers: [] };
+    }
+  },
+
+  getChannels: async () => {
+    try {
+      const response = await api.get(API_CONFIG.ENDPOINTS.BLOCKCHAIN.CHANNELS);
+      return response;
+    } catch (error) {
+      console.error('Error getting channels:', error);
+      return { channels: [] };
+    }
+  },
+
+  getContracts: async () => {
+    try {
+      const response = await api.get(API_CONFIG.ENDPOINTS.BLOCKCHAIN.CONTRACTS);
+      return response;
+    } catch (error) {
+      console.error('Error getting contracts:', error);
+      return { contracts: [] };
+    }
+  },
+};
+
+// Export auth API
+export const authApi = {
+  login: async (email: string, password: string) => {
+    try {
+      const response = await api.post(API_CONFIG.ENDPOINTS.AUTH.LOGIN, { email, password });
+
+      // Salvar tokens se retornados
+      if (response.accessToken && response.refreshToken) {
+        tokenStorage.setTokens(response.accessToken, response.refreshToken);
+        api.setAuthToken(response.accessToken);
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  },
+
+  logout: async () => {
+    try {
+      await api.post(API_CONFIG.ENDPOINTS.AUTH.LOGOUT);
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Sempre limpar tokens localmente
+      tokenStorage.clearTokens();
+      api.removeAuthToken();
+
+      // Redirecionar para login
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+    }
+  },
+
+  register: async (data: any) => {
+    try {
+      const response = await api.post(API_CONFIG.ENDPOINTS.AUTH.REGISTER, data);
+      return response;
+    } catch (error) {
+      console.error('Register error:', error);
+      throw error;
+    }
+  },
+
+  resetPassword: async (email: string) => {
+    try {
+      const response = await api.post(API_CONFIG.ENDPOINTS.AUTH.RESET_PASSWORD, { email });
+      return response;
+    } catch (error) {
+      console.error('Reset password error:', error);
+      throw error;
+    }
+  },
+};

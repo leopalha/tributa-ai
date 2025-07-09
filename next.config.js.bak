@@ -1,0 +1,172 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: false,
+  swcMinify: true,
+  
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      '@radix-ui/react-icons',
+      'recharts'
+    ],
+    serverActions: {
+      bodySizeLimit: '1mb',
+    },
+  },
+
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      }
+    ],
+  },
+
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+    reactRemoveProperties: process.env.NODE_ENV === 'production',
+  },
+
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  poweredByHeader: false,
+  compress: true,
+
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '/api',
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    NEXT_PUBLIC_USE_MOCK_BLOCKCHAIN: 'true',
+  },
+
+  webpack: (config, { isServer }) => {
+    // Resolver problemas de módulos problemáticos
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'onnxruntime-node': false,
+      'fabric-network': false,
+      'fabric-common': false,
+      'fabric-protos': false,
+      '@grpc/grpc-js': false,
+      'critters': false,
+    };
+    
+    // Ignorar arquivos .node
+    config.module.rules.push({
+      test: /\.node$/,
+      use: 'ignore-loader',
+    });
+    
+    // Fallbacks para cliente
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        dns: false,
+        http2: false,
+        crypto: false,
+        stream: false,
+        util: false,
+        url: false,
+        zlib: false,
+        http: false,
+        https: false,
+        assert: false,
+        os: false,
+        path: false,
+        buffer: false,
+        process: false,
+      };
+    }
+    
+    // Externals para server-side
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        'onnxruntime-node': 'commonjs onnxruntime-node',
+        '@xenova/transformers': 'commonjs @xenova/transformers',
+        'fabric-network': 'commonjs fabric-network',
+        'fabric-protos': 'commonjs fabric-protos',
+        '@grpc/grpc-js': 'commonjs @grpc/grpc-js',
+        'fabric-common': 'commonjs fabric-common',
+        'critters': 'commonjs critters',
+      });
+    }
+    
+    return config;
+  },
+  
+  async redirects() {
+    return [
+      {
+        source: '/dashboard/blockchain/:path*',
+        destination: '/dashboard/tc/:path*',
+        permanent: false,
+      },
+      {
+        source: '/marketplace',
+        destination: '/dashboard/marketplace',
+        permanent: true,
+      }
+    ];
+  },
+
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+        ]
+      },
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate'
+          }
+        ]
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
+      }
+    ];
+  }
+};
+
+module.exports = nextConfig; 

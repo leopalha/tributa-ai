@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Bell, CheckCircle2, FileText, AlertTriangleIcon, Clock, Users } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { Bell, CheckCircle2, FileText, AlertTriangleIcon, Clock, Users } from 'lucide-react';
 
 interface Activity {
   id: string;
@@ -21,7 +21,7 @@ const mockActivities: Activity[] = [
     description: 'Declaração enviada com sucesso para a empresa Tech Solutions LTDA',
     timestamp: '2 minutos atrás',
     status: 'success',
-    user: 'João Silva'
+    user: 'João Silva',
   },
   {
     id: '2',
@@ -29,7 +29,7 @@ const mockActivities: Activity[] = [
     title: 'Prazo Próximo',
     description: 'EFD-Reinf vence em 3 dias para Comércio Digital S.A.',
     timestamp: '15 minutos atrás',
-    status: 'warning'
+    status: 'warning',
   },
   {
     id: '3',
@@ -37,7 +37,7 @@ const mockActivities: Activity[] = [
     title: 'Nova Legislação',
     description: 'Atualização na IN RFB nº 2.132/2024',
     timestamp: '1 hora atrás',
-    status: 'info'
+    status: 'info',
   },
   {
     id: '4',
@@ -46,7 +46,7 @@ const mockActivities: Activity[] = [
     description: 'Maria Santos foi adicionada como contadora',
     timestamp: '2 horas atrás',
     status: 'info',
-    user: 'Admin'
+    user: 'Admin',
   },
   {
     id: '5',
@@ -54,7 +54,7 @@ const mockActivities: Activity[] = [
     title: 'Backup Realizado',
     description: 'Backup automático dos dados fiscais concluído',
     timestamp: '3 horas atrás',
-    status: 'success'
+    status: 'success',
   },
   {
     id: '6',
@@ -62,8 +62,8 @@ const mockActivities: Activity[] = [
     title: 'Erro de Processamento',
     description: 'Falha no envio da GFIP - Empresa: Serviços Online LTDA',
     timestamp: '4 horas atrás',
-    status: 'error'
-  }
+    status: 'error',
+  },
 ];
 
 const getActivityIcon = (type: Activity['type']) => {
@@ -107,15 +107,15 @@ export function ActivityFeed() {
       <CardContent>
         <ScrollArea className="h-[400px] pr-4">
           <div className="space-y-4">
-            {mockActivities.map((activity) => (
+            {mockActivities.map(activity => (
               <div
                 key={activity.id}
-                className="flex items-start gap-4 p-3 rounded-lg hover:bg-accent/5 transition-colors"
+                className="flex items-start gap-4 p-3 rounded-lg hover:bg-[hsl(var(--accent))]/5 transition-colors"
               >
                 <div className={`p-2 rounded-full ${getStatusColor(activity.status)}`}>
                   {getActivityIcon(activity.type)}
                 </div>
-                
+
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center justify-between">
                     <p className="font-medium">{activity.title}</p>
@@ -123,11 +123,11 @@ export function ActivityFeed() {
                       {activity.timestamp}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-[hsl(var(--muted-foreground))]">
                     {activity.description}
                   </p>
                   {activity.user && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-[hsl(var(--muted-foreground))]">
                       por {activity.user}
                     </p>
                   )}
@@ -139,4 +139,4 @@ export function ActivityFeed() {
       </CardContent>
     </Card>
   );
-} 
+}

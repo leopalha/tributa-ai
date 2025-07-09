@@ -1,15 +1,6 @@
-export type TipoUsuario = 
-  | 'administrador'
-  | 'contador'
-  | 'analista'
-  | 'consultor'
-  | 'cliente';
+export type TipoUsuario = 'administrador' | 'contador' | 'analista' | 'consultor' | 'cliente';
 
-export type StatusUsuario = 
-  | 'ativo'
-  | 'inativo'
-  | 'bloqueado'
-  | 'pendente_confirmacao';
+export type StatusUsuario = 'ativo' | 'inativo' | 'bloqueado' | 'pendente_confirmacao';
 
 export interface Permissao {
   recurso: string;
@@ -75,4 +66,4 @@ export interface SessaoUsuario {
   usuario: Usuario;
   token: TokenAutenticacao;
   empresaSelecionada?: string;
-} 
+}

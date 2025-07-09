@@ -1,0 +1,284 @@
+﻿Duração 
+Item Etapa Atividade Responsável Início Término  Custo (R$) 
+
+(dias)
+Branding e Logomarca Agência de Design 05/01/2024 05/02/2024 31  R$    10.000,00 
+
+Escolha do nome Equipe de Design, Diretor de Marketing 05/01/2024 05/02/2024 31  R$                   -   
+Formação sociedade Sócios, Advogado 05/01/2024 05/02/2024 31  R$                   -   
+
+D01 - D31 1. Lançamento Inicial Compliance Auditor Hildo 05/01/2024 05/02/2024 31  R$       8.000,00 
+Obtenção de autorização do BC e da RF Sócios, Contador e Caio da CVM 05/01/2024 05/02/2024 31  R$  120.000,00 
+
+Pagamento de taxas de registro e licenciamento Sócios, Contador 05/01/2024 05/02/2024 31  R$       5.000,00 
+Contratação e capacitação da equipe inicial Sócios, RH 05/01/2024 05/02/2024 31  R$    50.000,00 
+
+Pesquisa de mercado e definição de público-alvo Equipe de Marketing, Pesquisadores 05/01/2024 05/02/2024 31  R$    10.000,00 
+Configuração inicial dos recursos AWS e definição da arquitetura Arquiteto Cloud, Desenvolvedores Backend (opcional para 
+
+D15 - D44 1. Setup e Arquitetura 15/01/2024 14/02/2024 30  R$  110.000,00 
+serverless configuração AWS)
+
+Custo de hospedagem e software de segurança Arquiteto Cloud, Especialista em Segurança 15/01/2024 14/02/2024 30  R$    10.000,00 
+Implementação das funcionalidades básicas do Marketplace e integração 
+
+D43 - 2. Desenvolvimento do Desenvolvedores Backend, Especialista em Segurança 12/02/2024 11/04/2024 59  R$    48.000,00 
+com o PIX
+
+D101 Backend Custo de hardware e outros custos de TI Desenvolvedores Backend, Especialista em TI 12/02/2024 11/04/2024 59  R$    20.000,00 
+Custo de software e serviços usados pelos desenvolvedores Desenvolvedores Backend, Especialista em TI 12/02/2024 11/04/2024 59  R$    10.000,00 
+
+D101 - Landing Page e Captura de Leads Desenvolvedores Web, Especialistas em SEO 10/04/2024 10/06/2024 61  R$    15.000,00 
+2. Pré-Lançamento
+
+D161 Assessoria de Imprensa Assessor de Imprensa, Redatores 10/05/2024 10/06/2024 31  R$    15.000,00 
+Custo de pessoal Todos os envolvidos nas fases anteriores 10/04/2024 10/06/2024 61  R$    40.000,00 
+
+D117 - 3. Desenvolvimento do Desenvolvimento das interfaces do usuário e integração com o backend 
+Desenvolvedores Frontend 26/03/2024 08/05/2024 43  R$    37.000,00 
+
+D159 Frontend serverless
+Custo de hardware e outros custos de TI Desenvolvedores Frontend, Especialista em TI 26/03/2024 08/05/2024 43  R$    15.000,00 
+
+D138 - Testes de usabilidade, performance e implementação de melhorias com QA/Testers, Desenvolvedores Backend e Frontend (para 
+4. Testes e Melhorias 17/04/2024 15/05/2024 28  R$    72.000,00 
+
+D165 base no feedback correções)
+Custo de pessoal Todos os envolvidos nas fases anteriores 17/04/2024 15/05/2024 28  R$    30.000,00 
+
+D131 - 5. Lançamento e 
+Estratégia de lançamento gradual e monitoramento pós-lançamento Todos os envolvidos nas fases anteriores 16/05/2024 31/05/2024 15  R$    51.000,00 
+
+D161 Monitoramento
+D192 - 
+
+Campanha de Teaser nas Redes Sociais Especialistas em Mídias Sociais 10/04/2024 10/05/2024 30  R$       5.000,00 
+D222
+
+D192 - 3. Lançamento Oficial Campanha de Redes Sociais Social Media Manager, Publicitários 10/05/2024 10/06/2024 31  R$    24.000,00 
+D253
+
+D222 - 
+Eventos do Segmento Representantes de Vendas, Relações Públicas 10/07/2024 10/08/2024 31  R$    20.000,00 
+
+D252
+D344 - 
+
+Marketing de Conteúdo Redatores, Especialistas em Conteúdo 10/07/2024 10/10/2024 92  R$    36.000,00 
+D365
+
+4. Pós-Lançamento Publicidade Online Segmentada Especialistas em PPC, Analistas de Dados 10/07/2024 10/09/2024 62  R$       6.000,00 
+Exclusividade para Perfil “Comprador-Vendedor” Especialistas em Marketing de Campanha 10/08/2024 10/09/2024 31  R$       5.000,00 
+Campanhas Especiais para Comprador-Vendedor Especialistas em Marketing, Designers 10/08/2024 10/10/2024 61  R$       8.000,00 
+
+Análise de Métricas e Feedback do Cliente Analistas de Dados, Especialistas em Feedback 10/12/2024 01/01/2025 22  R$       5.000,00 
+ R$  785.000,00 
+
+
+
+15
+30
+
+28
+
+Fase 1: Setup e Arquitetura
+Fase 2: Desenvolvimento do Backend
+Fase 3: Desenvolvimento do Frontend
+Fase 4: Testes e Melhorias
+Fase 5: Lançamento e Monitoramento
+
+59
+43
+
+Fase 1: Setup e Arquitetura
+Fase 2: Desenvolvimento do Backend
+Fase 3: Desenvolvimento do Frontend
+
+R$ 0,00
+Fase 4: Testes e Melhorias
+
+R$ 21.000,00 R$ 20.000,00 Fase 5: Lançamento e Monitoramento
+
+R$ 18.000,00
+R$ 21.000,00
+
+R$ 7.000,00
+
+R$ 87.000,00
+
+Total Squad
+Total Executivo
+
+R$ 210.000,00
+
+
+
+Iniciativa/Marco Responsável Autorizado Consultado Informado
+Pesquisa de mercado e Analistas de crédito tributário, 
+
+validação da ideia Gerente de marketing Gerente geral desenvolvedores de software, Patrocinadores, gestores, 
+designer gráfico clientes, usuários
+
+Desenvolvimento do MVP da Desenvolvedores de 
+plataforma digital Gerente de tecnologia Gerente geral software, designer gráfico, Patrocinadores, gestores, 
+
+analistas de crédito tributário clientes, usuários
+Gerente de tecnologia, 
+
+Teste e feedback do MVP 
+com clientes e usuários piloto Gerente de marketing Gerente geral desenvolvedores de software, Patrocinadores, gestores, 
+
+designer gráfico, analistas de clientes, usuários
+crédito tributário
+
+Lançamento da versão beta Gerente de marketing, 
+da plataforma digital Gerente geral Patrocinadores, gestores gerente de tecnologia, Clientes, usuários, mercado 
+
+gerente financeiro financeiro, governo
+
+Aquisição e retenção de Gerente de tecnologia, Patrocinadores, gestores, 
+clientes e usuários Gerente de marketing Gerente geral gerente financeiro, analistas clientes, usuários, mercado 
+
+de crédito tributário financeiro, governo
+Lançamento da versão final Gerente de marketing, 
+
+da plataforma digital Gerente geral Patrocinadores, gestores gerente de tecnologia, Clientes, usuários, mercado 
+gerente financeiro financeiro, governo
+
+Avaliação e melhoria Gerente de marketing, 
+contínua do produto e do Gerente geral Patrocinadores, gestores gerente de tecnologia, Clientes, usuários, mercado 
+
+negócio gerente financeiro, analistas financeiro, governo
+de crédito tributário
+
+
+
+Etapa Descrição Início Término Dias Profissionais Custos Envolv idos  na Etap a (Lista )  Custos Dias
+1. Lançamento Inicial Branding e Logomarca 05/01/2024 05/02/2024 31,00 Agência de Design R$ 10.000,00 Marketing] R$ 144.000,00 483
+
+Especialistas em Mídias 
+1. Lançamento Inicial Campanha de Teaser nas Redes Sociais 10/04/2024 10/05/2024 30,00 Sociais R$ 5.000,00 [Social Media Manager, Redatores]
+
+Desenvolvedores Web, 
+2. Pré-Lançamento Landing Page e Captura de Leads 10/04/2024 10/06/2024 61,00 Especialistas em SEO R$ 15.000,00 [Web Developers, SEO Specialist]
+
+Assessor de Imprensa, 
+2. Pré-Lançamento Assessoria de Imprensa 10/05/2024 10/06/2024 31,00 Redatores R$ 15.000,00 [PR Specialist, Redatores]
+
+Social Media Manager, 
+3. Lançamento Oficial Campanha de Redes Sociais 10/05/2024 10/06/2024 31,00 Publicitários R$ 24.000,00 [Equipe de Publicidade, Redatores]
+
+Representantes de 
+Vendas, Relações 
+
+3. Lançamento Oficial Eventos do Segmento 10/07/2024 10/08/2024 31,00 Públicas R$ 20.000,00 [Sales Representatives, PR Team]
+
+Redatores, Especialistas [Equipe de Conteúdo, SEO 
+4. Pós-Lançamento Marketing de Conteúdo 10/07/2024 10/10/2024 92,00 em Conteúdo R$ 36.000,00 Specialist]
+
+Especialistas em PPC, 
+4. Pós-Lançamento Publicidade Online Segmentada 10/07/2024 10/09/2024 62,00 Analistas de Dados R$ 6.000,00 [PPC Specialists, Data Analysts]
+
+5. Estratégia "Comprador- Exclusividade para Perfil "Comprador- Especialistas em 
+Vendedor" Oficial Vendedor" 10/08/2024 10/09/2024 31,00 Marketing de Campanha R$ 5.000,00 [Campaign Marketers, Designers]
+
+5. Estratégia "Comprador- Campanhas Especiais para Comprador- Especialistas em 
+Vendedor" Oficial Vendedor 10/08/2024 10/10/2024 61,00 Marketing, Designers R$ 8.000,00 [Campaign Marketers, Designers]
+
+Analistas de Dados, 
+6. Monitoramento Especialistas em [Data Analysts, Customer Feedback 
+
+Contínuo e Ajustes Análise de Métricas e Feedback do Cliente 10/12/2024 01/01/2025 22,00 Feedback $5,000 (anual) Specialists]
+
+`
+
+
+
+Marco Descrição Prazo
+M1 Pesquisa de mercado e validação da 
+
+ideia 3 meses
+
+M2 Desenvolvimento do MVP (produto 
+mínimo viável) da plataforma digital 6 meses
+
+M3 Teste e feedback do MVP com clientes 
+e usuários piloto 9 meses
+
+M4 Lançamento da versão beta da 
+plataforma digital 12 meses
+
+M5 Aquisição e retenção de clientes e 
+usuários 15 meses
+
+M6 Lançamento da versão final da 
+plataforma digital 18 meses
+
+M7 Avaliação e melhoria contínua do 
+produto e do negócio 24 meses
+
+
+
+Etapa Descrição Início Término Qtd Profissionais Envolvidos Custo de Custo Total Squad Total Executivo Total Qtd total
+Fase 1: Setup e Arquitetura Configuração inicial dos recursos AWS e definição da 
+
+arquitetura serverless. 15/01/2024 14/02/2024 30 Arquiteto Cloud, Desenvolvedores Backend (opcional para 
+configuração AWS) R$ 20.000,00 R$ 90.000,00 R$ 87.000,00 R$ 210.000,00 R$ 297.000,00 175
+
+Fase 2: Desenvolvimento do Backend Implementação das funcionalidades básicas do 
+Marketplace e integração com o PIX. 12/02/2024 11/04/2024 59 Desenvolvedores Backend,  Especialista em Segurança R$ 18.000,00 R$ 30.000,00
+
+Fase 3: Desenvolvimento do Desenvolvimento das interfaces do usuário e integração 
+Frontend com o backend serverless. 26/03/2024 08/05/2024 43 Desenvolvedores Frontend R$ 7.000,00 R$ 30.000,00
+
+Fase 4: Testes e Melhorias Testes de usabilidade, performance e implementação de 
+melhorias com base no feedback. 17/04/2024 15/05/2024 28 QA/Testers, Desenvolvedores Backend e Frontend (para 
+
+correções) R$ 21.000,00 R$ 30.000,00
+Fase 5: Lançamento e Estratégia de lançamento gradual e monitoramento pós-
+
+Monitoramento lançamento. 16/05/2024 31/05/2024 15 Todos os envolvidos nas fases anteriores R$ 21.000,00 R$ 30.000,00
+
+
+
+Projeção e Lucro
+Mês Novos Clientes / Este Mês Total de Clientes Acumulado Volume MensalLucro Lucro do Investidor
+
+Mês 1 1 1
+Mês 2 2 3
+Mês 3 2 5
+Mês 4 4 9
+Mês 5 4 13
+Mês 6 4 17
+Mês 7 6 23
+Mês 8 6 29
+Mês 9 6 35
+Mês 10 6 41
+Mês 11 8 49
+Mês 12 8 57
+Mês 13 8 65
+Mês 14 8 73
+Mês 15 8 81
+Mês 16 10 91
+Mês 17 10 101
+Mês 18 10 111
+Mês 19 10 121
+Mês 20 10 131
+Mês 21 10 141
+Mês 22 15 156
+Mês 23 15 171
+Mês 24 15 186
+Mês 25 15 201
+Mês 26 15 216
+Mês 27 15 231
+Mês 28 15 246
+Mês 29 20 266
+Mês 30 20 286
+Mês 31 20 306
+Mês 32 20 326
+Mês 33 20 346
+Mês 34 20 366
+Mês 35 20 386
+Mês 36 20 406
+Mês 37 20 426
+Mês 38 20 446

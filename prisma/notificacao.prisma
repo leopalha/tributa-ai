@@ -1,0 +1,21 @@
+// Model de Notificações do Sistema
+model Notificacao {
+  id            String    @id @default(cuid())
+  mensagem      String
+  tipo          String?   // Tipo de notificação (ex: SISTEMA, TRANSACAO, COMPENSACAO)
+  lida          Boolean   @default(false)
+  userId        String    @map("user_id") // Usuário destinatário
+  contextoId    String?   @map("contexto_id") // ID da referência (Transação, TC, etc)
+  contextoTipo  String?   @map("contexto_tipo") // Tipo da referência (ex: TRANSACAO, TC, COMPENSACAO)
+  metadados     Json?     // Dados adicionais específicos da notificação
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relações
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([lida])
+  @@index([createdAt])
+  @@map("notificacoes")
+} 

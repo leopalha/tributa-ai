@@ -1,65 +1,131 @@
-import * as React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker } from "react-day-picker";
-import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import React from 'react';
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
-
-function Calendar({
-  className,
-  classNames,
-  showOutsideDays = true,
-  ...props
-}: CalendarProps) {
-  return (
-    <DayPicker
-      showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
-      locale={ptBR}
-      classNames={{
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
-        nav: "space-x-1 flex items-center",
-        nav_button: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
-        ),
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex",
-        head_cell:
-          "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-        row: "flex w-full mt-2",
-        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-        day: cn(
-          buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
-        ),
-        day_range_end: "day-range-end",
-        day_selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-        day_today: "bg-accent text-accent-foreground",
-        day_outside:
-          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
-        day_disabled: "text-muted-foreground opacity-50",
-        day_range_middle:
-          "aria-selected:bg-accent aria-selected:text-accent-foreground",
-        day_hidden: "invisible",
-        ...classNames,
-      }}
-      components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
-      }}
-      {...props}
-    />
-  );
+interface CalendarProps {
+  className?: string;
+  selected?: Date;
+  onSelect?: (date: Date | undefined) => void;
+  mode?: 'single' | 'multiple' | 'range';
 }
-Calendar.displayName = "Calendar";
 
-export { Calendar }; 
+const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
+  ({ className = '', selected, onSelect, mode = 'single' }, ref) => {
+    const today = new Date();
+    const [currentMonth, setCurrentMonth] = React.useState(today.getMonth());
+    const [currentYear, setCurrentYear] = React.useState(today.getFullYear());
+
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+
+    const monthNames = [
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
+    ];
+
+    const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+    const handleDateClick = (day: number) => {
+      const newDate = new Date(currentYear, currentMonth, day);
+      onSelect?.(newDate);
+    };
+
+    const handlePrevMonth = () => {
+      if (currentMonth === 0) {
+        setCurrentMonth(11);
+        setCurrentYear(currentYear - 1);
+      } else {
+        setCurrentMonth(currentMonth - 1);
+      }
+    };
+
+    const handleNextMonth = () => {
+      if (currentMonth === 11) {
+        setCurrentMonth(0);
+        setCurrentYear(currentYear + 1);
+      } else {
+        setCurrentMonth(currentMonth + 1);
+      }
+    };
+
+    const renderDays = () => {
+      const days = [];
+
+      // Empty cells for days before the first day of the month
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        days.push(<div key={`empty-${i}`} className="w-8 h-8"></div>);
+      }
+
+      // Days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(currentYear, currentMonth, day);
+        const isSelected =
+          selected &&
+          date.getDate() === selected.getDate() &&
+          date.getMonth() === selected.getMonth() &&
+          date.getFullYear() === selected.getFullYear();
+
+        days.push(
+          <button
+            key={day}
+            onClick={() => handleDateClick(day)}
+            className={`w-8 h-8 text-sm rounded hover:bg-blue-100 ${
+              isSelected ? 'bg-blue-600 text-white' : 'text-gray-700'
+            }`}
+          >
+            {day}
+          </button>
+        );
+      }
+
+      return days;
+    };
+
+    return (
+      <div
+        ref={ref}
+        className={`p-4 bg-white border border-gray-200 rounded-md shadow ${className}`}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={handlePrevMonth} className="p-1 rounded hover:bg-gray-100">
+            ←
+          </button>
+          <h3 className="text-lg font-semibold">
+            {monthNames[currentMonth]} {currentYear}
+          </h3>
+          <button onClick={handleNextMonth} className="p-1 rounded hover:bg-gray-100">
+            →
+          </button>
+        </div>
+
+        {/* Day names */}
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {dayNames.map(day => (
+            <div
+              key={day}
+              className="w-8 h-8 text-xs font-medium text-gray-500 flex items-center justify-center"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar grid */}
+        <div className="grid grid-cols-7 gap-1">{renderDays()}</div>
+      </div>
+    );
+  }
+);
+
+Calendar.displayName = 'Calendar';
+
+export { Calendar };

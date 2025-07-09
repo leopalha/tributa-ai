@@ -1,67 +1,105 @@
-export type RegimeTributario = 'simples_nacional' | 'lucro_presumido' | 'lucro_real';
-export type SetorAtividade = 'comercio' | 'industria' | 'servicos' | 'agronegocio';
-export type StatusEmpresa = 'ativa' | 'inativa' | 'suspensa' | 'baixada';
+export type StatusEmpresa = 'ATIVA' | 'INATIVA' | 'SUSPENSA' | 'BLOQUEADA';
+export type RegimeTributario = 'SIMPLES' | 'LUCRO_PRESUMIDO' | 'LUCRO_REAL' | 'MEI';
+export type SetorAtividade =
+  | 'COMERCIO'
+  | 'INDUSTRIA'
+  | 'SERVICO'
+  | 'AGROPECUARIA'
+  | 'CONSTRUCAO'
+  | 'OUTRO';
 
 export interface EnderecoEmpresa {
-  cep: string;
   logradouro: string;
   numero: string;
   complemento?: string;
   bairro: string;
   cidade: string;
   estado: string;
-  pais: string;
+  cep: string;
 }
 
 export interface ContatoEmpresa {
-  nome: string;
-  cargo: string;
-  email: string;
   telefone: string;
-  departamento: string;
+  email: string;
+  site?: string;
+  responsavel?: string;
 }
 
 export interface CertificadoDigital {
-  id: string;
-  tipo: 'e-CNPJ' | 'e-PJ' | 'NF-e';
-  numeroSerie: string;
-  dataEmissao: string;
-  dataValidade: string;
-  status: 'valido' | 'expirado' | 'revogado';
+  id?: string;
+  nome: string;
+  validade: string;
   arquivo?: string;
+  senha?: string;
+  tipo: 'A1' | 'A3';
+  status: 'VALIDO' | 'EXPIRADO' | 'PENDENTE';
 }
 
 export interface InscricaoFiscal {
-  tipo: 'estadual' | 'municipal';
+  id?: string;
+  tipo: 'ESTADUAL' | 'MUNICIPAL' | 'OUTRO';
   numero: string;
   estado?: string;
-  municipio?: string;
-  status: 'ativa' | 'baixada' | 'suspensa';
+  cidade?: string;
 }
 
 export interface ConfiguracaoFiscal {
-  regimeTributario: RegimeTributario;
-  inscricoes: InscricaoFiscal[];
-  certificados: CertificadoDigital[];
-  obrigacoesAcessorias: string[];
-  aliquotas: {
-    [key: string]: number;
-  };
+  id?: string;
+  enviaSpedFiscal: boolean;
+  enviaSpedContribuicoes: boolean;
+  emiteNfe: boolean;
+  emiteNfse: boolean;
+  emiteCte: boolean;
+  emiteMdfe: boolean;
+  retemIss: boolean;
 }
 
 export interface Empresa {
   id: string;
-  razaoSocial: string;
+  nome: string;
   nomeFantasia?: string;
   cnpj: string;
-  setorAtividade: SetorAtividade;
+  inscricaoEstadual?: string;
+  inscricaoMunicipal?: string;
+  regimeTributario: RegimeTributario;
+  setorAtividade?: SetorAtividade;
+  cnaePrincipal?: string;
   status: StatusEmpresa;
-  dataAbertura: string;
+  dataAbertura?: string;
   endereco: EnderecoEmpresa;
-  contatos: ContatoEmpresa[];
-  configuracaoFiscal: ConfiguracaoFiscal;
-  matrizFilial: 'matriz' | 'filial';
-  cnpjMatriz?: string;
-  createdAt: string;
-  updatedAt: string;
-} 
+  contato: ContatoEmpresa;
+  certificadoDigital?: CertificadoDigital;
+  inscricoesFiscais?: InscricaoFiscal[];
+  configuracaoFiscal?: ConfiguracaoFiscal;
+  observacoes?: string;
+  logo?: string;
+  matrizFilial?: 'MATRIZ' | 'FILIAL';
+  empresaMatriz?: string;
+}
+
+export interface EmpresaFiltros {
+  nome?: string;
+  cnpj?: string;
+  status?: StatusEmpresa;
+  regimeTributario?: RegimeTributario;
+  estado?: string;
+  cidade?: string;
+  setorAtividade?: SetorAtividade;
+}
+
+export interface EmpresaPaginada {
+  empresas: Empresa[];
+  total: number;
+  pagina: number;
+  limite: number;
+}
+
+export interface EmpresaContextData {
+  empresas: Empresa[];
+  selectedEmpresa: Empresa | null;
+  loading: boolean;
+  setSelectedEmpresa: (empresa: Empresa) => void;
+  createEmpresa: (empresa: Omit<Empresa, 'id'>) => Promise<Empresa>;
+  updateEmpresa: (id: string, empresa: Partial<Empresa>) => Promise<Empresa>;
+  deleteEmpresa: (id: string) => Promise<void>;
+}

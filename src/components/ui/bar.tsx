@@ -1,10 +1,39 @@
-"use client";
-
 import React from 'react';
 import { Bar as BarChart } from 'recharts';
-import { ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart as RechartsBarChart } from 'recharts';
+import {
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  BarChart as RechartsBarChart,
+} from 'recharts';
+import { cn } from '@/lib/utils';
 
-interface BarProps {
+interface BarProps extends React.HTMLAttributes<HTMLDivElement> {
+  value: number; // 0 to 100
+  color?: string; // Tailwind color class (e.g., 'bg-blue-500')
+}
+
+export const Bar: React.FC<BarProps> = ({
+  value,
+  color = 'bg-primary',
+  className,
+  ...props
+}: BarProps) => {
+  const clampedValue = Math.max(0, Math.min(100, value));
+
+  return (
+    <div className={cn('h-2 w-full rounded-full bg-muted', className)} {...props}>
+      <div className={cn('h-full rounded-full', color)} style={{ width: `${clampedValue}%` }} />
+    </div>
+  );
+};
+
+Bar.displayName = 'Bar';
+
+interface BarChartProps {
   data: any[];
   categories: string[];
   index: string;
@@ -13,14 +42,14 @@ interface BarProps {
   yAxisWidth?: number;
 }
 
-export function Bar({
+export function BarChartComponent({
   data,
   categories,
   index,
   colors,
   valueFormatter,
   yAxisWidth = 40,
-}: BarProps) {
+}: BarChartProps) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <RechartsBarChart data={data}>
@@ -34,14 +63,9 @@ export function Bar({
         />
         <Legend />
         {categories.map((category, i) => (
-          <BarChart
-            key={category}
-            dataKey={category}
-            fill={colors[i]}
-            radius={[4, 4, 0, 0]}
-          />
+          <BarChart key={category} dataKey={category} fill={colors[i]} radius={[4, 4, 0, 0]} />
         ))}
       </RechartsBarChart>
     </ResponsiveContainer>
   );
-} 
+}

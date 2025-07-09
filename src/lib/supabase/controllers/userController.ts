@@ -13,21 +13,19 @@ export const userController = {
   },
 
   async getById(id: string): Promise<User | null> {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from('users').select('*').eq('id', id).single();
 
     if (error) throw error;
     return data;
   },
 
   async getCurrentUser(): Promise<User | null> {
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     if (!session) return null;
-    
+
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -41,7 +39,7 @@ export const userController = {
   async login(email: string, password: string): Promise<User> {
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (authError) throw authError;
@@ -69,9 +67,9 @@ export const userController = {
         data: {
           nome: userData.nome,
           telefone: userData.telefone,
-          cargo: userData.cargo
-        }
-      }
+          cargo: userData.cargo,
+        },
+      },
     });
 
     if (authError) throw authError;
@@ -79,14 +77,10 @@ export const userController = {
     // Create user record in the users table
     const newUser = {
       id: authData.user!.id,
-      ...userData
+      ...userData,
     };
 
-    const { data, error } = await supabase
-      .from('users')
-      .insert([newUser])
-      .select()
-      .single();
+    const { data, error } = await supabase.from('users').insert([newUser]).select().single();
 
     if (error) throw error;
     return data;
@@ -96,7 +90,7 @@ export const userController = {
     // If email is being updated, update auth record
     if (userData.email) {
       const { error: authError } = await supabase.auth.updateUser({
-        email: userData.email
+        email: userData.email,
       });
 
       if (authError) throw authError;
@@ -112,5 +106,5 @@ export const userController = {
 
     if (error) throw error;
     return data;
-  }
-}; 
+  },
+};

@@ -1,11 +1,11 @@
 import { api } from './api';
-import { 
+import {
   PeriodoAnalise,
   MetricaAnalytics,
   GraficoAnalytics,
   Insight,
   RelatorioAnalytics,
-  DashboardAnalytics 
+  DashboardAnalytics,
 } from '@/types/analytics';
 
 export interface AnalyticsFiltros {
@@ -67,11 +67,16 @@ class AnalyticsService {
     return api.get(`${this.baseUrl}/dashboards/${id}`);
   }
 
-  public async salvarDashboard(dashboard: Omit<DashboardAnalytics, 'id'>): Promise<DashboardAnalytics> {
+  public async salvarDashboard(
+    dashboard: Omit<DashboardAnalytics, 'id'>
+  ): Promise<DashboardAnalytics> {
     return api.post(`${this.baseUrl}/dashboards`, dashboard);
   }
 
-  public async atualizarDashboard(id: string, dados: Partial<DashboardAnalytics>): Promise<DashboardAnalytics> {
+  public async atualizarDashboard(
+    id: string,
+    dados: Partial<DashboardAnalytics>
+  ): Promise<DashboardAnalytics> {
     return api.put(`${this.baseUrl}/dashboards/${id}`, dados);
   }
 
@@ -79,10 +84,13 @@ class AnalyticsService {
     return api.delete(`${this.baseUrl}/dashboards/${id}`);
   }
 
-  public async obterAnaliseCreditos(empresaId: string, periodo?: {
-    inicio: string;
-    fim: string;
-  }): Promise<{
+  public async obterAnaliseCreditos(
+    empresaId: string,
+    periodo?: {
+      inicio: string;
+      fim: string;
+    }
+  ): Promise<{
     totalCreditos: number;
     creditosUtilizados: number;
     creditosDisponiveis: number;
@@ -102,10 +110,13 @@ class AnalyticsService {
     return api.get(`${this.baseUrl}/creditos/${empresaId}`, periodo);
   }
 
-  public async obterAnaliseObrigacoes(empresaId: string, periodo?: {
-    inicio: string;
-    fim: string;
-  }): Promise<{
+  public async obterAnaliseObrigacoes(
+    empresaId: string,
+    periodo?: {
+      inicio: string;
+      fim: string;
+    }
+  ): Promise<{
     totalObrigacoes: number;
     obrigacoesNoPrazo: number;
     obrigacoesAtrasadas: number;
@@ -144,7 +155,10 @@ class AnalyticsService {
     return api.get(`${this.baseUrl}/riscos/${empresaId}`);
   }
 
-  public async obterPrevisoes(empresaId: string, horizonte: number): Promise<{
+  public async obterPrevisoes(
+    empresaId: string,
+    horizonte: number
+  ): Promise<{
     obrigacoes: {
       data: string;
       tipo: string;
@@ -167,7 +181,10 @@ class AnalyticsService {
     return api.get(`${this.baseUrl}/previsoes/${empresaId}`, { horizonte });
   }
 
-  public async obterComparativoMercado(empresaId: string, metricas: string[]): Promise<{
+  public async obterComparativoMercado(
+    empresaId: string,
+    metricas: string[]
+  ): Promise<{
     posicaoRanking: number;
     totalEmpresas: number;
     metricas: {
@@ -181,4 +198,4 @@ class AnalyticsService {
   }
 }
 
-export const analyticsService = AnalyticsService.getInstance(); 
+export const analyticsService = AnalyticsService.getInstance();

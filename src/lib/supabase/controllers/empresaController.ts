@@ -1,5 +1,5 @@
 import { supabase } from '../config';
-import { Empresa } from '@/models/types';
+import { Empresa } from '@/types/empresa';
 
 export const empresaController = {
   async getAll(): Promise<Empresa[]> {
@@ -13,22 +13,14 @@ export const empresaController = {
   },
 
   async getById(id: string): Promise<Empresa | null> {
-    const { data, error } = await supabase
-      .from('empresas')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from('empresas').select('*').eq('id', id).single();
 
     if (error) throw error;
     return data;
   },
 
   async create(empresa: Omit<Empresa, 'id' | 'created_at' | 'updated_at'>): Promise<Empresa> {
-    const { data, error } = await supabase
-      .from('empresas')
-      .insert([empresa])
-      .select()
-      .single();
+    const { data, error } = await supabase.from('empresas').insert([empresa]).select().single();
 
     if (error) throw error;
     return data;
@@ -47,11 +39,8 @@ export const empresaController = {
   },
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('empresas')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('empresas').delete().eq('id', id);
 
     if (error) throw error;
-  }
-}; 
+  },
+};

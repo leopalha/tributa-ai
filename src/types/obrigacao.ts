@@ -1,32 +1,20 @@
-export type TipoObrigacao = 
-  | 'DCTF' 
-  | 'EFD_CONTRIBUICOES' 
-  | 'EFD_ICMS_IPI' 
-  | 'ECD' 
-  | 'ECF' 
-  | 'SPED_FISCAL' 
-  | 'GIA' 
-  | 'DEFIS' 
-  | 'PGDAS';
+import { StatusObrigacao } from './common/status';
 
-export type StatusObrigacao = 
-  | 'pendente'
-  | 'em_andamento'
-  | 'concluida'
-  | 'atrasada'
-  | 'dispensada'
-  | 'cancelada';
+export type TipoObrigacao =
+  | 'ICMS'
+  | 'IPI'
+  | 'PIS'
+  | 'COFINS'
+  | 'IRPJ'
+  | 'CSLL'
+  | 'ISS'
+  | 'INSS'
+  | 'FGTS'
+  | 'SIMPLES';
 
-export type Periodicidade = 
-  | 'mensal'
-  | 'trimestral'
-  | 'semestral'
-  | 'anual';
+export type Periodicidade = 'mensal' | 'trimestral' | 'semestral' | 'anual';
 
-export type NivelComplexidade = 
-  | 'baixa'
-  | 'media'
-  | 'alta';
+export type NivelComplexidade = 'baixa' | 'media' | 'alta';
 
 export interface AnexoObrigacao {
   id: string;
@@ -39,10 +27,10 @@ export interface AnexoObrigacao {
 
 export interface HistoricoObrigacao {
   id: string;
-  data: string;
   status: StatusObrigacao;
-  descricao: string;
+  data: string;
   usuario: string;
+  observacao?: string;
 }
 
 export interface ValidacaoObrigacao {
@@ -54,40 +42,77 @@ export interface ValidacaoObrigacao {
   regraValidacao?: string;
 }
 
-export type ObrigacaoStatus = 'pendente' | 'em_andamento' | 'concluida' | 'atrasada';
-
 export interface Obrigacao {
   id: string;
-  nome: string;
-  descricao: string;
-  status: ObrigacaoStatus;
+  tipo: TipoObrigacao;
+  status: StatusObrigacao;
   dataVencimento: string;
-  dataConclusao?: string;
-  empresaId: string;
-  valor?: number;
+  valor: number;
+  descricao?: string;
   observacoes?: string;
-  documentos?: {
-    id: string;
-    nome: string;
-    url: string;
-  }[];
-  tipo: string;
-  periodicidade: string;
-  periodoReferencia: string;
-  dataProrrogacao?: string;
-  complexidade: string;
   responsavel?: string;
-  anexos: {
-    id: string;
-    nome: string;
-    url: string;
-    tipo: string;
-  }[];
-  historico: {
-    id: string;
+  empresaId: string;
+  dataCriacao: string;
+  dataAtualizacao: string;
+  dataConclusao?: string;
+  dataDispensa?: string;
+  motivoDispensa?: string;
+  anexos: AnexoObrigacao[];
+  historico: HistoricoObrigacao[];
+}
+
+export interface ObrigacaoFiltros {
+  tipo?: TipoObrigacao;
+  status?: StatusObrigacao;
+  dataInicio?: string;
+  dataFim?: string;
+  empresaId?: string;
+  responsavel?: string;
+}
+
+export interface ObrigacaoCreate {
+  tipo: TipoObrigacao;
+  dataVencimento: string;
+  valor: number;
+  descricao?: string;
+  observacoes?: string;
+  responsavel?: string;
+  empresaId: string;
+}
+
+export interface ObrigacaoUpdate {
+  tipo?: TipoObrigacao;
+  dataVencimento?: string;
+  valor?: number;
+  descricao?: string;
+  observacoes?: string;
+  responsavel?: string;
+}
+
+export interface ObrigacaoEstatisticas {
+  total: number;
+  porStatus: Record<StatusObrigacao, number>;
+  porTipo: Record<TipoObrigacao, number>;
+  valorTotal: number;
+  valorPendente: number;
+  valorPago: number;
+}
+
+export interface ObrigacaoPendencias {
+  total: number;
+  atrasadas: number;
+  proximas: number;
+  obrigacoes: Obrigacao[];
+}
+
+export interface ObrigacaoCalendario {
+  mes: number;
+  ano: number;
+  obrigacoes: Array<{
     data: string;
-    status: ObrigacaoStatus;
-    observacao: string;
-    usuario: string;
-  }[];
-} 
+    obrigacoes: Obrigacao[];
+  }>;
+}
+
+// Aliases for backward compatibility
+export type ObrigacaoStatus = StatusObrigacao;

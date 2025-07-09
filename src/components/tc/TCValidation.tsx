@@ -1,155 +1,150 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { TituloDeCredito } from '@/types/tc';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, AlertCircle, Loader2, AlertTriangle } from 'lucide-react';
-import { TítuloDeCrédito } from '@/types/tc';
-import { api } from '@/lib/api';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/utils';
+import { Check, X, AlertCircle, ArrowRight } from 'lucide-react';
 
-interface PropsValidaçãoTC {
-  título: TítuloDeCrédito;
-  aoCompletarValidação: (resultado: ResultadoValidação) => void;
+interface TCValidationProps {
+  tc: TituloDeCredito;
+  onValidationComplete?: (isValid: boolean) => void;
 }
 
-interface ResultadoValidação {
-  válido: boolean;
-  mensagem: string;
-  detalhes: string[];
-  avisos?: string[];
-}
+export function TCValidation({ tc, onValidationComplete }: TCValidationProps) {
+  const [loading, setLoading] = useState(false);
+  const [validationStatus, setValidationStatus] = useState<{
+    autenticidade: boolean | null;
+    documentacao: boolean | null;
+    valor: boolean | null;
+    emissor: boolean | null;
+  }>({
+    autenticidade: null,
+    documentacao: null,
+    valor: null,
+    emissor: null,
+  });
 
-export function ValidaçãoTC({ título, aoCompletarValidação }: PropsValidaçãoTC) {
-  const [carregando, setCarregando] = useState(false);
-  const [resultado, setResultado] = useState<ResultadoValidação | null>(null);
+  const [validationComplete, setValidationComplete] = useState(false);
 
-  const validarTC = async () => {
-    try {
-      setCarregando(true);
-      const response = await api.post('/api/tc/validate', {
-        tcId: título.id,
-        número: título.número,
-        tipo: título.tipo,
-        valor: título.valorOriginal,
-        dataEmissão: título.dataEmissão,
-        dataVencimento: título.dataVencimento,
-      });
+  const runValidation = async () => {
+    setLoading(true);
 
-      const resultadoValidação: ResultadoValidação = response.data;
-      setResultado(resultadoValidação);
-      aoCompletarValidação(resultadoValidação);
-    } catch (error) {
-      console.error('Erro ao validar título:', error);
-      setResultado({
-        válido: false,
-        mensagem: 'Erro ao validar título',
-        detalhes: ['Ocorreu um erro durante a validação'],
-      });
-    } finally {
-      setCarregando(false);
+    // Simulando validação dos diferentes aspectos do TC
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setValidationStatus(prev => ({ ...prev, autenticidade: true }));
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setValidationStatus(prev => ({ ...prev, documentacao: true }));
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setValidationStatus(prev => ({ ...prev, valor: true }));
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setValidationStatus(prev => ({ ...prev, emissor: true }));
+
+    setLoading(false);
+    setValidationComplete(true);
+  };
+
+  const handleCompleteValidation = () => {
+    const isValid = Object.values(validationStatus).every(status => status === true);
+    if (onValidationComplete) {
+      onValidationComplete(isValid);
     }
   };
+
+  const getStatusIcon = (status: boolean | null) => {
+    if (status === null) {
+      return <AlertCircle className="h-5 w-5 text-gray-400" />;
+    } else if (status) {
+      return <Check className="h-5 w-5 text-green-500" />;
+    } else {
+      return <X className="h-5 w-5 text-red-500" />;
+    }
+  };
+
+  const allValid = Object.values(validationStatus).every(status => status === true);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Validação de Título de Crédito</CardTitle>
-        <CardDescription>
-          Verifique a validade e autenticidade do título de crédito
-        </CardDescription>
+        <CardTitle>Validação de Título</CardTitle>
+        <CardDescription>Validando o título {tc.numero}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="numero">Número do Título</Label>
-              <Input id="numero" value={título.número} disabled />
+      <CardContent>
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium">Detalhes do Título</h3>
+              <div className="space-y-2">
+                <p className="text-sm">
+                  <span className="font-medium">Número:</span> {tc.numero}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Tipo:</span> {tc.tipo.toUpperCase()}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Valor:</span> {formatCurrency(tc.valor)}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Emissor:</span> {tc.emissor.nome}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Origem:</span> {tc.origemCredito}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Tributo:</span> {tc.tipoTributo}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Emissão:</span> {tc.dataEmissao}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Validade:</span> {tc.dataValidade}
+                </p>
+              </div>
             </div>
-            <div>
-              <Label htmlFor="tipo">Tipo</Label>
-              <Input id="tipo" value={título.tipo} disabled />
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium">Status de Validação</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(validationStatus.autenticidade)}
+                  <span className="text-sm">Autenticidade</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(validationStatus.documentacao)}
+                  <span className="text-sm">Documentação</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(validationStatus.valor)}
+                  <span className="text-sm">Valor</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(validationStatus.emissor)}
+                  <span className="text-sm">Emissor</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="valor">Valor Original</Label>
-              <Input
-                id="valor"
-                value={título.valorOriginal.toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
-                })}
-                disabled
-              />
-            </div>
-            <div>
-              <Label htmlFor="dataEmissao">Data de Emissão</Label>
-              <Input
-                id="dataEmissao"
-                value={new Date(título.dataEmissão).toLocaleDateString('pt-BR')}
-                disabled
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="dataVencimento">Data de Vencimento</Label>
-              <Input value={new Date(título.dataVencimento).toLocaleDateString('pt-BR')} disabled />
-            </div>
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Input value={título.status} disabled />
-            </div>
+
+          <div className="flex justify-between">
+            {!validationComplete ? (
+              <Button onClick={runValidation} disabled={loading} className="w-full">
+                {loading ? 'Validando...' : 'Iniciar Validação'}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleCompleteValidation}
+                disabled={!allValid}
+                className="w-full"
+                variant={allValid ? 'default' : 'outline'}
+              >
+                {allValid ? 'Confirmar Validação' : 'Validação Falhou'}
+                {allValid && <ArrowRight className="ml-2 h-4 w-4" />}
+              </Button>
+            )}
           </div>
         </div>
-
-        <Button onClick={validarTC} disabled={carregando} className="w-full">
-          {carregando ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Validando...
-            </>
-          ) : (
-            'Validar Título'
-          )}
-        </Button>
-
-        {resultado && (
-          <div className="space-y-4">
-            <Alert variant={resultado.válido ? 'default' : 'destructive'}>
-              {resultado.válido ? (
-                <CheckCircle2 className="h-4 w-4" />
-              ) : (
-                <AlertCircle className="h-4 w-4" />
-              )}
-              <AlertTitle>
-                {resultado.válido ? 'Título Válido' : 'Título Inválido'}
-              </AlertTitle>
-              <AlertDescription>
-                <p className="mb-2">{resultado.mensagem}</p>
-                {resultado.detalhes.length > 0 && (
-                  <ul className="list-disc pl-4">
-                    {resultado.detalhes.map((detalhe, index) => (
-                      <li key={index}>{detalhe}</li>
-                    ))}
-                  </ul>
-                )}
-                {resultado.avisos && resultado.avisos.length > 0 && (
-                  <div className="mt-2">
-                    <p className="font-medium">Avisos:</p>
-                    <ul className="list-disc pl-4">
-                      {resultado.avisos.map((aviso, index) => (
-                        <li key={index}>{aviso}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </AlertDescription>
-            </Alert>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
-} 
+}

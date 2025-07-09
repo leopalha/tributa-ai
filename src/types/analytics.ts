@@ -1,18 +1,8 @@
 export type PeriodoAnalise = 'dia' | 'semana' | 'mes' | 'trimestre' | 'ano' | 'personalizado';
 
-export type TipoGrafico = 
-  | 'linha'
-  | 'barra'
-  | 'pizza'
-  | 'area'
-  | 'scatter'
-  | 'radar';
+export type TipoGrafico = 'linha' | 'barra' | 'pizza' | 'area' | 'scatter' | 'radar';
 
-export type CategoriaInsight = 
-  | 'tendencia'
-  | 'anomalia'
-  | 'oportunidade'
-  | 'risco';
+export type CategoriaInsight = 'tendencia' | 'anomalia' | 'oportunidade' | 'risco';
 
 export interface MetricaAnalytics {
   id: string;
@@ -147,4 +137,4 @@ export interface DashboardAnalytics {
   };
   dataCriacao: string;
   dataAtualizacao: string;
-} 
+}
