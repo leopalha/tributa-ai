@@ -14,11 +14,11 @@ Tributa.AI é uma plataforma completa para gestão, tokenização e negociação
 
 ## Tecnologias Utilizadas
 
-- **Frontend**: React, TypeScript, Tailwind CSS, Radix UI
+- **Frontend**: React, TypeScript, Webpack, Tailwind CSS, Radix UI
 - **Backend**: Node.js, Express, Prisma
 - **Blockchain**: Ethereum, Ethers.js
 - **Banco de Dados**: PostgreSQL, Supabase
-- **Testes**: Vitest, Jest
+- **Testes**: Vitest
 
 ## Pré-requisitos
 
@@ -48,7 +48,7 @@ cp .env.example .env
 4. Edite o arquivo `.env` com suas configurações:
 ```bash
 DATABASE_URL="postgresql://user:password@localhost:5432/tributa_ai"
-NEXT_PUBLIC_API_URL="http://localhost:3000/api"
+API_URL="http://localhost:3001/api"
 BLOCKCHAIN_RPC_URL="https://mainnet.infura.io/v3/your-infura-key"
 ```
 
@@ -66,10 +66,10 @@ npm run db:seed
 
 ### Modo de Desenvolvimento
 
-Para iniciar o servidor de desenvolvimento:
+Para iniciar o servidor de desenvolvimento (frontend e backend):
 
 ```bash
-npm run dev
+npm run dev:full
 ```
 
 A aplicação estará disponível em [http://localhost:3000](http://localhost:3000).
@@ -93,18 +93,14 @@ tributa-ai-web/
 │   │   ├── marketplace/    # Componentes do marketplace
 │   │   ├── compensacao/    # Componentes do sistema de compensação
 │   │   └── ui/             # Componentes de UI reutilizáveis
-│   ├── pages/              # Páginas da aplicação
 │   ├── services/           # Serviços e lógica de negócio
 │   ├── hooks/              # Hooks personalizados
 │   ├── types/              # Definições de tipos TypeScript
 │   └── utils/              # Funções utilitárias
 ├── prisma/                 # Schema e migrações do Prisma
 ├── docs/                   # Documentação do projeto
-│   └── plataforma/         # Documentação da plataforma
-│       ├── desenvolvimento/ # Guias de desenvolvimento
-│       └── status/         # Status do projeto
 ├── scripts/                # Scripts utilitários
-└── tests/                  # Testes automatizados
+└── ...
 ```
 
 ## Módulos Principais
@@ -129,16 +125,10 @@ Para acessar o marketplace, navegue até `/dashboard/marketplace`.
 
 ## Testes
 
-### Executando Testes Unitários
+Para executar a suíte de testes unitários e de integração, utilize o seguinte comando:
 
 ```bash
 npm run test
-```
-
-### Executando Testes de Integração Blockchain
-
-```bash
-node scripts/test-blockchain.js
 ```
 
 ## Documentação
