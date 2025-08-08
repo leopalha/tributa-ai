@@ -1,14 +1,23 @@
 import React, { useState, ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Menu, X, User, Search, Bell } from 'lucide-react';
+import { Menu, X, User, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { AriaAssistant } from '@/components/chat/AriaAssistant';
+import { ARIAFloatingButton, useARIAShortcuts } from '@/components/aria/ARIAFloatingButton';
 import { Sidebar } from '@/components/layout/Sidebar';
-import NotificationCenter from '@/components/notifications/NotificationCenter';
+import { UnifiedNotificationCenter } from '@/components/notifications/UnifiedNotificationCenter';
+import { KYCNotificationBanner } from '@/components/notifications/KYCNotificationBanner';
 import { Toaster } from 'sonner';
+import { useStoreOrchestrator } from '@/hooks/useStoreOrchestrator';
+import { useDemoUser } from '@/hooks/useDemoUser';
+
+interface DashboardLayoutProps {
+  children?: ReactNode;
+}
 
 // Componente do Header
 const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
+  const { currentUser, isAuthenticated } = useDemoUser();
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="flex items-center justify-between h-16 px-6">
@@ -31,17 +40,25 @@ const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
         </div>
 
         <div className="flex items-center space-x-4">
-          {/* Notification Center */}
-          <NotificationCenter />
+          {/* Sistema Unificado de Notificações */}
+          <UnifiedNotificationCenter />
 
           {/* User Menu */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-gray-600" />
+            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+              {currentUser?.avatar ? (
+                <img src={currentUser.avatar} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-4 h-4 text-gray-600" />
+              )}
             </div>
             <div className="hidden md:block">
-              <p className="text-sm font-medium text-gray-900">Usuário Demo</p>
-              <p className="text-xs text-gray-500">demo@tributa.ai</p>
+              <p className="text-sm font-medium text-gray-900">
+                {isAuthenticated && currentUser ? currentUser.name : 'Usuário'}
+              </p>
+              <p className="text-xs text-gray-500">
+                {isAuthenticated && currentUser ? currentUser.email : 'Não logado'}
+              </p>
             </div>
           </div>
         </div>
@@ -50,13 +67,15 @@ const Header = ({ onMenuClick }: { onMenuClick: () => void }) => {
   );
 };
 
-interface DashboardLayoutProps {
-  children?: ReactNode;
-}
-
 // Componente principal do DashboardLayout
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Inicializar orquestrador de stores para conectar Recovery → Tokens → Marketplace
+  useStoreOrchestrator();
+  
+  // Ativar atalhos de teclado da ARIA
+  useARIAShortcuts();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,6 +113,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Header */}
         <Header onMenuClick={() => setSidebarOpen(true)} />
 
+        {/* KYC Notification Banner */}
+        <KYCNotificationBanner position="sticky" />
+
         {/* Page Content */}
         <main className="p-6">
           {children || <Outlet />}
@@ -103,7 +125,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <Toaster richColors position="top-right" expand={true} duration={4000} />
 
       {/* ARIA Assistant */}
-      <AriaAssistant />
+      <ARIAFloatingButton />
     </div>
   );
 }

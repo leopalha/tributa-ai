@@ -1,489 +1,447 @@
-import React from 'react';
-import Link from '@/components/ui/custom-link';
-import { usePathname } from '@/lib/router-utils';
+// PROMPT DE PADRONIZAÇÃO PARA TRIBUTA.AI
+/**
+ * PADRONIZAÇÃO TRIBUTA.AI v1.0
+ * 
+ * Este componente Sidebar foi padronizado seguindo as diretrizes do design system.
+ * Para padronizar TODOS os componentes da plataforma, siga estas diretrizes:
+ * 
+ * 1. CORES PADRONIZADAS
+ *    - Use classes Tailwind padronizadas (text-blue-600) em vez de hardcoded [hsl(var(--...))]
+ *    - Cores primárias: blue-600 (ações principais), gray-700 (textos), gray-200 (bordas)
+ *    - Estados: blue-50 (hover/active bg), red-600 (destructive), green-500 (success)
+ * 
+ * 2. TAMANHOS PADRONIZADOS
+ *    - Botões: h-8/32px (sm), h-10/40px (md), h-12/48px (lg) 
+ *    - Cards: p-4/16px (sm), p-6/24px (md), p-8/32px (lg)
+ *    - Espaçamento: gap-2/8px (xs), gap-4/16px (sm), gap-6/24px (md), gap-8/32px (lg)
+ *    - Tipografia: text-sm, text-base (padrão), text-lg, text-xl, text-2xl
+ * 
+ * 3. COMPONENTES PADRONIZADOS
+ *    - Cards com estrutura Header + Content + Actions
+ *    - Botões sempre alinhados no canto inferior direito dos cards
+ *    - Estados consistentes: Loading (spinner centralizado), Empty (ícone+título+ação)
+ * 
+ * 4. LAYOUT RESPONSIVO
+ *    - Mobile-first: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3
+ *    - Flex adaptável: flex flex-col md:flex-row
+ * 
+ * 5. ESTADOS CONSISTENTES
+ *    - Loading: <Loader2 className="animate-spin h-5 w-5 text-muted-foreground" />
+ *    - Empty: Componente centralizado com ícone, texto e ação
+ *    - Error: Mensagem clara com opção de retry
+ * 
+ * Ao desenvolver novos componentes ou modificar existentes, utilize o StandardPageLayout
+ * para manter consistência de espaçamento, margens e layout geral.
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import {
+import { useDemoUser } from '@/hooks/useDemoUser';
+import { 
+  ChevronRight, 
   LayoutDashboard,
-  Building2,
-  FileText,
-  CreditCard,
-  Store,
-  CalendarDays,
-  Users,
-  Settings,
-  LogOut,
-  History,
-  BarChartIcon,
-  BarChart3,
-  Blocks,
-  Activity,
-  MessageSquare,
-  Coins,
-  ShoppingCart,
-  Shield,
-  DollarSign,
-  RefreshCw,
   Search,
-  Brain,
-  TrendingUp,
-  ClipboardList,
-  ArrowRightLeft,
-  Zap,
-  Database,
-  Bot,
+  FileCheck,
+  PlusCircle,
+  Wallet,
   Heart,
-  Home,
-  Plus,
-  AlertTriangle,
-  Calendar,
-  Bell,
+  DollarSign,
+  MessageSquare,
+  History,
+  Brain,
+  Target,
+  FileSearch,
+  Eye,
+  GitBranch,
+  Layers,
   Gavel,
+  Database,
+  Activity,
+  Coins,
+  Receipt,
+  Shield,
+  CircleDollarSign,
+  Plus,
+  TrendingUp,
+  BarChart,
+  Settings,
+  User,
+  Building2,
+  Users,
+  LogOut,
+  Crown,
+  Server,
+  FileText,
+  BarChart3,
+  Zap,
+  ShoppingCart,
+  Menu
 } from 'lucide-react';
-// TODO: Replace with custom auth
-// import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import type { LucideIcon } from 'lucide-react';
 
-const mainNavItems = [
-  {
-    title: 'Dashboard',
-    href: '/dashboard',
-    icon: Home,
-    description: 'Visão geral da sua atividade e métricas principais',
-  },
-  {
-    title: 'Recuperação',
-    href: '/dashboard/recuperacao',
-    icon: RefreshCw,
-    description: 'Sistema principal de recuperação de créditos tributários',
-    highlight: true,
-    items: [
-      {
-        title: 'Análise de Obrigações',
-        href: '/dashboard/recuperacao/analise',
-        icon: Brain,
-        description: 'IA analisa CPF/CNPJ e identifica créditos e obrigações',
-      },
-      {
-        title: 'Resultados das Análises',
-        href: '/dashboard/recuperacao/resultados',
-        icon: Search,
-        description: 'Resultados da análise com créditos e débitos identificados',
-      },
-      {
-        title: 'Compensação Bilateral',
-        href: '/dashboard/recuperacao/compensacao-bilateral',
-        icon: ArrowRightLeft,
-        description: 'Compensação direta entre créditos e débitos',
-      },
-      {
-        title: 'Compensação Multilateral',
-        href: '/dashboard/recuperacao/compensacao-multilateral',
-        icon: ArrowRightLeft,
-        description: 'Sistema de compensação entre múltiplas partes',
-      },
-      {
-        title: 'Processos de Recuperação',
-        href: '/dashboard/recuperacao/processos',
-        icon: ClipboardList,
-        description: 'Acompanhe protocolos e andamentos',
-      },
-      {
-        title: 'Relatórios',
-        href: '/dashboard/recuperacao/relatorios',
-        icon: BarChartIcon,
-        description: 'Analytics e performance da recuperação',
-      },
-    ],
-  },
-  {
-    title: 'Marketplace',
-    href: '/dashboard/marketplace',
-    icon: Store,
-    description: 'Marketplace universal para negociação de títulos',
-    items: [
-      {
-        title: 'Explorar Créditos',
-        href: '/dashboard/marketplace',
-        icon: Search,
-        description: 'Explore todos os tipos de títulos disponíveis',
-      },
-      {
-        title: 'Minhas Negociações',
-        href: '/dashboard/marketplace/negociacoes',
-        icon: MessageSquare,
-        description: 'Leilões e ofertas ativas',
-      },
-      {
-        title: 'Minhas Compras',
-        href: '/dashboard/marketplace/compras',
-        icon: ShoppingCart,
-        description: 'Compras realizadas',
-      },
-      {
-        title: 'Minhas Vendas',
-        href: '/dashboard/marketplace/vendas',
-        icon: TrendingUp,
-        description: 'Vendas concluídas',
-      },
-      {
-        title: 'Meus Anúncios',
-        href: '/dashboard/marketplace/anuncios',
-        icon: Store,
-        description: 'Títulos anunciados',
-      },
-      {
-        title: 'Lista de Desejos',
-        href: '/dashboard/marketplace/desejos',
-        icon: Heart,
-        description: 'Títulos favoritos',
-      },
-      {
-        title: 'Mensagens',
-        href: '/dashboard/marketplace/mensagens',
-        icon: MessageSquare,
-        description: 'Conversas privadas',
-      },
-      {
-        title: 'Analytics',
-        href: '/dashboard/marketplace/analytics',
-        icon: BarChart3,
-        description: 'Relatórios e métricas',
-      },
-      {
-        title: 'Configurações',
-        href: '/dashboard/marketplace/configuracoes',
-        icon: Settings,
-        description: 'Preferências do marketplace',
-      },
-    ],
-  },
-  {
-    title: 'Tokenização',
-    href: '/dashboard/tokenizacao',
-    icon: Coins,
-    description: 'Transforme seus créditos em tokens blockchain',
-    items: [
-      {
-        title: 'Visão Geral',
-        href: '/dashboard/tokenizacao',
-        icon: Coins,
-        description: 'Visão geral da tokenização',
-      },
-      {
-        title: 'Criar Novo Token',
-        href: '/dashboard/tokenizacao/criar',
-        icon: Plus,
-        description: 'Tokenize um novo título de crédito',
-      },
-      {
-        title: 'Meus Tokens',
-        href: '/dashboard/tokenizacao/meus-tokens',
-        icon: Coins,
-        description: 'Gerencie seus títulos tokenizados',
-      },
-    ],
-  },
-  {
-    title: 'Carteira',
-    href: '/dashboard/wallet',
-    icon: DollarSign,
-    description: 'Gerencie seu saldo e pagamentos na plataforma',
-  },
-  {
-    title: 'Blockchain',
-    href: '/dashboard/blockchain',
-    icon: Blocks,
-    description: 'Visualize tokens e transações na blockchain',
-    items: [
-      {
-        title: 'Visão Geral',
-        href: '/dashboard/blockchain',
-        icon: Blocks,
-        description: 'Visão geral da blockchain',
-      },
-      {
-        title: 'Explorador',
-        href: '/dashboard/blockchain/explorer',
-        icon: Search,
-        description: 'Explorador de blocos e transações',
-      },
-      {
-        title: 'Status da Rede',
-        href: '/dashboard/blockchain/status',
-        icon: Activity,
-        description: 'Monitoramento da rede blockchain',
-      },
-    ],
-  },
-  {
-    title: 'Gestão de Riscos',
-    href: '/dashboard/risk',
-    icon: Shield,
-    description: 'Sistema avançado de monitoramento e controle de riscos',
-  },
-];
+interface SidebarLinkProps {
+  to: string;
+  children: React.ReactNode;
+  icon?: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+}
 
-const tradingNavItems = [
-  {
-    title: 'Trading Profissional',
-    href: '/dashboard/trading-pro',
-    icon: BarChart3,
-    description: 'Plataforma estilo IQ Option com bots inteligentes',
-    highlight: true,
-  },
-  {
-    title: 'Análise de Mercado',
-    href: '/dashboard/trading/analysis',
-    icon: TrendingUp,
-    description: 'Análise técnica e fundamental em tempo real',
-  },
-];
+function SidebarLink({ to, icon, children, className, onClick }: SidebarLinkProps) {
+  const location = useLocation();
+  const isActive = location.pathname === to || location.pathname?.startsWith(`${to}/`);
 
-const secondaryNavItems = [
-  {
-    title: 'Notificações',
-    href: '/dashboard/notifications',
-    icon: Bell,
-    description: 'Central de notificações e atividades em tempo real',
-  },
-  {
-    title: 'KYC',
-    href: '/dashboard/kyc',
-    icon: Shield,
-    description: 'Verificação de identidade e compliance',
-  },
-  {
-    title: 'Configurações',
-    href: '/dashboard/configuracoes',
-    icon: Settings,
-    description: 'Personalize sua experiência na plataforma',
-  },
-];
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className={cn(
+        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 group',
+        isActive 
+          ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
+          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50',
+        className
+      )}
+    >
+      <div className={cn('transition-transform duration-200', isActive ? 'text-blue-600' : 'group-hover:text-blue-500')}>
+        {icon}
+      </div>
+      <span>{children}</span>
+    </Link>
+  );
+}
 
-// Itens de menu apenas para administradores
-const adminNavItems = [
-  {
-    title: 'Dashboard Admin',
-    href: '/dashboard/admin',
-    icon: Settings,
-    description: 'Painel administrativo principal',
-  },
-  {
-    title: 'Consulta CNPJ/CPF',
-    href: '/dashboard/fonte-dados',
-    icon: Database,
-    description: 'Consulte débitos e créditos fiscais em tempo real',
-    highlight: false,
-  },
-  {
-    title: 'Sistema de Saúde',
-    href: '/dashboard/admin/system-health',
-    icon: Heart,
-    description: 'Monitoramento completo da plataforma',
-  },
-  {
-    title: 'Painel de Controle - Bots',
-    href: '/dashboard/admin/bots',
-    icon: Bot,
-    description: 'Controle e monitoramento dos bots',
-  },
-  {
-    title: 'Status da Rede',
-    href: '/dashboard/admin/network-status',
-    icon: Activity,
-    description: 'Status da rede blockchain',
-  },
-  {
-    title: 'Leilões',
-    href: '/dashboard/admin/auctions',
-    icon: Gavel,
-    description: 'Gerenciamento de leilões',
-  },
-  {
-    title: 'Notificações',
-    href: '/dashboard/admin/notifications',
-    icon: Bell,
-    description: 'Central de notificações do sistema',
-  },
-  {
-    title: 'Usuários',
-    href: '/dashboard/admin/users',
-    icon: Users,
-    description: 'Gerenciamento de usuários',
-  },
-  {
-    title: 'Logs de Auditoria',
-    href: '/dashboard/admin/audit-logs',
-    icon: FileText,
-    description: 'Logs de auditoria e segurança',
-  },
-];
+interface SidebarItemProps {
+  Icon: LucideIcon;
+  label: string;
+  children: React.ReactNode;
+  isOpen: boolean;
+  onToggle: () => void;
+}
 
-export function Sidebar() {
-  const pathname = usePathname();
-  const [activeItem, setActiveItem] = React.useState('');
-  const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
-  // TODO: Implement session management
-  const session = null;
+function SidebarItem({ Icon, label, children, isOpen, onToggle }: SidebarItemProps) {
+  const pathname = useLocation();
+  const isActiveSection = pathname.pathname?.includes(label.toLowerCase()) || 
+    (label === 'Administração' && pathname.pathname?.includes('/admin'));
 
-  // Verifica se o usuário é administrador
-  // Temporariamente definindo como true para acesso ao painel
-  const isAdmin = true; // session?.user?.role === 'ADMIN';
+  return (
+    <div className="space-y-1">
+      <Button
+        variant="ghost"
+        className={cn(
+          'w-full justify-start h-auto py-2.5 px-3 text-left font-semibold transition-all duration-200 rounded-lg group',
+          isActiveSection 
+            ? 'bg-blue-50 text-blue-700 shadow-sm' 
+            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+        )}
+        onClick={onToggle}
+      >
+        <Icon className={cn(
+          "mr-3 h-4 w-4 flex-shrink-0 transition-colors duration-200", 
+          isActiveSection ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-700'
+        )} />
+        <span className="flex-1 text-left">{label}</span>
+        <ChevronRight 
+          className={cn(
+            'h-4 w-4 transition-all duration-200 flex-shrink-0', 
+            isOpen && 'rotate-90',
+            isActiveSection ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'
+          )} 
+        />
+      </Button>
+      {isOpen && (
+        <div className="ml-4 pl-4 border-l-2 border-gray-200 space-y-1">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
-  // Auto-expandir item ativo - FIXO: usar callback para evitar loop
-  React.useEffect(() => {
-    const shouldExpand: string[] = [];
+interface SidebarProps {
+  userName?: string;
+}
 
-    mainNavItems.forEach(item => {
-      if (item.items && pathname.startsWith(item.href)) {
-        shouldExpand.push(item.href);
-      }
-    });
+export function Sidebar({ userName = 'Usuário' }: SidebarProps) {
+  const [openSections, setOpenSections] = useState({
+    marketplace: false,
+    recuperacao: false,
+    blockchain: false,
+    wallet: false,
+    settings: false,
+    admin: false,
+  });
 
-    if (shouldExpand.length > 0) {
-      setExpandedItems(prev => {
-        const newExpanded = [...prev];
-        let hasChanges = false;
+  const pathname = useLocation();
+  const { canAccessAdminPanel, logout } = useDemoUser();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const userInitial = userName.charAt(0).toUpperCase();
 
-        shouldExpand.forEach(href => {
-          if (!newExpanded.includes(href)) {
-            newExpanded.push(href);
-            hasChanges = true;
-          }
-        });
+  const handleLogout = async () => {
+    logout();
+    window.location.href = '/login';
+  };
 
-        return hasChanges ? newExpanded : prev;
-      });
+  const toggleSection = (section: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [section]: !prev[section as keyof typeof prev]
+    }));
+  };
+
+  // Auto-open sections based on current route
+  useEffect(() => {
+    if (pathname.pathname?.includes('/marketplace')) {
+      setOpenSections(prev => ({ ...prev, marketplace: true }));
+    } else if (pathname.pathname?.includes('/recuperacao')) {
+      setOpenSections(prev => ({ ...prev, recuperacao: true }));
+    } else if (pathname.pathname?.includes('/blockchain')) {
+      setOpenSections(prev => ({ ...prev, blockchain: true }));
+    } else if (pathname.pathname?.includes('/wallet')) {
+      setOpenSections(prev => ({ ...prev, wallet: true }));
+    } else if (pathname.pathname?.includes('/configuracoes')) {
+      setOpenSections(prev => ({ ...prev, settings: true }));
+    } else if (pathname.pathname?.includes('/admin')) {
+      setOpenSections(prev => ({ ...prev, admin: true }));
     }
   }, [pathname]);
 
-  const toggleExpanded = (href: string) => {
-    setExpandedItems(prev =>
-      prev.includes(href) ? prev.filter(item => item !== href) : [...prev, href]
-    );
-  };
-
-  const renderNavItem = (item: any, level = 0) => {
-    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-    const isExpanded = expandedItems.includes(item.href);
-    const hasItems = item.items && item.items.length > 0;
-
-    return (
-      <div key={item.href}>
-        <div
-          className={cn(
-            'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 group cursor-pointer',
-            level > 0 && 'ml-4 py-2',
-            // Padronização: fundo azul uniforme para todos os itens selecionados ou com subitens
-            isActive || hasItems
-              ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-              : 'hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-800 dark:text-white',
-            item.highlight && 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-          )}
-          onMouseEnter={() => setActiveItem(item.href)}
-          onMouseLeave={() => setActiveItem('')}
-          onClick={() => {
-            if (hasItems) {
-              toggleExpanded(item.href);
-            }
-          }}
-        >
-          <Link href={item.href} className="flex items-center gap-3 flex-1">
-            <item.icon
-              className={cn(
-                'h-5 w-5',
-                level > 0 && 'h-4 w-4',
-                // Padronização: ícone azul para itens ativos/com subitens, cinza para outros
-                isActive || hasItems
-                  ? 'text-blue-600 dark:text-blue-400'
-                  : 'text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400',
-                item.highlight && 'text-blue-600 dark:text-blue-400'
-              )}
-            />
-            <div className="flex flex-col flex-1">
-              <span
-                className={cn(
-                  // Padronização: texto azul para itens ativos/com subitens, cinza para outros
-                  isActive || hasItems
-                    ? 'text-blue-700 dark:text-blue-300'
-                    : 'text-gray-800 dark:text-white',
-                  item.highlight && 'text-blue-700 dark:text-blue-300'
-                )}
-              >
-                {item.title}
-              </span>
-              {activeItem === item.href && (
-                <span className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-[180px] line-clamp-1 animate-fadeIn">
-                  {item.description}
-                </span>
-              )}
-            </div>
-          </Link>
-          {hasItems && (
-            <Zap
-              className={cn(
-                'h-4 w-4 transition-transform',
-                isExpanded ? 'rotate-90' : '',
-                'text-blue-600 dark:text-blue-400'
-              )}
-            />
-          )}
-        </div>
-
-        {hasItems && isExpanded && (
-          <div className="mt-1 space-y-1">
-            {item.items.map((subItem: any) => renderNavItem(subItem, level + 1))}
+  // Use the proper admin check from useAuthSystem
+  const SidebarContent = () => (
+    <>
+      {/* Header */}
+      <div className="flex h-16 items-center border-b border-gray-200 px-4 bg-white">
+        <Link to="/dashboard" className="flex items-center gap-3 font-semibold group">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm transition-transform duration-200 group-hover:scale-105">
+            <Zap className="h-5 w-5 text-white" />
           </div>
-        )}
+          <span className="text-lg font-bold text-gray-900">
+            Tributa.AI
+          </span>
+        </Link>
       </div>
-    );
-  };
+
+      {/* Main Navigation */}
+      <div className="flex-1 overflow-auto py-4 px-3">
+        <div className="space-y-3">
+          {/* Dashboard Principal */}
+          <div className="space-y-1">
+            <SidebarLink to="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />}>
+              Dashboard
+            </SidebarLink>
+          </div>
+
+          {/* Marketplace */}
+          <SidebarItem
+            Icon={ShoppingCart}
+            label="Marketplace"
+            isOpen={openSections.marketplace}
+            onToggle={() => toggleSection('marketplace')}
+          >
+            <SidebarLink to="/dashboard/marketplace" icon={<Search className="h-4 w-4" />}>
+              Explorar
+            </SidebarLink>
+            <SidebarLink to="/dashboard/marketplace/emitir" icon={<PlusCircle className="h-4 w-4" />}>
+              Emitir Token
+            </SidebarLink>
+            <SidebarLink to="/dashboard/marketplace/meus-tokens" icon={<Wallet className="h-4 w-4" />}>
+              Meus Tokens
+            </SidebarLink>
+            <SidebarLink to="/dashboard/marketplace/meus-creditos" icon={<FileCheck className="h-4 w-4" />}>
+              Meus Créditos
+            </SidebarLink>
+            <SidebarLink to="/dashboard/marketplace/minhas-negociacoes" icon={<Gavel className="h-4 w-4" />}>
+              Minhas Negociações
+            </SidebarLink>
+            <SidebarLink to="/dashboard/marketplace/anuncios" icon={<DollarSign className="h-4 w-4" />}>
+              Meus Anúncios
+            </SidebarLink>
+            <SidebarLink to="/dashboard/marketplace/favoritos" icon={<Heart className="h-4 w-4" />}>
+              Favoritos
+            </SidebarLink>
+            <SidebarLink to="/dashboard/marketplace/historico" icon={<History className="h-4 w-4" />}>
+              Histórico
+            </SidebarLink>
+          </SidebarItem>
+
+
+          {/* Recuperação de Créditos */}
+          <SidebarItem
+            Icon={Brain}
+            label="Recuperação"
+            isOpen={openSections.recuperacao}
+            onToggle={() => toggleSection('recuperacao')}
+          >
+            <SidebarLink to="/dashboard/recuperacao" icon={<Target className="h-4 w-4" />}>
+              Visão Geral
+            </SidebarLink>
+            <SidebarLink to="/dashboard/recuperacao/analise" icon={<FileSearch className="h-4 w-4" />}>
+              Análise Inteligente
+            </SidebarLink>
+            <SidebarLink to="/dashboard/recuperacao/resultados" icon={<Eye className="h-4 w-4" />}>
+              Resultados
+            </SidebarLink>
+            <SidebarLink to="/dashboard/recuperacao/compensacao-bilateral" icon={<GitBranch className="h-4 w-4" />}>
+              Compensação Bilateral
+            </SidebarLink>
+            <SidebarLink to="/dashboard/recuperacao/compensacao-multilateral" icon={<Layers className="h-4 w-4" />}>
+              Compensação Multilateral
+            </SidebarLink>
+            <SidebarLink to="/dashboard/recuperacao/processos" icon={<Gavel className="h-4 w-4" />}>
+              Processos
+            </SidebarLink>
+          </SidebarItem>
+
+          {/* Blockchain */}
+          <SidebarItem
+            Icon={Database}
+            label="Blockchain"
+            isOpen={openSections.blockchain}
+            onToggle={() => toggleSection('blockchain')}
+          >
+            <SidebarLink to="/dashboard/blockchain" icon={<Activity className="h-4 w-4" />}>
+              Visão Geral
+            </SidebarLink>
+            <SidebarLink to="/dashboard/blockchain/explorer" icon={<Search className="h-4 w-4" />}>
+              Explorer
+            </SidebarLink>
+            <SidebarLink to="/dashboard/blockchain/tokens" icon={<Coins className="h-4 w-4" />}>
+              Tokens
+            </SidebarLink>
+            <SidebarLink to="/dashboard/blockchain/transacoes" icon={<Receipt className="h-4 w-4" />}>
+              Transações
+            </SidebarLink>
+            <SidebarLink to="/dashboard/blockchain/auditoria" icon={<Shield className="h-4 w-4" />}>
+              Auditoria
+            </SidebarLink>
+          </SidebarItem>
+
+          {/* Carteira Digital */}
+          <SidebarItem
+            Icon={Wallet}
+            label="Carteira Digital"
+            isOpen={openSections.wallet}
+            onToggle={() => toggleSection('wallet')}
+          >
+            <SidebarLink to="/dashboard/wallet" icon={<Wallet className="h-4 w-4" />}>
+              Visão Geral
+            </SidebarLink>
+            <SidebarLink to="/dashboard/wallet/balance" icon={<CircleDollarSign className="h-4 w-4" />}>
+              Saldo
+            </SidebarLink>
+            <SidebarLink to="/dashboard/wallet/transacoes" icon={<Receipt className="h-4 w-4" />}>
+              Transações
+            </SidebarLink>
+            <SidebarLink to="/dashboard/wallet/deposit" icon={<Plus className="h-4 w-4" />}>
+              Depósito
+            </SidebarLink>
+            <SidebarLink to="/dashboard/wallet/withdraw" icon={<TrendingUp className="h-4 w-4" />}>
+              Saque
+            </SidebarLink>
+            <SidebarLink to="/dashboard/wallet/analytics" icon={<BarChart className="h-4 w-4" />}>
+              Analytics
+            </SidebarLink>
+          </SidebarItem>
+
+          {/* Configurações */}
+          <SidebarItem
+            Icon={Settings}
+            label="Configurações"
+            isOpen={openSections.settings}
+            onToggle={() => toggleSection('settings')}
+          >
+            <SidebarLink to="/dashboard/configuracoes" icon={<Settings className="h-4 w-4" />}>
+              Visão Geral
+            </SidebarLink>
+            <SidebarLink to="/dashboard/configuracoes/perfil" icon={<User className="h-4 w-4" />}>
+              Perfil
+            </SidebarLink>
+            <SidebarLink to="/dashboard/configuracoes/empresa" icon={<Building2 className="h-4 w-4" />}>
+              Empresa
+            </SidebarLink>
+            <SidebarLink to="/dashboard/configuracoes/usuarios" icon={<Users className="h-4 w-4" />}>
+              Usuários
+            </SidebarLink>
+          </SidebarItem>
+        </div>
+      </div>
+
+      {/* Footer - Informações do usuário, Administração e botão de sair */}
+      <div className="border-t border-gray-200 p-3 space-y-2">
+        {/* Perfil do Usuário */}
+        <div className="flex items-center justify-between mb-3 px-3">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white">
+              {userInitial}
+            </div>
+            <div className="text-sm font-medium text-gray-700">{userName}</div>
+          </div>
+        </div>
+        
+        {/* Administração - Movida para área do perfil */}
+        {canAccessAdminPanel && (
+          <SidebarItem
+            Icon={Shield}
+            label="Administração"
+            isOpen={openSections.admin}
+            onToggle={() => toggleSection('admin')}
+          >
+            <SidebarLink to="/dashboard/admin" icon={<Crown className="h-4 w-4" />}>
+              Dashboard Admin
+            </SidebarLink>
+            <SidebarLink to="/dashboard/admin/sistema" icon={<Server className="h-4 w-4" />}>
+              Sistema
+            </SidebarLink>
+            <SidebarLink to="/dashboard/admin/logs" icon={<FileText className="h-4 w-4" />}>
+              Logs
+            </SidebarLink>
+            <SidebarLink to="/dashboard/admin/relatorios" icon={<BarChart3 className="h-4 w-4" />}>
+              Relatórios
+            </SidebarLink>
+          </SidebarItem>
+        )}
+        
+        {/* Botão Sair */}
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-50" 
+          onClick={handleLogout}
+        >
+          <LogOut className="mr-3 h-4 w-4" />
+          Sair
+        </Button>
+      </div>
+    </>
+  );
 
   return (
-    <div className="hidden md:flex fixed h-full w-64 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-r border-gray-200 dark:border-gray-800 pt-8 z-40">
-      <div className="flex flex-col w-full px-4 overflow-y-auto">
-        <div className="flex items-center h-16 px-4 mb-8">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-2xl">
-            T
-          </div>
-          <span className="ml-3 text-xl font-semibold">Tributa.AI</span>
-        </div>
-
-        <div className="space-y-1 px-2">
-          <h3 className="px-4 text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-            Sistema Principal
-          </h3>
-          {mainNavItems.map(item => renderNavItem(item))}
-        </div>
-
-        <div className="mt-6 space-y-1 px-2">
-          <h3 className="px-4 text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-            Trading
-          </h3>
-          {tradingNavItems.map(item => renderNavItem(item))}
-        </div>
-
-        <div className="mt-6 space-y-1 px-2">
-          <h3 className="px-4 text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-            Configurações
-          </h3>
-          {secondaryNavItems.map(item => renderNavItem(item))}
-        </div>
-
-        {/* Seção de administração - SEMPRE VISÍVEL PARA DEBUG */}
-        <div className="mt-6 space-y-1 px-2">
-          <h3 className="px-4 text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-            Administração
-          </h3>
-          {adminNavItems.map(item => renderNavItem(item))}
-        </div>
-
-        <div className="mt-auto mb-8 px-6">
-          <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 text-sm font-medium">
-            <LogOut className="h-4 w-4" />
-            Sair
-          </button>
-        </div>
+    <>
+      {/* Sidebar para desktop */}
+      <div className="hidden lg:flex fixed inset-y-0 z-50 w-64 flex-col bg-white border-r border-gray-200 shadow-sm">
+        <SidebarContent />
       </div>
-    </div>
+      
+      {/* Menu para mobile */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b p-2 flex items-center">
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64 bg-white">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
   );
 }
