@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: tributa-ai
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run dev
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    healthCheckPath: /
+
+  - type: web
+    name: tributa-ai-genesis
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install pg express ws
+    startCommand: node .lia/agents/genesis/genesis-enterprise-system.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3003
+      - key: OPENROUTER_API_KEY
+        sync: false
+    healthCheckPath: /api/health
