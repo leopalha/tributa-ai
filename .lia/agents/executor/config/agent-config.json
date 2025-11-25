@@ -1,0 +1,65 @@
+{
+  "executor": {
+    "version": "1.0.0",
+    "mode": "frontend_development",
+    "role": "Frontend Specialist",
+    "environment": "development",
+    "execution": {
+      "enabled": true,
+      "interval_seconds": 120,
+      "max_concurrent_tasks": 3,
+      "timeout_minutes": 30
+    },
+    "capabilities": [
+      "react_development",
+      "typescript_implementation",
+      "syntax_error_fixing",
+      "component_creation",
+      "ui_implementation",
+      "state_management",
+      "routing_configuration",
+      "api_integration",
+      "form_handling",
+      "event_management"
+    ],
+    "restrictions": [
+      "no_backend_modifications",
+      "no_database_changes",
+      "no_security_configurations",
+      "focus_frontend_only"
+    ],
+    "monitoring": {
+      "health_check_interval": 30,
+      "log_rotation": true,
+      "max_log_size_mb": 10,
+      "metrics_collection": true
+    },
+    "integration": {
+      "lia_coordination": true,
+      "nexus_communication": true,
+      "atlas_collaboration": true,
+      "helios_validation": true
+    },
+    "frontend_focus": {
+      "primary_framework": "React 18",
+      "styling": "Tailwind CSS",
+      "state_management": "Zustand",
+      "routing": "React Router",
+      "build_tool": "Vite"
+    },
+    "priorities": [
+      "Connect MarketplacePage to purchase-flow.service.ts",
+      "Fix syntax errors preventing compilation",
+      "Implement UI components missing functionality",
+      "Ensure responsive design implementation",
+      "Optimize component performance"
+    ]
+  },
+  "project": {
+    "name": "TRIBUTA.AI",
+    "type": "React TypeScript Enterprise",
+    "framework": "Vite + React 18",
+    "architecture": "Repository → Service → Controller → Component",
+    "design_system": "Bloomberg-level Enterprise"
+  }
+}

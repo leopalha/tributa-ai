@@ -1,0 +1,16 @@
+{
+  "serviceName": "GENESIS-BACKGROUND",
+  "version": "1.0.0",
+  "status": "running",
+  "message": "Serviço em execução em background",
+  "timestamp": "2025-09-15T22:01:51.549Z",
+  "pid": 3340,
+  "uptime": 1.6915845,
+  "memoryUsage": {
+    "rss": 48705536,
+    "heapTotal": 5799936,
+    "heapUsed": 5097336,
+    "external": 1740564,
+    "arrayBuffers": 13915
+  }
+}

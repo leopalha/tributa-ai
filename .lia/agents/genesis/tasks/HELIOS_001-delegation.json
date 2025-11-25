@@ -1,0 +1,27 @@
+{
+  "id": "HELIOS_001",
+  "title": "Resolver warnings de build enterprise-grade",
+  "agent": "HELIOS",
+  "priority": "MEDIUM",
+  "description": "Corrigir JSX duplicate style e otimizar chunk size para produção",
+  "files": [
+    "src/components/layout/DashboardLayoutClean.tsx",
+    "webpack.config.js",
+    "package.json"
+  ],
+  "estimated_time": "2h",
+  "success_criteria": "Build limpo sem warnings, chunks otimizados < 500kB",
+  "business_impact": "MEDIUM - professional polish para investidores",
+  "validation_steps": [
+    "1. Executar npm run build e capturar warnings",
+    "2. Corrigir JSX duplicate style warnings",
+    "3. Otimizar chunk splitting",
+    "4. Validar build production-ready"
+  ],
+  "dependencies": [],
+  "status": "delegated",
+  "delegated_at": "2025-09-27T16:46:38.377Z",
+  "delegated_by": "LIA_COORDINATOR",
+  "auto_execution": true,
+  "coordination_mode": "LIA_SUPERVISED"
+}

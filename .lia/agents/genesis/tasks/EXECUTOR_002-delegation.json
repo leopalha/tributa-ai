@@ -1,0 +1,30 @@
+{
+  "id": "EXECUTOR_002",
+  "title": "Conectar MarketplacePage aos services implementados",
+  "agent": "EXECUTOR",
+  "priority": "HIGH",
+  "description": "Integrar UI com os 6 services críticos já implementados",
+  "files": [
+    "src/pages/dashboard/marketplace/MarketplacePage.tsx",
+    "src/services/marketplace.service.ts",
+    "src/services/wallet.service.ts",
+    "src/services/blockchain.service.ts"
+  ],
+  "estimated_time": "3h",
+  "success_criteria": "Marketplace 100% funcional com dados reais",
+  "business_impact": "HIGH - marketplace é core da demo para investidores",
+  "validation_steps": [
+    "1. Identificar services funcionais em src/services/",
+    "2. Conectar MarketplacePage aos services reais",
+    "3. Testar carregamento de títulos",
+    "4. Validar performance e UX"
+  ],
+  "dependencies": [
+    "EXECUTOR_001"
+  ],
+  "status": "delegated",
+  "delegated_at": "2025-09-27T16:46:38.374Z",
+  "delegated_by": "LIA_COORDINATOR",
+  "auto_execution": true,
+  "coordination_mode": "LIA_SUPERVISED"
+}

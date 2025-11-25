@@ -1,0 +1,28 @@
+{
+  "id": "ATLAS_001",
+  "title": "Finalizar design system Bloomberg-level",
+  "agent": "ATLAS",
+  "priority": "MEDIUM",
+  "description": "Garantir consistência visual enterprise para impressed investors",
+  "files": [
+    "src/styles/",
+    "src/components/ui/",
+    "src/components/marketplace/",
+    "src/pages/dashboard/"
+  ],
+  "estimated_time": "3h",
+  "success_criteria": "UI profissional investment-ready, consistência 100%",
+  "business_impact": "HIGH - first impression para investidores",
+  "validation_steps": [
+    "1. Audit visual consistency across platform",
+    "2. Standardize colors, fonts, spacing",
+    "3. Polish marketplace UI to Bloomberg standards",
+    "4. Test responsive design and accessibility"
+  ],
+  "dependencies": [],
+  "status": "delegated",
+  "delegated_at": "2025-09-27T16:46:38.378Z",
+  "delegated_by": "LIA_COORDINATOR",
+  "auto_execution": true,
+  "coordination_mode": "LIA_SUPERVISED"
+}

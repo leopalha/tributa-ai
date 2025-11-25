@@ -1,0 +1,55 @@
+{
+  "communication": {
+    "protocol": "json_file_based",
+    "channels": {
+      "lia_coordination": {
+        "path": ".lia/coordination/nexus-lia.json",
+        "frequency": "real_time",
+        "format": "status_updates"
+      },
+      "agent_delegation": {
+        "path": ".lia/coordination/task-delegation.json",
+        "frequency": "on_task_creation",
+        "format": "task_assignment"
+      },
+      "inter_agent": {
+        "path": ".lia/coordination/inter-agent-comm.json",
+        "frequency": "as_needed",
+        "format": "coordination_messages"
+      }
+    },
+    "message_formats": {
+      "task_delegation": {
+        "agent_id": "string",
+        "task_type": "string",
+        "priority": "high|medium|low",
+        "description": "string",
+        "deadline": "ISO_datetime",
+        "dependencies": "array",
+        "validation_criteria": "object"
+      },
+      "status_report": {
+        "agent_id": "nexus",
+        "timestamp": "ISO_datetime",
+        "status": "coordinating|delegating|monitoring|idle",
+        "active_coordinations": "number",
+        "pending_tasks": "number",
+        "system_health": "object"
+      },
+      "coordination_message": {
+        "from": "nexus",
+        "to": "string",
+        "type": "delegation|status_request|priority_change|conflict_resolution",
+        "content": "object",
+        "requires_response": "boolean"
+      }
+    },
+    "coordination_rules": {
+      "max_concurrent_delegations": 5,
+      "priority_override_authority": true,
+      "conflict_resolution_authority": true,
+      "resource_allocation_authority": true,
+      "emergency_coordination": true
+    }
+  }
+}

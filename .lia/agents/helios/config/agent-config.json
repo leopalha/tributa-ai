@@ -1,0 +1,64 @@
+{
+  "helios": {
+    "version": "1.0.0",
+    "mode": "security_validation",
+    "role": "Security Master",
+    "environment": "development",
+    "execution": {
+      "enabled": true,
+      "interval_seconds": 300,
+      "max_concurrent_tasks": 2,
+      "timeout_minutes": 60
+    },
+    "capabilities": [
+      "build_validation",
+      "security_audit",
+      "compliance_check",
+      "lgpd_validation",
+      "dependency_security",
+      "code_vulnerability_scan",
+      "penetration_testing",
+      "encryption_validation",
+      "authentication_review",
+      "authorization_check"
+    ],
+    "restrictions": [
+      "no_security_bypass",
+      "no_compliance_violation",
+      "enterprise_standards_only",
+      "audit_trail_required"
+    ],
+    "monitoring": {
+      "health_check_interval": 60,
+      "log_rotation": true,
+      "max_log_size_mb": 20,
+      "metrics_collection": true
+    },
+    "integration": {
+      "lia_coordination": true,
+      "nexus_communication": true,
+      "build_system_integration": true,
+      "security_tools_integration": true
+    },
+    "security_focus": {
+      "primary_standard": "Enterprise Security",
+      "compliance_frameworks": ["LGPD", "ISO27001", "OWASP"],
+      "build_validation": "npm run build",
+      "security_tools": ["ESLint Security", "Audit", "TypeScript Strict"]
+    },
+    "priorities": [
+      "Enterprise security validation",
+      "npm run build success validation",
+      "LGPD compliance enforcement",
+      "Vulnerability assessment",
+      "Security header implementation"
+    ]
+  },
+  "project": {
+    "name": "TRIBUTA.AI",
+    "type": "React TypeScript Enterprise",
+    "framework": "Vite + React 18",
+    "architecture": "Repository → Service → Controller → Component",
+    "design_system": "Bloomberg-level Enterprise"
+  }
+}

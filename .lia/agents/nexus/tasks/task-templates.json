@@ -1,0 +1,99 @@
+{
+  "templates": {
+    "delegate_frontend_fix": {
+      "type": "delegation",
+      "target_agent": "executor",
+      "template": {
+        "priority": "high",
+        "description": "Corrigir erro de sintaxe em {{file_path}}",
+        "validation": [
+          "Arquivo compila sem erros",
+          "Funcionalidade mantida intacta",
+          "Padrões de código seguidos"
+        ],
+        "estimated_duration": 15,
+        "dependencies": []
+      }
+    },
+    "delegate_build_validation": {
+      "type": "delegation",
+      "target_agent": "helios",
+      "template": {
+        "priority": "high",
+        "description": "Validar build após correções em {{component_name}}",
+        "validation": [
+          "npm run build executa sem erros",
+          "Testes passam",
+          "Security checks ok"
+        ],
+        "estimated_duration": 10,
+        "dependencies": ["frontend_fixes_completed"]
+      }
+    },
+    "delegate_ui_polish": {
+      "type": "delegation",
+      "target_agent": "atlas",
+      "template": {
+        "priority": "medium",
+        "description": "Otimizar UX de {{page_name}} para padrão Bloomberg",
+        "validation": [
+          "Design consistente",
+          "UX otimizada",
+          "Responsivo"
+        ],
+        "estimated_duration": 45,
+        "dependencies": ["component_functional"]
+      }
+    },
+    "delegate_code_cleanup": {
+      "type": "delegation",
+      "target_agent": "thanos",
+      "template": {
+        "priority": "low",
+        "description": "Limpar código desnecessário em {{directory}}",
+        "validation": [
+          "Imports não utilizados removidos",
+          "Código morto removido",
+          "Build ainda funciona"
+        ],
+        "estimated_duration": 20,
+        "dependencies": []
+      }
+    },
+    "coordinate_marketplace_flow": {
+      "type": "coordination",
+      "agents": ["executor", "atlas", "helios"],
+      "template": {
+        "priority": "high",
+        "description": "Coordenar implementação completa do fluxo Marketplace",
+        "sequence": [
+          "executor: Conectar UI aos services",
+          "atlas: Otimizar UX do fluxo",
+          "helios: Validar segurança e build"
+        ],
+        "validation": [
+          "Fluxo end-to-end funcional",
+          "UX Bloomberg-level",
+          "Security validated"
+        ]
+      }
+    }
+  },
+  "coordination_patterns": {
+    "parallel_execution": {
+      "description": "Executar tarefas independentes em paralelo",
+      "suitable_for": ["cleanup", "optimization", "independent_fixes"],
+      "max_concurrent": 3
+    },
+    "sequential_execution": {
+      "description": "Executar tarefas em sequência dependente",
+      "suitable_for": ["build_process", "integration_flow", "deployment"],
+      "dependency_tracking": true
+    },
+    "hybrid_execution": {
+      "description": "Combinar execução paralela e sequencial",
+      "suitable_for": ["complex_features", "system_integration"],
+      "orchestration_required": true
+    }
+  }
+}

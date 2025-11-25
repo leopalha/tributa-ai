@@ -1,0 +1,107 @@
+{
+  "genesis": {
+    "version": "2.0.0",
+    "mode": "autonomous",
+    "environment": "development",
+    "execution": {
+      "enabled": true,
+      "interval_seconds": 300,
+      "max_concurrent_tasks": 3,
+      "timeout_minutes": 30
+    },
+    "capabilities": [
+      "error_correction",
+      "performance_optimization",
+      "optimization",
+      "code_generation",
+      "style_fix",
+      "style_fixes",
+      "ui_improvement",
+      "security_audit",
+      "file_cleanup",
+      "analysis",
+      "type_checking",
+      "lint_fixing",
+      "bundle_optimization"
+    ],
+    "restrictions": [
+      "no_file_deletion_outside_temp",
+      "no_external_network_calls",
+      "no_system_modification",
+      "require_backup_before_major_changes"
+    ],
+    "monitoring": {
+      "health_check_interval": 30,
+      "log_rotation": true,
+      "max_log_size_mb": 10,
+      "metrics_collection": true
+    },
+    "integration": {
+      "lia_coordination": true,
+      "cursor_integration": true,
+      "git_operations": false,
+      "auto_commit": false
+    },
+    "performance": {
+      "memory_limit_mb": 512,
+      "cpu_limit_percent": 50,
+      "disk_usage_limit_mb": 100
+    },
+    "error_handling": {
+      "max_retries": 3,
+      "backoff_strategy": "exponential",
+      "fail_fast": false,
+      "recovery_mode": "auto"
+    }
+  },
+  "project": {
+    "name": "TRIBUTA.AI",
+    "type": "React TypeScript Enterprise",
+    "framework": "Vite + React 18",
+    "architecture": "Repository → Service → Controller → Component",
+    "design_system": "Bloomberg-level Enterprise",
+    "performance_targets": {
+      "bundle_size_kb": 500,
+      "initial_load_seconds": 2,
+      "type_coverage_percent": 95
+    }
+  },
+  "tasks": {
+    "auto_queue": [
+      {
+        "type": "error_correction",
+        "description": "Verificação automática de erros TypeScript",
+        "schedule": "every_10_minutes",
+        "priority": "high"
+      },
+      {
+        "type": "performance_optimization", 
+        "description": "Otimização de performance e bundle",
+        "schedule": "every_30_minutes",
+        "priority": "medium"
+      },
+      {
+        "type": "style_fix",
+        "description": "Correção de problemas de CSS/Tailwind",
+        "schedule": "every_hour",
+        "priority": "low"
+      }
+    ],
+    "manual_queue": [],
+    "completed": [],
+    "failed": []
+  },
+  "logging": {
+    "level": "INFO",
+    "include_timestamps": true,
+    "include_stack_traces": false,
+    "separate_error_log": true,
+    "console_output": true
+  },
+  "backup": {
+    "enabled": true,
+    "before_modifications": true,
+    "retention_days": 7,
+    "max_backups": 50
+  }
+}

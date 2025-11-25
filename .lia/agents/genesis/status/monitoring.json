@@ -1,0 +1,37 @@
+{
+  "startTime": "2025-11-20T04:03:36.615Z",
+  "status": "monitoring",
+  "healthChecks": {
+    "lastCheck": "2025-11-20T04:03:36.661Z",
+    "systemHealth": "healthy",
+    "metrics": {
+      "cpuUsage": 0,
+      "memoryUsage": 0,
+      "taskCompletionRate": 100,
+      "errorRate": 0,
+      "responseTime": 0,
+      "codeQualityScore": 95
+    }
+  },
+  "capabilities": [
+    "error_correction",
+    "performance_optimization",
+    "optimization",
+    "code_generation",
+    "style_fix",
+    "style_fixes",
+    "ui_improvement",
+    "security_audit",
+    "file_cleanup",
+    "analysis",
+    "type_checking",
+    "lint_fixing",
+    "bundle_optimization"
+  ],
+  "restrictions": [
+    "no_file_deletion_outside_temp",
+    "no_external_network_calls",
+    "no_system_modification",
+    "require_backup_before_major_changes"
+  ]
+}

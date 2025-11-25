@@ -1,0 +1,37 @@
+{
+  "workflow_name": "TRIBUTA.AI Autonomous Development",
+  "execution_mode": "continuous",
+  "agents_coordination": {
+    "EXECUTOR": {
+      "specialization": "React/TypeScript UI connections",
+      "current_focus": "PurchaseModal → purchase-flow.service connection",
+      "auto_assign": true
+    },
+    "THANOS": {
+      "specialization": "Code cleanup and optimization",
+      "current_focus": "Services consolidation 46→12",
+      "auto_assign": true
+    },
+    "HELIOS": {
+      "specialization": "Build validation and security",
+      "current_focus": "Build warnings resolution",
+      "auto_assign": true
+    },
+    "ATLAS": {
+      "specialization": "UI/UX Bloomberg-level",
+      "current_focus": "Design system finalization",
+      "auto_assign": true
+    },
+    "NEXUS": {
+      "specialization": "Architecture coordination",
+      "current_focus": "Overall system orchestration",
+      "auto_assign": false
+    }
+  },
+  "success_criteria": {
+    "build_status": "no_warnings",
+    "ui_connections": "100%",
+    "services_consolidated": true,
+    "investment_ready": true
+  }
+}

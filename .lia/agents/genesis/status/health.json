@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-09-15T23:31:25.715Z",
+  "status": "healthy",
+  "uptime": 5375.8574508,
+  "memoryUsage": {
+    "rss": 56143872,
+    "heapTotal": 10010624,
+    "heapUsed": 8878952,
+    "external": 2048257,
+    "arrayBuffers": 321608
+  },
+  "genesisAgentRunning": true,
+  "checks": {
+    "configAccessible": true,
+    "logsWritable": true,
+    "taskQueueAccessible": true
+  }
+}

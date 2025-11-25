@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-11-20T05:38:37.754Z",
+  "systemHealth": "healthy",
+  "checks": {
+    "configLoaded": true,
+    "logWritable": true,
+    "statusWritable": true,
+    "taskQueueAccessible": true
+  }
+}

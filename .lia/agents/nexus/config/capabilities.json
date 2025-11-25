@@ -1,0 +1,74 @@
+{
+  "capabilities": {
+    "architecture_design": {
+      "description": "Design and maintain system architecture",
+      "level": "expert",
+      "execution_time": "medium",
+      "dependencies": []
+    },
+    "team_coordination": {
+      "description": "Coordinate multiple agents and their tasks",
+      "level": "expert",
+      "execution_time": "fast",
+      "dependencies": ["agent_communication"]
+    },
+    "anti_duplication": {
+      "description": "Prevent duplicate work across agents",
+      "level": "expert",
+      "execution_time": "fast",
+      "dependencies": ["task_monitoring"]
+    },
+    "build_system_management": {
+      "description": "Oversee build processes and integration",
+      "level": "expert",
+      "execution_time": "medium",
+      "dependencies": ["helios_coordination"]
+    },
+    "code_review_coordination": {
+      "description": "Coordinate code review processes",
+      "level": "expert",
+      "execution_time": "medium",
+      "dependencies": ["quality_monitoring"]
+    },
+    "technical_decisions": {
+      "description": "Make high-level technical decisions",
+      "level": "expert",
+      "execution_time": "slow",
+      "dependencies": ["system_analysis"]
+    },
+    "resource_allocation": {
+      "description": "Allocate agents to optimal tasks",
+      "level": "expert",
+      "execution_time": "fast",
+      "dependencies": ["workload_analysis"]
+    },
+    "conflict_resolution": {
+      "description": "Resolve conflicts between agent tasks",
+      "level": "expert",
+      "execution_time": "medium",
+      "dependencies": ["priority_management"]
+    }
+  },
+  "coordination_matrix": {
+    "executor": {
+      "priority": "high",
+      "delegation_tasks": ["syntax_fixes", "ui_implementation", "component_creation"],
+      "communication_frequency": "real_time"
+    },
+    "helios": {
+      "priority": "high",
+      "delegation_tasks": ["build_validation", "security_checks", "compliance_audit"],
+      "communication_frequency": "on_build"
+    },
+    "atlas": {
+      "priority": "medium",
+      "delegation_tasks": ["ui_polish", "ux_optimization", "design_consistency"],
+      "communication_frequency": "on_ui_changes"
+    },
+    "thanos": {
+      "priority": "medium",
+      "delegation_tasks": ["code_cleanup", "optimization", "consolidation"],
+      "communication_frequency": "scheduled"
+    }
+  }
+}

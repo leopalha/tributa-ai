@@ -1,0 +1,152 @@
+{
+  "mission": "TRIBUTA.AI Platform Completion - Investment Ready",
+  "coordination_mode": "LIA_SUPERVISED",
+  "auto_execution": true,
+  "timestamp": "2025-09-27T16:40:00.000Z",
+  "priority_sequence": ["EXECUTOR_001", "EXECUTOR_002", "THANOS_001", "HELIOS_001", "ATLAS_001"],
+
+  "critical_tasks": {
+    "EXECUTOR_001": {
+      "title": "Conectar PurchaseModal ao purchase-flow.service",
+      "priority": "CRITICAL",
+      "description": "Substituir alert() por connection real ao service existente",
+      "files": [
+        "src/components/marketplace/PurchaseModal.tsx",
+        "src/services/purchase-flow.service.ts"
+      ],
+      "estimated_time": "2h",
+      "success_criteria": "Usuários podem comprar títulos reais - transação funcional",
+      "agent": "EXECUTOR",
+      "auto_start": true,
+      "status": "pending",
+      "business_impact": "CRITICAL - sem isso investidores não veem funcionalidade real",
+      "validation_steps": [
+        "1. Verificar purchase-flow.service.ts existe e está funcional",
+        "2. Substituir alert() por chamada real ao service",
+        "3. Testar fluxo completo de compra",
+        "4. Validar integração com wallet"
+      ]
+    },
+
+    "EXECUTOR_002": {
+      "title": "Conectar MarketplacePage aos services implementados",
+      "priority": "HIGH",
+      "description": "Integrar UI com os 6 services críticos já implementados",
+      "files": [
+        "src/pages/dashboard/marketplace/MarketplacePage.tsx",
+        "src/services/marketplace.service.ts",
+        "src/services/wallet.service.ts",
+        "src/services/blockchain.service.ts"
+      ],
+      "estimated_time": "3h",
+      "success_criteria": "Marketplace 100% funcional com dados reais",
+      "agent": "EXECUTOR",
+      "auto_start": true,
+      "status": "pending",
+      "business_impact": "HIGH - marketplace é core da demo para investidores",
+      "dependencies": ["EXECUTOR_001"],
+      "validation_steps": [
+        "1. Identificar services funcionais em src/services/",
+        "2. Conectar MarketplacePage aos services reais",
+        "3. Testar carregamento de títulos",
+        "4. Validar performance e UX"
+      ]
+    },
+
+    "THANOS_001": {
+      "title": "Consolidar services duplicados 46→12",
+      "priority": "HIGH",
+      "description": "Manter apenas services funcionais, remover duplicações",
+      "files": ["src/services/"],
+      "estimated_time": "4h",
+      "success_criteria": "Build otimizado, performance melhorada, mantendo funcionalidade",
+      "agent": "THANOS",
+      "auto_start": true,
+      "status": "pending",
+      "business_impact": "MEDIUM - otimização para performance e manutenibilidade",
+      "dependencies": ["EXECUTOR_001", "EXECUTOR_002"],
+      "validation_steps": [
+        "1. Audit completo dos 46 services",
+        "2. Identificar duplicações e conflitos",
+        "3. Consolidar mantendo funcionalidades críticas",
+        "4. Testar que nada quebrou após limpeza"
+      ]
+    },
+
+    "HELIOS_001": {
+      "title": "Resolver warnings de build enterprise-grade",
+      "priority": "MEDIUM",
+      "description": "Corrigir JSX duplicate style e otimizar chunk size para produção",
+      "files": [
+        "src/components/layout/DashboardLayoutClean.tsx",
+        "webpack.config.js",
+        "package.json"
+      ],
+      "estimated_time": "2h",
+      "success_criteria": "Build limpo sem warnings, chunks otimizados < 500kB",
+      "agent": "HELIOS",
+      "auto_start": true,
+      "status": "pending",
+      "business_impact": "MEDIUM - professional polish para investidores",
+      "validation_steps": [
+        "1. Executar npm run build e capturar warnings",
+        "2. Corrigir JSX duplicate style warnings",
+        "3. Otimizar chunk splitting",
+        "4. Validar build production-ready"
+      ]
+    },
+
+    "ATLAS_001": {
+      "title": "Finalizar design system Bloomberg-level",
+      "priority": "MEDIUM",
+      "description": "Garantir consistência visual enterprise para impressed investors",
+      "files": [
+        "src/styles/",
+        "src/components/ui/",
+        "src/components/marketplace/",
+        "src/pages/dashboard/"
+      ],
+      "estimated_time": "3h",
+      "success_criteria": "UI profissional investment-ready, consistência 100%",
+      "agent": "ATLAS",
+      "auto_start": true,
+      "status": "pending",
+      "business_impact": "HIGH - first impression para investidores",
+      "validation_steps": [
+        "1. Audit visual consistency across platform",
+        "2. Standardize colors, fonts, spacing",
+        "3. Polish marketplace UI to Bloomberg standards",
+        "4. Test responsive design and accessibility"
+      ]
+    }
+  },
+
+  "coordination_rules": {
+    "executor_priority": "UI connections first - critical for functionality",
+    "thanos_after_executor": "Wait for UI stable before cleanup to avoid breaking connections",
+    "parallel_execution": ["HELIOS_001", "ATLAS_001"],
+    "validation_sequence": "EXECUTOR → THANOS → HELIOS → ATLAS",
+    "escalation_rules": {
+      "task_blocked_2h": "escalate_to_LIA",
+      "critical_task_failed": "immediate_LIA_intervention",
+      "dependency_conflict": "coordinator_resolution"
+    },
+    "success_gates": {
+      "gate_1": "EXECUTOR tasks complete - core functionality working",
+      "gate_2": "THANOS cleanup complete - optimized performance",
+      "gate_3": "HELIOS + ATLAS complete - production ready",
+      "final_gate": "Full system test - investment presentation ready"
+    }
+  },
+
+  "business_objectives": {
+    "investor_demo_ready": "6-8 hours estimated completion",
+    "roi_target": "R$ 2-5M investment potential",
+    "success_metrics": {
+      "functional_score": "95%",
+      "visual_score": "Bloomberg-level",
+      "performance_score": "Enterprise-grade",
+      "investment_readiness": "Grade A+"
+    }
+  }
+}

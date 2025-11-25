@@ -1,0 +1,62 @@
+{
+  "version": "2.0.0",
+  "lastUpdate": "2025-09-15T15:45:00.000Z",
+  "totalTasks": 3,
+  "tasks": [
+    {
+      "id": "fix-auth-loops-001",
+      "type": "error_correction",
+      "priority": "high",
+      "description": "Corrigir loops infinitos de autenticação no console",
+      "status": "pending",
+      "createdAt": "2025-09-15T15:45:00.000Z",
+      "assignedTo": "GENESIS-REAL",
+      "details": {
+        "files": [
+          "src/hooks/useAuth.ts",
+          "src/components/providers/AuthProvider.tsx"
+        ],
+        "issues": [
+          "Multiple useEffect hooks causing infinite loops",
+          "Redundant auth checks in AuthProvider"
+        ]
+      }
+    },
+    {
+      "id": "optimize-bundle-002",
+      "type": "performance_optimization",
+      "priority": "medium",
+      "description": "Otimizar tamanho do bundle e performance de carregamento",
+      "status": "pending",
+      "createdAt": "2025-09-15T15:45:00.000Z",
+      "assignedTo": "GENESIS-REAL",
+      "details": {
+        "targets": [
+          "Reduzir bundle size para < 500KB",
+          "Implementar lazy loading",
+          "Otimizar imports"
+        ]
+      }
+    },
+    {
+      "id": "fix-styling-003",
+      "type": "style_fix",
+      "priority": "high",
+      "description": "Corrigir problemas de carregamento de estilos Tailwind",
+      "status": "pending",
+      "createdAt": "2025-09-15T15:45:00.000Z",
+      "assignedTo": "GENESIS-REAL",
+      "details": {
+        "files": [
+          "postcss.config.js",
+          "tailwind.config.js",
+          "src/styles/globals.css"
+        ],
+        "issues": [
+          "PostCSS plugin configuration",
+          "Tailwind directives loading"
+        ]
+      }
+    }
+  ]
+}

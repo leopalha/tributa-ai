@@ -1,0 +1,135 @@
+{
+  "version": "4.2",
+  "mode": "AUTONOMOUS_REAL",
+  "lastUpdate": "2025-09-21",
+  "description": "Configuração REAL para GENESIS Enterprise substituir LIA completamente",
+
+  "systemConfig": {
+    "projectPath": "D:/tributa-ai",
+    "autoStart": true,
+    "autoExecute": true,
+    "realFileModification": true,
+    "port": 3003,
+    "dashboardEnabled": true,
+    "openRouterEnabled": true,
+    "localExecutionEnabled": true
+  },
+
+  "autonomousMode": {
+    "enabled": true,
+    "scanInterval": 5000,
+    "autoFixErrors": true,
+    "autoOptimize": true,
+    "autoTest": true,
+    "autoBuild": true,
+    "requiresApproval": false
+  },
+
+  "realCapabilities": {
+    "fileSystem": {
+      "read": true,
+      "write": true,
+      "delete": true,
+      "create": true,
+      "execute": true
+    },
+    "codeModification": {
+      "javascript": true,
+      "typescript": true,
+      "react": true,
+      "css": true,
+      "html": true,
+      "json": true,
+      "markdown": true
+    },
+    "systemCommands": {
+      "npm": true,
+      "git": true,
+      "build": true,
+      "test": true,
+      "deploy": false
+    }
+  },
+
+  "openRouterConfig": {
+    "enabled": true,
+    "apiKey": "${OPENROUTER_API_KEY}",
+    "models": {
+      "primary": "anthropic/claude-3-sonnet",
+      "fallback": "openai/gpt-4",
+      "fast": "anthropic/claude-3-haiku"
+    },
+    "costLimit": 50.0,
+    "requestsPerMinute": 60
+  },
+
+  "localExecutionConfig": {
+    "enabled": true,
+    "useBuiltInAI": true,
+    "localModel": "code-llama",
+    "fallbackToAPI": true
+  },
+
+  "tasksConfig": {
+    "sources": [
+      ".lia/agents/genesis/tasks/task-queue.json",
+      ".lia/agents/*/tasks/task-queue.json",
+      "monitoring/detected-issues.json"
+    ],
+    "autoAcceptTasks": true,
+    "priorities": {
+      "critical_error": 1,
+      "build_failure": 2,
+      "syntax_error": 3,
+      "optimization": 4,
+      "feature": 5,
+      "cleanup": 6
+    }
+  },
+
+  "agentsConfig": {
+    "allAgentsActive": true,
+    "coordinationMode": "autonomous",
+    "conflictResolution": "auto",
+    "parallelExecution": true,
+    "maxConcurrent": 5
+  },
+
+  "monitoringConfig": {
+    "watchFiles": [
+      "src/**/*.tsx",
+      "src/**/*.ts",
+      "src/**/*.css"
+    ],
+    "detectIssues": true,
+    "autoCreateTasks": true,
+    "reportInterval": 60000
+  },
+
+  "communicationConfig": {
+    "webSocketEnabled": true,
+    "apiEnabled": true,
+    "dashboardEnabled": true,
+    "cliEnabled": true,
+    "endpoints": {
+      "dashboard": "http://localhost:3003",
+      "api": "http://localhost:3003/api",
+      "ws": "ws://localhost:3003/ws"
+    }
+  },
+
+  "securityConfig": {
+    "protectedFiles": [
+      ".env",
+      "*.key",
+      "*.pem",
+      "secrets.json"
+    ],
+    "allowedPaths": [
+      "D:/tributa-ai/src",
+      "D:/tributa-ai/.lia"
+    ],
+    "requireAuth": false,
+    "apiKey": "genesis-enterprise-key-2025"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "critical_tasks": [
+    {
+      "id": "fix-purchase-flow-ui-connection",
+      "priority": "CRITICAL",
+      "description": "Conectar PurchaseModal.tsx ao purchase-flow.service.ts existente",
+      "agent_target": "EXECUTOR",
+      "estimated_time": "2h",
+      "status": "pending"
+    },
+    {
+      "id": "consolidate-services",
+      "priority": "HIGH",
+      "description": "Consolidar 46 services para 12 conforme planejado",
+      "agent_target": "THANOS",
+      "estimated_time": "4h",
+      "status": "pending"
+    },
+    {
+      "id": "ui-service-integration",
+      "priority": "HIGH",
+      "description": "Conectar MarketplacePage aos services reais implementados",
+      "agent_target": "EXECUTOR",
+      "estimated_time": "3h",
+      "status": "pending"
+    },
+    {
+      "id": "build-optimization",
+      "priority": "MEDIUM",
+      "description": "Otimizar build warnings e chunk size",
+      "agent_target": "HELIOS",
+      "estimated_time": "2h",
+      "status": "pending"
+    },
+    {
+      "id": "design-system-cleanup",
+      "priority": "MEDIUM",
+      "description": "Finalizar design system unificado Bloomberg-level",
+      "agent_target": "ATLAS",
+      "estimated_time": "3h",
+      "status": "pending"
+    }
+  ],
+  "coordination_mode": "autonomous",
+  "auto_delegation": true,
+  "monitoring_interval": 300000
+}

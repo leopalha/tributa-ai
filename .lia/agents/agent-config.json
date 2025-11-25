@@ -1,0 +1,246 @@
+{
+  "version": "1.0.0",
+  "orchestration": {
+    "coordinator": "NEXUS",
+    "max_concurrent_agents": 3,
+    "communication_protocol": "event-driven",
+    "conflict_resolution": "NEXUS-mediated"
+  },
+  
+  "agents": {
+    "NEXUS": {
+      "id": "nexus-001",
+      "type": "coordinator",
+      "model": "claude-3-opus",
+      "temperature": 0.3,
+      "max_tokens": 4096,
+      "capabilities": [
+        "architecture_decisions",
+        "agent_coordination",
+        "conflict_resolution",
+        "strategic_planning",
+        "code_review"
+      ],
+      "restrictions": [
+        "cannot_deploy_directly",
+        "must_document_decisions",
+        "requires_consensus_for_breaking_changes"
+      ],
+      "prompt_template": "You are NEXUS, the senior CTO-AI of TRIBUTA.AI. Your role is to coordinate other agents, make architectural decisions, and ensure code quality. Always follow the rules in .lia/rules/ directory."
+    },
+    
+    "EXECUTOR": {
+      "id": "executor-001",
+      "type": "developer",
+      "model": "claude-3-sonnet",
+      "temperature": 0.5,
+      "max_tokens": 8192,
+      "capabilities": [
+        "react_development",
+        "typescript_programming",
+        "api_integration",
+        "component_creation",
+        "testing"
+      ],
+      "restrictions": [
+        "must_follow_architecture_patterns",
+        "cannot_modify_core_infrastructure",
+        "requires_nexus_approval_for_new_dependencies"
+      ],
+      "prompt_template": "You are EXECUTOR, a senior React/TypeScript developer. Build components and features following the patterns in .lia/rules/. Focus on clean, performant, and maintainable code."
+    },
+    
+    "HELIOS": {
+      "id": "helios-001",
+      "type": "security",
+      "model": "claude-3-sonnet",
+      "temperature": 0.2,
+      "max_tokens": 4096,
+      "capabilities": [
+        "security_audit",
+        "authentication_implementation",
+        "rate_limiting",
+        "vulnerability_scanning",
+        "cors_configuration"
+      ],
+      "restrictions": [
+        "cannot_reduce_security_levels",
+        "must_log_all_security_changes",
+        "requires_nexus_approval_for_auth_changes"
+      ],
+      "prompt_template": "You are HELIOS, a security engineer. Implement and audit security measures. Never compromise on security. Follow OWASP best practices."
+    },
+    
+    "ATLAS": {
+      "id": "atlas-001",
+      "type": "designer",
+      "model": "claude-3-sonnet",
+      "temperature": 0.7,
+      "max_tokens": 4096,
+      "capabilities": [
+        "ui_design",
+        "ux_optimization",
+        "animation_creation",
+        "responsive_design",
+        "accessibility"
+      ],
+      "restrictions": [
+        "must_follow_design_system",
+        "cannot_break_existing_layouts",
+        "requires_executor_for_implementation"
+      ],
+      "prompt_template": "You are ATLAS, a UI/UX designer. Create beautiful, intuitive interfaces following the Enterprise Design System. Focus on user experience and accessibility."
+    },
+    
+    "THANOS": {
+      "id": "thanos-001",
+      "type": "optimizer",
+      "model": "claude-3-haiku",
+      "temperature": 0.1,
+      "max_tokens": 2048,
+      "capabilities": [
+        "code_cleanup",
+        "dead_code_removal",
+        "dependency_optimization",
+        "bundle_size_reduction",
+        "performance_optimization"
+      ],
+      "restrictions": [
+        "cannot_remove_used_code",
+        "must_run_tests_before_cleanup",
+        "requires_nexus_approval_for_major_refactors"
+      ],
+      "prompt_template": "You are THANOS, a code optimizer. Remove unnecessary code, optimize performance, and keep the codebase clean. Always verify nothing breaks before removing code."
+    },
+    
+    "GENESIS": {
+      "id": "genesis-001",
+      "type": "autoprogrammer",
+      "model": "claude-3-sonnet",
+      "temperature": 0.4,
+      "max_tokens": 8192,
+      "location": "cloud",
+      "operational_mode": "autonomous",
+      "capabilities": [
+        "autoprogramming",
+        "self_correction",
+        "continuous_evolution",
+        "autonomous_development",
+        "bug_detection",
+        "performance_optimization",
+        "code_generation",
+        "pattern_learning"
+      ],
+      "restrictions": [
+        "cannot_modify_protected_files",
+        "must_follow_enterprise_patterns",
+        "requires_lia_coordination",
+        "cannot_make_breaking_changes_without_approval"
+      ],
+      "coordination": {
+        "receives_from": "LIA",
+        "reports_to": "LIA",
+        "escalates_to": "NEXUS",
+        "communication_protocol": "file_based",
+        "execution_path": ".lia/cloud/genesis/start-genesis.js"
+      },
+      "prompt_template": "You are GENESIS, an autonomous cloud-based agent. Develop, optimize, and self-correct code continuously. Follow TRIBUTA.AI enterprise patterns and coordinate with LIA for task assignment."
+    }
+  },
+  
+  "delegation_rules": [
+    {
+      "condition": "task_type == 'frontend_component'",
+      "assign_to": "EXECUTOR",
+      "fallback": "NEXUS"
+    },
+    {
+      "condition": "task_type == 'security_issue'",
+      "assign_to": "HELIOS",
+      "escalate_to": "NEXUS"
+    },
+    {
+      "condition": "task_type == 'ui_refinement'",
+      "assign_to": "ATLAS",
+      "requires": ["EXECUTOR"]
+    },
+    {
+      "condition": "task_type == 'code_cleanup'",
+      "assign_to": "THANOS",
+      "requires_approval": "NEXUS"
+    },
+    {
+      "condition": "task_type == 'autonomous_development'",
+      "assign_to": "GENESIS",
+      "coordinator": "LIA",
+      "escalate_to": "NEXUS"
+    },
+    {
+      "condition": "task_type == 'error_correction' && auto_fix == true",
+      "assign_to": "GENESIS",
+      "coordinator": "LIA"
+    },
+    {
+      "condition": "task_type == 'continuous_optimization'",
+      "assign_to": "GENESIS",
+      "coordinator": "LIA",
+      "consult": ["THANOS"]
+    },
+    {
+      "condition": "task_complexity == 'high' || breaking_change == true",
+      "assign_to": "NEXUS",
+      "consult": ["EXECUTOR", "HELIOS", "GENESIS"]
+    }
+  ],
+  
+  "communication_protocols": {
+    "handoff": {
+      "required_fields": [
+        "task_id",
+        "from_agent",
+        "to_agent",
+        "context",
+        "files_modified",
+        "next_steps"
+      ],
+      "format": "json",
+      "storage": ".lia/jobs/handoffs/"
+    },
+    
+    "conflict": {
+      "escalation_path": ["direct_resolution", "NEXUS_mediation", "CEO_decision"],
+      "timeout": 300,
+      "documentation_required": true
+    },
+    
+    "completion": {
+      "validation": [
+        "tests_passing",
+        "lint_clean",
+        "build_successful",
+        "documentation_updated"
+      ],
+      "notification": "all_agents"
+    }
+  },
+  
+  "performance_metrics": {
+    "track": [
+      "tasks_completed",
+      "errors_introduced",
+      "code_quality_score",
+      "time_to_completion",
+      "rework_rate"
+    ],
+    "report_frequency": "weekly",
+    "storage": ".lia/memory/metrics/"
+  },
+  
+  "learning_config": {
+    "pattern_recognition": true,
+    "error_learning": true,
+    "success_reinforcement": true,
+    "rule_updates": "automatic_with_review",
+    "memory_retention": "90_days"
+  }
+}

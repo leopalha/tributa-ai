@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 LIA Genesis - Dashboard Enterprise</title>
+    <style>
+        /* 📊 BLOOMBERG-LEVEL STYLING */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+            --accent-blue: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-orange: #ff8800;
+            --accent-red: #ff4444;
+            --accent-purple: #8844ff;
+            --border-color: #333333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* 🎯 HEADER ENTERPRISE */
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+            padding: 16px 24px;
+            border-bottom: 2px solid var(--accent-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .system-status {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online { background: var(--accent-green); }
+        .status-dot.warning { background: var(--accent-orange); }
+        .status-dot.error { background: var(--accent-red); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* 📊 MAIN GRID LAYOUT */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 80px);
+        }
+
+        .widget {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .widget:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.1);
+        }
+
+        .widget h3 {
+            color: var(--accent-blue);
+            margin-bottom: 16px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        /* 🤖 AGENTS OVERVIEW */
+        .agents-overview {
+            grid-column: 1 / 2;
+            grid-row: 1 / 3;
+        }
+
+        .agent-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-blue);
+            transition: all 0.2s ease;
+        }
+
+        .agent-card:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .agent-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .agent-name {
+            font-weight: bold;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .agent-role {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .agent-metrics {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            display: block;
+            font-weight: bold;
+            color: var(--accent-green);
+            font-size: 14px;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* ⚡ PERFORMANCE METRICS */
+        .performance-metrics {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+        }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .performance-card {
+            background: var(--bg-tertiary);
+            padding: 16px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .performance-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-green);
+            display: block;
+        }
+
+        .performance-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* 💰 COST TRACKING */
+        .cost-tracking {
+            grid-column: 3 / 4;
+            grid-row: 1 / 2;
+        }
+
+        .cost-overview {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .cost-metric {
+            text-align: center;
+        }
+
+        .cost-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent-orange);
+        }
+
+        .cost-trend {
+            font-size: 12px;
+            color: var(--accent-green);
+            margin-top: 4px;
+        }
+
+        .cost-breakdown {
+            background: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        /* 📈 REAL-TIME CHART */
+        .realtime-chart {
+            grid-column: 2 / 4;
+            grid-row: 2 / 3;
+        }
+
+        .chart-container {
+            height: 200px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-line {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            height: 150px;
+            background: linear-gradient(
+                to right,
+                transparent 0%,
+                rgba(0, 212, 255, 0.1) 50%,
+                transparent 100%
+            );
+            border-top: 2px solid var(--accent-blue);
+            animation: chartFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes chartFlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; transform: scaleY(1.1); }
+        }
+
+        /* 🚨 ALERTS PANEL */
+        .alerts-panel {
+            grid-column: 1 / 2;
+            grid-row: 3 / 4;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-orange);
+        }
+
+        .alert-item.critical {
+            border-left-color: var(--accent-red);
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .alert-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .alert-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* 🔧 OPTIMIZATION PANEL */
+        .optimization-panel {
+            grid-column: 2 / 3;
+            grid-row: 3 / 4;
+        }
+
+        .optimization-item {
+            background: var(--bg-tertiary);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-purple);
+        }
+
+        .optimization-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .optimization-impact {
+            font-size: 11px;
+            color: var(--accent-green);
+        }
+
+        .optimization-confidence {
+            font-size: 11px;
+            color: var(--accent-blue);
+            float: right;
+        }
+
+        /* 🌐 COMMUNICATION STATUS */
+        .communication-status {
+            grid-column: 3 / 4;
+            grid-row: 3 / 4;
+        }
+
+        .comm-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .comm-stat {
+            background: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .comm-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+
+        .comm-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .channel-list {
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .channel-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 12px;
+        }
+
+        .channel-name {
+            color: var(--text-secondary);
+        }
+
+        .channel-activity {
+            color: var(--accent-green);
+        }
+
+        /* 🎮 CONTROL BUTTONS */
+        .control-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            padding: 12px 20px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .control-btn:hover {
+            background: var(--accent-green);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .control-btn.danger {
+            background: var(--accent-red);
+        }
+
+        .control-btn.danger:hover {
+            background: #cc0000;
+        }
+
+        /* 📱 RESPONSIVE */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+
+            .agents-overview {
+                grid-column: 1 / 3;
+                grid-row: 1 / 2;
+            }
+
+            .realtime-chart {
+                grid-column: 1 / 3;
+                grid-row: 2 / 3;
+            }
+        }
+
+        /* 🌟 LOADING ANIMATION */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--bg-tertiary);
+            border-radius: 50%;
+            border-top-color: var(--accent-blue);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 🎯 CONNECTION STATUS */
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        .connection-status.connected {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .connection-status.disconnected {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        /* 📊 SCROLLBAR STYLING */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- 🎯 HEADER ENTERPRISE -->
+    <header class="header">
+        <h1>🧠 LIA Genesis - Enterprise Command Center</h1>
+        <div class="system-status">
+            <div class="status-indicator">
+                <div class="status-dot online"></div>
+                <span>Sistema Online</span>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot online"></div>
+                <span>9 Agentes Ativos</span>
+            </div>
+            <div class="status-indicator">
+                <div class="loading"></div>
+                <span>Processando</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 🔗 CONNECTION STATUS -->
+    <div class="connection-status connected" id="connectionStatus">
+        ● WebSocket Conectado
+    </div>
+
+    <!-- 📊 MAIN DASHBOARD GRID -->
+    <main class="dashboard-grid">
+        <!-- 🤖 AGENTS OVERVIEW -->
+        <section class="widget agents-overview">
+            <h3>🤖 Agentes Especializados</h3>
+            <div id="agentsContainer">
+                <!-- Agentes serão carregados dinamicamente -->
+            </div>
+        </section>
+
+        <!-- ⚡ PERFORMANCE METRICS -->
+        <section class="widget performance-metrics">
+            <h3>⚡ Performance em Tempo Real</h3>
+            <div class="performance-grid">
+                <div class="performance-card">
+                    <span class="performance-value" id="avgResponseTime">234ms</span>
+                    <div class="performance-label">Tempo Resposta</div>
+                </div>
+                <div class="performance-card">
+                    <span class="performance-value" id="successRate">98.7%</span>
+                    <div class="performance-label">Taxa Sucesso</div>
+                </div>
+                <div class="performance-card">
+                    <span class="performance-value" id="throughput">156</span>
+                    <div class="performance-label">Tasks/hora</div>
+                </div>
+                <div class="performance-card">
+                    <span class="performance-value" id="uptime">24h 12m</span>
+                    <div class="performance-label">Uptime</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 💰 COST TRACKING -->
+        <section class="widget cost-tracking">
+            <h3>💰 Controle de Custos</h3>
+            <div class="cost-overview">
+                <div class="cost-metric">
+                    <div class="cost-value" id="totalCost">$23.45</div>
+                    <div class="cost-trend">↗ +12% hoje</div>
+                </div>
+                <div class="cost-metric">
+                    <div class="cost-value" id="hourlyCost">$0.98</div>
+                    <div class="cost-trend">↘ -5% última hora</div>
+                </div>
+            </div>
+            <div class="cost-breakdown">
+                <div class="cost-item">
+                    <span>GPT-4 Turbo</span>
+                    <span>$8.32</span>
+                </div>
+                <div class="cost-item">
+                    <span>Claude-3 Opus</span>
+                    <span>$6.78</span>
+                </div>
+                <div class="cost-item">
+                    <span>Claude-3 Sonnet</span>
+                    <span>$4.23</span>
+                </div>
+                <div class="cost-item">
+                    <span>Outros</span>
+                    <span>$4.12</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 📈 REAL-TIME CHART -->
+        <section class="widget realtime-chart">
+            <h3>📈 Atividade em Tempo Real</h3>
+            <div class="chart-container">
+                <div class="chart-line"></div>
+                <canvas id="activityChart" width="600" height="150"></canvas>
+            </div>
+        </section>
+
+        <!-- 🚨 ALERTS PANEL -->
+        <section class="widget alerts-panel">
+            <h3>🚨 Alertas Ativos</h3>
+            <div id="alertsContainer">
+                <!-- Alertas serão carregados dinamicamente -->
+            </div>
+        </section>
+
+        <!-- 🔧 OPTIMIZATION PANEL -->
+        <section class="widget optimization-panel">
+            <h3>🔧 Otimizações Disponíveis</h3>
+            <div id="optimizationsContainer">
+                <!-- Otimizações serão carregadas dinamicamente -->
+            </div>
+        </section>
+
+        <!-- 🌐 COMMUNICATION STATUS -->
+        <section class="widget communication-status">
+            <h3>🌐 Status Comunicação</h3>
+            <div class="comm-stats">
+                <div class="comm-stat">
+                    <div class="comm-value" id="activeConnections">9</div>
+                    <div class="comm-label">Conexões</div>
+                </div>
+                <div class="comm-stat">
+                    <div class="comm-value" id="messagesCount">1,247</div>
+                    <div class="comm-label">Mensagens</div>
+                </div>
+            </div>
+            <div class="channel-list" id="channelsList">
+                <!-- Canais serão carregados dinamicamente -->
+            </div>
+        </section>
+    </main>
+
+    <!-- 🎮 CONTROL BUTTONS -->
+    <div class="control-buttons">
+        <button class="control-btn" onclick="startOptimization()">🚀 Otimizar</button>
+        <button class="control-btn" onclick="restartAgents()">🔄 Reiniciar</button>
+        <button class="control-btn danger" onclick="emergencyStop()">🛑 Emergência</button>
+    </div>
+
+    <script>
+        // 🌐 WebSocket Connection
+        let ws = null;
+        let isConnected = false;
+
+        // 📊 Data Storage
+        let agentsData = new Map();
+        let metricsData = [];
+        let alertsData = [];
+        let optimizationsData = [];
+
+        // 🔧 Configuração dinâmica - detecta se está em produção ou local
+        function getServerUrl() {
+            // Se estiver rodando em localhost, usa localhost
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                return {
+                    http: 'http://localhost:3003',
+                    ws: 'ws://localhost:3003'
+                };
+            }
+            // Em produção (Railway), usa a URL atual
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const httpProtocol = window.location.protocol;
+            return {
+                http: `${httpProtocol}//${window.location.host}`,
+                ws: `${protocol}//${window.location.host}`
+            };
+        }
+
+        const SERVER_URL = getServerUrl();
+        console.log('🔧 Server URL:', SERVER_URL);
+
+        // 🚀 Initialize Dashboard
+        function initializeDashboard() {
+            console.log('🚀 Inicializando Dashboard Enterprise...');
+            console.log(`📡 Conectando em: ${SERVER_URL.ws}`);
+
+            connectWebSocket();
+            loadInitialData();
+            startDataRefresh();
+
+            console.log('✅ Dashboard Enterprise inicializado');
+        }
+
+        // 🔗 WebSocket Connection
+        function connectWebSocket() {
+            try {
+                ws = new WebSocket(SERVER_URL.ws);
+
+                ws.onopen = function() {
+                    isConnected = true;
+                    updateConnectionStatus(true);
+                    console.log('🔗 WebSocket conectado');
+
+                    // Registra dashboard como cliente
+                    ws.send(JSON.stringify({
+                        type: 'register_agent',
+                        data: {
+                            agentId: 'dashboard',
+                            agentName: 'Enterprise Dashboard',
+                            capabilities: ['monitoring', 'visualization'],
+                            role: 'dashboard'
+                        }
+                    }));
+
+                    // Subscribe nos canais importantes
+                    subscribeToChannels();
+                };
+
+                ws.onmessage = function(event) {
+                    const message = JSON.parse(event.data);
+                    handleWebSocketMessage(message);
+                };
+
+                ws.onclose = function() {
+                    isConnected = false;
+                    updateConnectionStatus(false);
+                    console.log('🔌 WebSocket desconectado');
+
+                    // Reconecta após 5 segundos
+                    setTimeout(connectWebSocket, 5000);
+                };
+
+                ws.onerror = function(error) {
+                    console.error('❌ Erro WebSocket:', error);
+                    updateConnectionStatus(false);
+                };
+
+            } catch (error) {
+                console.error('❌ Erro ao conectar WebSocket:', error);
+                updateConnectionStatus(false);
+
+                // Tenta reconectar
+                setTimeout(connectWebSocket, 5000);
+            }
+        }
+
+        // 📨 Handle WebSocket Messages
+        function handleWebSocketMessage(message) {
+            switch (message.type) {
+                case 'metrics:update':
+                    updateMetricsDisplay(message.data);
+                    break;
+                case 'agent:activity':
+                    updateAgentActivity(message.data);
+                    break;
+                case 'alert:created':
+                    addNewAlert(message.data);
+                    break;
+                case 'optimization:available':
+                    addNewOptimization(message.data);
+                    break;
+                case 'system:status':
+                    updateSystemStatus(message.data);
+                    break;
+                default:
+                    console.log('📨 Mensagem recebida:', message);
+            }
+        }
+
+        // 📊 Subscribe to Channels
+        function subscribeToChannels() {
+            const channels = ['system', 'coordination', 'performance', 'security'];
+
+            channels.forEach(channel => {
+                ws.send(JSON.stringify({
+                    type: 'subscribe_channel',
+                    data: { channelId: channel }
+                }));
+            });
+        }
+
+        // 🔄 Load Initial Data
+        function loadInitialData() {
+            // Initialize agents data
+            const agents = [
+                { id: 'lia', name: 'LIA Coordenadora', role: 'orchestrator', status: 'active' },
+                { id: 'nexus', name: 'NEXUS CTO-AI', role: 'coordinator', status: 'active' },
+                { id: 'executor', name: 'EXECUTOR Frontend', role: 'frontend', status: 'active' },
+                { id: 'helios', name: 'HELIOS Security', role: 'security', status: 'active' },
+                { id: 'atlas', name: 'ATLAS UI/UX', role: 'design', status: 'active' },
+                { id: 'genesis', name: 'GENESIS Architect', role: 'generation', status: 'active' },
+                { id: 'aether', name: 'AETHER Performance', role: 'performance', status: 'active' },
+                { id: 'oracle', name: 'ORACLE Quality', role: 'testing', status: 'active' },
+                { id: 'thanos', name: 'THANOS Cleaner', role: 'cleanup', status: 'active' }
+            ];
+
+            agents.forEach(agent => {
+                agentsData.set(agent.id, {
+                    ...agent,
+                    tasks: Math.floor(Math.random() * 100),
+                    responseTime: Math.floor(Math.random() * 500) + 100,
+                    successRate: 95 + Math.random() * 5,
+                    cost: Math.random() * 5
+                });
+            });
+
+            updateAgentsDisplay();
+            updatePerformanceMetrics();
+            updateCostDisplay();
+            loadSampleAlerts();
+            loadSampleOptimizations();
+            updateCommunicationStatus();
+        }
+
+        // 🤖 Update Agents Display
+        function updateAgentsDisplay() {
+            const container = document.getElementById('agentsContainer');
+            container.innerHTML = '';
+
+            for (const [agentId, agent] of agentsData) {
+                const agentCard = document.createElement('div');
+                agentCard.className = 'agent-card';
+                agentCard.innerHTML = `
+                    <div class="agent-info">
+                        <div class="agent-name">${agent.name}</div>
+                        <div class="agent-role">${agent.role}</div>
+                    </div>
+                    <div class="agent-metrics">
+                        <div class="metric">
+                            <span class="metric-value">${agent.tasks}</span>
+                            <span class="metric-label">Tasks</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">${agent.responseTime}ms</span>
+                            <span class="metric-label">Response</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">${agent.successRate.toFixed(1)}%</span>
+                            <span class="metric-label">Success</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(agentCard);
+            }
+        }
+
+        // ⚡ Update Performance Metrics
+        function updatePerformanceMetrics() {
+            const avgResponseTime = Array.from(agentsData.values())
+                .reduce((sum, agent) => sum + agent.responseTime, 0) / agentsData.size;
+
+            const avgSuccessRate = Array.from(agentsData.values())
+                .reduce((sum, agent) => sum + agent.successRate, 0) / agentsData.size;
+
+            const totalTasks = Array.from(agentsData.values())
+                .reduce((sum, agent) => sum + agent.tasks, 0);
+
+            document.getElementById('avgResponseTime').textContent = Math.round(avgResponseTime) + 'ms';
+            document.getElementById('successRate').textContent = avgSuccessRate.toFixed(1) + '%';
+            document.getElementById('throughput').textContent = totalTasks;
+
+            // Update uptime
+            const uptime = Date.now() - (Date.now() - 24 * 60 * 60 * 1000);
+            const hours = Math.floor(uptime / (1000 * 60 * 60));
+            const minutes = Math.floor((uptime % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
+        }
+
+        // 💰 Update Cost Display
+        function updateCostDisplay() {
+            const totalCost = Array.from(agentsData.values())
+                .reduce((sum, agent) => sum + agent.cost, 0);
+
+            document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
+            document.getElementById('hourlyCost').textContent = '$' + (totalCost / 24).toFixed(2);
+        }
+
+        // 🚨 Load Sample Alerts
+        function loadSampleAlerts() {
+            const sampleAlerts = [
+                {
+                    id: 1,
+                    title: 'Performance Alert',
+                    message: 'Agente EXECUTOR com response time elevado',
+                    severity: 'warning',
+                    time: '2 min atrás'
+                },
+                {
+                    id: 2,
+                    title: 'Cost Alert',
+                    message: 'Uso de GPT-4 acima do limite',
+                    severity: 'critical',
+                    time: '5 min atrás'
+                },
+                {
+                    id: 3,
+                    title: 'System Alert',
+                    message: 'CPU usage acima de 85%',
+                    severity: 'warning',
+                    time: '8 min atrás'
+                }
+            ];
+
+            const container = document.getElementById('alertsContainer');
+            container.innerHTML = '';
+
+            sampleAlerts.forEach(alert => {
+                const alertElement = document.createElement('div');
+                alertElement.className = `alert-item ${alert.severity}`;
+                alertElement.innerHTML = `
+                    <div class="alert-icon">!</div>
+                    <div class="alert-content">
+                        <div class="alert-title">${alert.title}</div>
+                        <div class="alert-time">${alert.time}</div>
+                    </div>
+                `;
+                container.appendChild(alertElement);
+            });
+        }
+
+        // 🔧 Load Sample Optimizations
+        function loadSampleOptimizations() {
+            const sampleOptimizations = [
+                {
+                    id: 1,
+                    title: 'Trocar ATLAS para Claude-3 Haiku',
+                    impact: '+25% speed',
+                    confidence: '87%'
+                },
+                {
+                    id: 2,
+                    title: 'Habilitar cache para EXECUTOR',
+                    impact: '+30% efficiency',
+                    confidence: '92%'
+                },
+                {
+                    id: 3,
+                    title: 'Rebalancear workload THANOS',
+                    impact: '-15% cost',
+                    confidence: '78%'
+                }
+            ];
+
+            const container = document.getElementById('optimizationsContainer');
+            container.innerHTML = '';
+
+            sampleOptimizations.forEach(opt => {
+                const optElement = document.createElement('div');
+                optElement.className = 'optimization-item';
+                optElement.innerHTML = `
+                    <div class="optimization-title">${opt.title}</div>
+                    <div class="optimization-impact">${opt.impact}</div>
+                    <div class="optimization-confidence">Confiança: ${opt.confidence}</div>
+                `;
+                container.appendChild(optElement);
+            });
+        }
+
+        // 🌐 Update Communication Status
+        function updateCommunicationStatus() {
+            document.getElementById('activeConnections').textContent = agentsData.size;
+            document.getElementById('messagesCount').textContent = '1,247';
+
+            const channels = [
+                { name: 'system', activity: '42 msgs' },
+                { name: 'coordination', activity: '18 msgs' },
+                { name: 'performance', activity: '7 msgs' },
+                { name: 'security', activity: '3 msgs' }
+            ];
+
+            const container = document.getElementById('channelsList');
+            container.innerHTML = '';
+
+            channels.forEach(channel => {
+                const channelElement = document.createElement('div');
+                channelElement.className = 'channel-item';
+                channelElement.innerHTML = `
+                    <span class="channel-name">${channel.name}</span>
+                    <span class="channel-activity">${channel.activity}</span>
+                `;
+                container.appendChild(channelElement);
+            });
+        }
+
+        // 🔄 Start Data Refresh
+        function startDataRefresh() {
+            setInterval(() => {
+                if (isConnected) {
+                    refreshLiveData();
+                }
+            }, 5000); // Refresh every 5 seconds
+        }
+
+        // 📊 Refresh Live Data
+        function refreshLiveData() {
+            // Simulate real-time data updates
+            for (const [agentId, agent] of agentsData) {
+                agent.tasks += Math.floor(Math.random() * 3);
+                agent.responseTime += (Math.random() - 0.5) * 50;
+                agent.responseTime = Math.max(50, Math.min(1000, agent.responseTime));
+                agent.successRate += (Math.random() - 0.5) * 2;
+                agent.successRate = Math.max(90, Math.min(100, agent.successRate));
+                agent.cost += Math.random() * 0.1;
+            }
+
+            updateAgentsDisplay();
+            updatePerformanceMetrics();
+            updateCostDisplay();
+        }
+
+        // 🔗 Update Connection Status
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (connected) {
+                statusElement.className = 'connection-status connected';
+                statusElement.innerHTML = '● WebSocket Conectado';
+            } else {
+                statusElement.className = 'connection-status disconnected';
+                statusElement.innerHTML = '● WebSocket Desconectado';
+            }
+        }
+
+        // 🎮 Control Functions
+        function startOptimization() {
+            console.log('🚀 Iniciando otimização automática...');
+            if (isConnected) {
+                ws.send(JSON.stringify({
+                    type: 'start_optimization',
+                    data: { source: 'dashboard' }
+                }));
+            }
+        }
+
+        function restartAgents() {
+            console.log('🔄 Reiniciando agentes...');
+            if (isConnected) {
+                ws.send(JSON.stringify({
+                    type: 'restart_agents',
+                    data: { source: 'dashboard' }
+                }));
+            }
+        }
+
+        function emergencyStop() {
+            console.log('🛑 Parada de emergência ativada!');
+            if (confirm('Tem certeza que deseja parar todos os agentes?')) {
+                if (isConnected) {
+                    ws.send(JSON.stringify({
+                        type: 'emergency_stop',
+                        data: { source: 'dashboard' }
+                    }));
+                }
+            }
+        }
+
+        // 🚀 Start Dashboard
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+
+        // 📊 Chart Drawing (Simple Canvas Animation)
+        function drawActivityChart() {
+            const canvas = document.getElementById('activityChart');
+            const ctx = canvas.getContext('2d');
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 1;
+
+            // Vertical lines
+            for (let x = 0; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            // Horizontal lines
+            for (let y = 0; y < canvas.height; y += 30) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // Draw activity line
+            ctx.strokeStyle = '#00d4ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            const points = 50;
+            const step = canvas.width / points;
+
+            for (let i = 0; i < points; i++) {
+                const x = i * step;
+                const y = canvas.height / 2 + Math.sin(i * 0.3 + Date.now() * 0.001) * 30;
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            ctx.stroke();
+        }
+
+        // Draw chart every 100ms
+        setInterval(drawActivityChart, 100);
+    </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+# ============================================
+# TRIBUTA.AI - Genesis Enterprise System
+# Sistema de 9 Agentes LIA v4.1
+# ============================================
+
+FROM node:20-alpine
+
+# Labels
+LABEL maintainer="TRIBUTA.AI"
+LABEL version="4.1"
+LABEL description="Genesis Enterprise System - 9 AI Agents"
+
+# Variáveis de ambiente
+ENV NODE_ENV=production
+ENV PORT=3003
+
+# Diretório de trabalho
+WORKDIR /app
+
+# Instalar dependências do sistema
+RUN apk add --no-cache \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/cache/apk/*
+
+# Copiar package.json para instalar dependências
+COPY package*.json ./
+
+# Instalar dependências (apenas produção)
+RUN npm ci --only=production --ignore-scripts \
+    && npm cache clean --force
+
+# Copiar arquivos do sistema de agentes
+COPY .lia/agents/genesis/ ./.lia/agents/genesis/
+COPY .lia/agents/agent-config.json ./.lia/agents/
+COPY .lia/cloud/ ./.lia/cloud/
+COPY .lia/systems/ ./.lia/systems/
+COPY .lia/rules/ ./.lia/rules/
+COPY config/ai.js ./config/
+
+# Criar diretórios necessários
+RUN mkdir -p \
+    .lia/agents/genesis/logs \
+    .lia/agents/genesis/status \
+    .lia/agents/genesis/reports \
+    .lia/logs \
+    .lia/reports
+
+# Criar usuário não-root para segurança
+RUN addgroup -g 1001 -S nodejs \
+    && adduser -S genesis -u 1001 -G nodejs
+
+# Mudar ownership
+RUN chown -R genesis:nodejs /app
+
+# Mudar para usuário não-root
+USER genesis
+
+# Expor porta
+EXPOSE 3003
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3003/api/health || exit 1
+
+# Comando de inicialização
+CMD ["node", ".lia/agents/genesis/genesis-enterprise-system.js"]

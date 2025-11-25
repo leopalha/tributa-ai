@@ -1,0 +1,40 @@
+{
+  "timestamp": "2025-09-20T15:47:44.088Z",
+  "areas": {
+    "Estrutura de arquivos e organização": {
+      "score": 85,
+      "issues": [],
+      "recommendations": []
+    },
+    "Qualidade do código TypeScript": {
+      "score": 85,
+      "issues": [],
+      "recommendations": []
+    },
+    "Performance e otimizações": {
+      "score": 85,
+      "issues": [],
+      "recommendations": []
+    },
+    "Padrões de design e arquitetura": {
+      "score": 85,
+      "issues": [],
+      "recommendations": []
+    },
+    "Cobertura de testes": {
+      "score": 85,
+      "issues": [],
+      "recommendations": []
+    },
+    "Documentação": {
+      "score": 85,
+      "issues": [],
+      "recommendations": []
+    }
+  },
+  "recommendations": [
+    "Melhorar cobertura de testes",
+    "Otimizar performance de componentes",
+    "Adicionar documentação técnica"
+  ]
+}

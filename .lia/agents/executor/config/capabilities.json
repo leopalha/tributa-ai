@@ -1,0 +1,110 @@
+{
+  "capabilities": {
+    "react_development": {
+      "description": "Create and modify React components",
+      "level": "expert",
+      "execution_time": "fast",
+      "dependencies": ["typescript_implementation"]
+    },
+    "typescript_implementation": {
+      "description": "TypeScript code implementation and fixes",
+      "level": "expert",
+      "execution_time": "fast",
+      "dependencies": []
+    },
+    "syntax_error_fixing": {
+      "description": "Fix TypeScript/JavaScript syntax errors",
+      "level": "expert",
+      "execution_time": "very_fast",
+      "dependencies": []
+    },
+    "component_creation": {
+      "description": "Create new React components following enterprise patterns",
+      "level": "expert",
+      "execution_time": "medium",
+      "dependencies": ["react_development", "typescript_implementation"]
+    },
+    "ui_implementation": {
+      "description": "Implement UI designs into functional components",
+      "level": "expert",
+      "execution_time": "medium",
+      "dependencies": ["component_creation"]
+    },
+    "state_management": {
+      "description": "Implement state management with Zustand",
+      "level": "advanced",
+      "execution_time": "medium",
+      "dependencies": ["react_development"]
+    },
+    "api_integration": {
+      "description": "Connect UI components to backend services",
+      "level": "expert",
+      "execution_time": "medium",
+      "dependencies": ["typescript_implementation"]
+    },
+    "form_handling": {
+      "description": "Create and manage form components",
+      "level": "expert",
+      "execution_time": "fast",
+      "dependencies": ["react_development"]
+    }
+  },
+  "specializations": {
+    "marketplace_integration": {
+      "description": "Connect MarketplacePage to purchase-flow.service.ts",
+      "priority": "critical",
+      "estimated_effort": "high",
+      "components_involved": [
+        "MarketplacePage.tsx",
+        "purchase-flow.service.ts",
+        "PurchaseFlow components"
+      ]
+    },
+    "syntax_corrections": {
+      "description": "Fix compilation-blocking syntax errors",
+      "priority": "critical",
+      "estimated_effort": "low",
+      "common_issues": [
+        "unclosed_brackets",
+        "unterminated_strings",
+        "missing_imports",
+        "type_errors"
+      ]
+    },
+    "component_connectivity": {
+      "description": "Connect UI components to service layer",
+      "priority": "high",
+      "estimated_effort": "medium",
+      "patterns": [
+        "service_injection",
+        "state_management",
+        "error_handling",
+        "loading_states"
+      ]
+    }
+  },
+  "collaboration_matrix": {
+    "nexus": {
+      "communication": "receives_delegations",
+      "reports_to": true,
+      "coordination_level": "high"
+    },
+    "atlas": {
+      "communication": "ui_coordination",
+      "reports_to": false,
+      "coordination_level": "medium",
+      "shared_concerns": ["component_styling", "ux_implementation"]
+    },
+    "helios": {
+      "communication": "build_validation",
+      "reports_to": false,
+      "coordination_level": "low",
+      "validation_required": true
+    },
+    "thanos": {
+      "communication": "cleanup_coordination",
+      "reports_to": false,
+      "coordination_level": "low"
+    }
+  }
+}

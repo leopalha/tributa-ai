@@ -1,0 +1,45 @@
+{
+  "thanos": {
+    "version": "1.0.0",
+    "mode": "code_optimization",
+    "role": "Code Cleaner",
+    "environment": "development",
+    "execution": {
+      "enabled": true,
+      "interval_seconds": 600,
+      "max_concurrent_tasks": 2,
+      "timeout_minutes": 30
+    },
+    "capabilities": [
+      "dead_code_removal",
+      "import_optimization",
+      "service_consolidation",
+      "duplicate_elimination",
+      "structure_optimization",
+      "performance_cleanup",
+      "bundle_optimization",
+      "code_organization",
+      "dependency_cleanup",
+      "architecture_streamlining"
+    ],
+    "restrictions": [
+      "no_functional_breaking",
+      "backup_before_cleanup",
+      "conservative_approach",
+      "test_after_cleanup"
+    ],
+    "cleanup_focus": {
+      "primary_target": "Service Consolidation",
+      "current_services": 46,
+      "target_services": 12,
+      "consolidation_strategy": "Functional Grouping"
+    },
+    "priorities": [
+      "Consolidate 46 services to 12 core services",
+      "Remove unused imports and dead code",
+      "Optimize bundle size and performance",
+      "Streamline architecture complexity",
+      "Clean deprecated and demo code"
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "THANOS_001",
+  "title": "Consolidar services duplicados 46→12",
+  "agent": "THANOS",
+  "priority": "HIGH",
+  "description": "Manter apenas services funcionais, remover duplicações",
+  "files": [
+    "src/services/"
+  ],
+  "estimated_time": "4h",
+  "success_criteria": "Build otimizado, performance melhorada, mantendo funcionalidade",
+  "business_impact": "MEDIUM - otimização para performance e manutenibilidade",
+  "validation_steps": [
+    "1. Audit completo dos 46 services",
+    "2. Identificar duplicações e conflitos",
+    "3. Consolidar mantendo funcionalidades críticas",
+    "4. Testar que nada quebrou após limpeza"
+  ],
+  "dependencies": [
+    "EXECUTOR_001",
+    "EXECUTOR_002"
+  ],
+  "status": "delegated",
+  "delegated_at": "2025-09-27T16:46:38.375Z",
+  "delegated_by": "LIA_COORDINATOR",
+  "auto_execution": true,
+  "coordination_mode": "LIA_SUPERVISED"
+}

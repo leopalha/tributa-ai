@@ -1,0 +1,210 @@
+{
+  "coordination_system": {
+    "version": "1.0.0",
+    "enabled": true,
+    "protocol": "file_based_messaging",
+    "communication_interval_seconds": 30,
+    "coordination_timeout_minutes": 10
+  },
+  
+  "agent_registry": {
+    "NEXUS": {
+      "id": "nexus-001",
+      "type": "coordinator",
+      "status": "available",
+      "capabilities": ["architecture_decisions", "agent_coordination", "conflict_resolution"],
+      "communication_path": ".lia/agents/nexus/",
+      "priority": 1
+    },
+    "EXECUTOR": {
+      "id": "executor-001", 
+      "type": "developer",
+      "status": "available",
+      "capabilities": ["react_development", "typescript_programming", "component_creation"],
+      "communication_path": ".lia/agents/executor/",
+      "priority": 2
+    },
+    "HELIOS": {
+      "id": "helios-001",
+      "type": "security",
+      "status": "available", 
+      "capabilities": ["security_audit", "authentication", "vulnerability_scanning"],
+      "communication_path": ".lia/agents/helios/",
+      "priority": 3
+    },
+    "ATLAS": {
+      "id": "atlas-001",
+      "type": "designer",
+      "status": "available",
+      "capabilities": ["ui_design", "ux_optimization", "responsive_design"],
+      "communication_path": ".lia/agents/atlas/",
+      "priority": 4
+    },
+    "THANOS": {
+      "id": "thanos-001",
+      "type": "optimizer",
+      "status": "available",
+      "capabilities": ["code_cleanup", "performance_optimization", "dead_code_removal"],
+      "communication_path": ".lia/agents/thanos/",
+      "priority": 5
+    },
+    "GENESIS": {
+      "id": "genesis-001",
+      "type": "autoprogrammer",
+      "status": "active",
+      "capabilities": ["autonomous_development", "self_correction", "agent_coordination"],
+      "communication_path": ".lia/cloud/genesis/",
+      "priority": 6
+    }
+  },
+  
+  "coordination_workflows": {
+    "complex_development": {
+      "description": "Coordinated development involving multiple agents",
+      "sequence": [
+        {
+          "step": 1,
+          "agent": "NEXUS",
+          "action": "architectural_review",
+          "wait_for_completion": true
+        },
+        {
+          "step": 2,
+          "agent": "THANOS",
+          "action": "code_analysis",
+          "parallel": true
+        },
+        {
+          "step": 2,
+          "agent": "HELIOS", 
+          "action": "security_review",
+          "parallel": true
+        },
+        {
+          "step": 3,
+          "agent": "EXECUTOR",
+          "action": "implementation",
+          "depends_on": ["NEXUS", "THANOS"]
+        },
+        {
+          "step": 4,
+          "agent": "ATLAS",
+          "action": "design_refinement",
+          "depends_on": ["EXECUTOR"]
+        },
+        {
+          "step": 5,
+          "agent": "GENESIS",
+          "action": "quality_assurance",
+          "final_review": true
+        }
+      ]
+    },
+    
+    "error_correction": {
+      "description": "Coordinated error correction",
+      "sequence": [
+        {
+          "step": 1,
+          "agent": "GENESIS",
+          "action": "error_detection",
+          "auto_execute": true
+        },
+        {
+          "step": 2,
+          "agent": "THANOS",
+          "action": "code_cleanup",
+          "condition": "optimization_needed"
+        },
+        {
+          "step": 3,
+          "agent": "EXECUTOR",
+          "action": "fix_implementation",
+          "condition": "component_errors"
+        },
+        {
+          "step": 4,
+          "agent": "HELIOS",
+          "action": "security_validation",
+          "condition": "security_impact"
+        }
+      ]
+    },
+    
+    "continuous_optimization": {
+      "description": "24/7 continuous optimization workflow",
+      "sequence": [
+        {
+          "step": 1,
+          "agent": "GENESIS",
+          "action": "monitor_system",
+          "continuous": true
+        },
+        {
+          "step": 2,
+          "agent": "THANOS",
+          "action": "optimize_performance",
+          "trigger": "performance_threshold"
+        },
+        {
+          "step": 3,
+          "agent": "ATLAS",
+          "action": "maintain_design_consistency", 
+          "trigger": "ui_inconsistency"
+        }
+      ]
+    }
+  },
+  
+  "communication_protocols": {
+    "task_assignment": {
+      "format": "json",
+      "path_template": ".lia/agents/{agent_id}/tasks/",
+      "file_template": "task-{timestamp}-{task_id}.json"
+    },
+    "status_reporting": {
+      "format": "json",
+      "path_template": ".lia/agents/{agent_id}/status/",
+      "file_template": "status-{timestamp}.json"
+    },
+    "coordination_messages": {
+      "format": "json",
+      "path_template": ".lia/coordination/messages/",
+      "file_template": "msg-{from_agent}-{to_agent}-{timestamp}.json"
+    }
+  },
+  
+  "escalation_rules": {
+    "conflict_resolution": {
+      "escalate_to": "NEXUS",
+      "timeout_minutes": 5
+    },
+    "critical_errors": {
+      "escalate_to": "HELIOS",
+      "immediate": true
+    },
+    "architectural_changes": {
+      "requires_approval": "NEXUS",
+      "consultation_required": ["EXECUTOR", "THANOS"]
+    }
+  },
+  
+  "performance_metrics": {
+    "coordination_efficiency": {
+      "track": ["task_completion_time", "agent_response_time", "conflict_count"],
+      "target": {
+        "avg_completion_time": "< 15 minutes",
+        "avg_response_time": "< 30 seconds",
+        "conflicts_per_day": "< 3"
+      }
+    },
+    "quality_metrics": {
+      "track": ["code_quality_score", "error_rate", "optimization_success"],
+      "target": {
+        "code_quality": "> 90%",
+        "error_rate": "< 2%", 
+        "optimization_success": "> 95%"
+      }
+    }
+  }
+}

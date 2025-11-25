@@ -1,0 +1,26 @@
+{
+  "id": "EXECUTOR_001",
+  "title": "Conectar PurchaseModal ao purchase-flow.service",
+  "agent": "EXECUTOR",
+  "priority": "CRITICAL",
+  "description": "Substituir alert() por connection real ao service existente",
+  "files": [
+    "src/components/marketplace/PurchaseModal.tsx",
+    "src/services/purchase-flow.service.ts"
+  ],
+  "estimated_time": "2h",
+  "success_criteria": "Usuários podem comprar títulos reais - transação funcional",
+  "business_impact": "CRITICAL - sem isso investidores não veem funcionalidade real",
+  "validation_steps": [
+    "1. Verificar purchase-flow.service.ts existe e está funcional",
+    "2. Substituir alert() por chamada real ao service",
+    "3. Testar fluxo completo de compra",
+    "4. Validar integração com wallet"
+  ],
+  "dependencies": [],
+  "status": "delegated",
+  "delegated_at": "2025-09-27T16:46:38.370Z",
+  "delegated_by": "LIA_COORDINATOR",
+  "auto_execution": true,
+  "coordination_mode": "LIA_SUPERVISED"
+}

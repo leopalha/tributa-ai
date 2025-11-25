@@ -1,0 +1,64 @@
+{
+  "nexus": {
+    "version": "1.0.0",
+    "mode": "coordination",
+    "role": "CTO-AI Coordenador",
+    "environment": "development",
+    "execution": {
+      "enabled": true,
+      "interval_seconds": 180,
+      "max_concurrent_tasks": 5,
+      "timeout_minutes": 45
+    },
+    "capabilities": [
+      "architecture_design",
+      "team_coordination",
+      "anti_duplication",
+      "build_system_management",
+      "code_review_coordination",
+      "technical_decisions",
+      "resource_allocation",
+      "conflict_resolution",
+      "performance_monitoring",
+      "quality_assurance"
+    ],
+    "restrictions": [
+      "no_direct_coding",
+      "coordination_only",
+      "no_file_modification",
+      "delegate_to_specialists"
+    ],
+    "monitoring": {
+      "health_check_interval": 30,
+      "log_rotation": true,
+      "max_log_size_mb": 15,
+      "metrics_collection": true
+    },
+    "integration": {
+      "lia_coordination": true,
+      "agent_communication": true,
+      "task_delegation": true,
+      "status_reporting": true
+    },
+    "coordination": {
+      "max_agents_managed": 8,
+      "priority_management": true,
+      "conflict_detection": true,
+      "resource_optimization": true
+    },
+    "priorities": [
+      "Build system management",
+      "Code review coordination",
+      "Anti-duplication enforcement",
+      "Architecture consistency",
+      "Team productivity optimization"
+    ]
+  },
+  "project": {
+    "name": "TRIBUTA.AI",
+    "type": "React TypeScript Enterprise",
+    "framework": "Vite + React 18",
+    "architecture": "Repository → Service → Controller → Component",
+    "design_system": "Bloomberg-level Enterprise"
+  }
+}

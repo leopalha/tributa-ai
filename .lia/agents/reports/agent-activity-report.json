@@ -1,0 +1,88 @@
+{
+  "version": "4.1",
+  "lastUpdate": "2025-09-21",
+  "reportConfig": {
+    "autoReport": true,
+    "frequency": "onTaskComplete",
+    "destination": ".lia/agents/reports/",
+    "includeMetrics": true
+  },
+  "agents": {
+    "LIA": {
+      "role": "COORDENADORA SUPREME",
+      "status": "ACTIVE",
+      "lastActivity": "2025-09-21",
+      "tasksCoordinated": [],
+      "reportsTo": "USER"
+    },
+    "NEXUS": {
+      "role": "CTO-AI Coordenador",
+      "status": "CONFIGURED",
+      "lastActivity": null,
+      "tasksCompleted": [],
+      "reportsTo": "LIA"
+    },
+    "EXECUTOR": {
+      "role": "Frontend Specialist",
+      "status": "CONFIGURED",
+      "lastActivity": null,
+      "tasksCompleted": [],
+      "reportsTo": "LIA"
+    },
+    "HELIOS": {
+      "role": "Security Master",
+      "status": "CONFIGURED",
+      "lastActivity": null,
+      "tasksCompleted": [],
+      "reportsTo": "LIA"
+    },
+    "ATLAS": {
+      "role": "UI/UX Perfectionist",
+      "status": "CONFIGURED",
+      "lastActivity": null,
+      "tasksCompleted": [],
+      "reportsTo": "LIA"
+    },
+    "THANOS": {
+      "role": "Code Cleaner",
+      "status": "CONFIGURED",
+      "lastActivity": null,
+      "tasksCompleted": [],
+      "reportsTo": "LIA"
+    },
+    "GENESIS": {
+      "role": "Autoprogramador",
+      "status": "ACTIVE",
+      "lastActivity": "2025-09-15",
+      "tasksCompleted": ["error_correction", "style_fix"],
+      "reportsTo": "LIA"
+    },
+    "THEMIS": {
+      "role": "Legal/Compliance",
+      "status": "CONFIGURED",
+      "lastActivity": null,
+      "tasksCompleted": [],
+      "reportsTo": "LIA"
+    },
+    "ARIA": {
+      "role": "NLP/User Interaction",
+      "status": "CONFIGURED",
+      "lastActivity": null,
+      "tasksCompleted": [],
+      "reportsTo": "LIA"
+    }
+  },
+  "reportingRules": {
+    "onTaskStart": "Agent deve reportar início da tarefa em tasks/task-queue.json",
+    "onProgress": "Atualizar status a cada 25% de progresso",
+    "onComplete": "Mover para completed-tasks.json e notificar LIA",
+    "onError": "Reportar imediatamente em logs/ com detalhes do erro",
+    "metrics": [
+      "timeToComplete",
+      "filesModified",
+      "linesChanged",
+      "errorsFixed",
+      "performanceGain"
+    ]
+  }
+}

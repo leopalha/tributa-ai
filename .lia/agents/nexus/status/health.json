@@ -1,0 +1,43 @@
+{
+  "health": {
+    "status": "healthy",
+    "last_check": "2025-09-20T21:25:08.913Z",
+    "checks": {
+      "coordination_system": {
+        "status": "ok",
+        "message": "Coordination system operational"
+      },
+      "agent_communication": {
+        "status": "ok",
+        "message": "Communication channels ready"
+      },
+      "task_delegation": {
+        "status": "ok",
+        "message": "Delegation system functional"
+      },
+      "resource_monitoring": {
+        "status": "ok",
+        "message": "Resource monitoring active"
+      },
+      "conflict_detection": {
+        "status": "ok",
+        "message": "Conflict detection enabled"
+      }
+    },
+    "resources": {
+      "memory_usage_mb": 45,
+      "cpu_usage_percent": 5,
+      "coordination_load": "low",
+      "response_time_ms": 125
+    },
+    "connectivity": {
+      "lia_connection": "ready",
+      "agent_connections": {
+        "executor": "ready",
+        "helios": "ready",
+        "atlas": "ready",
+        "thanos": "ready"
+      }
+    }
+  }
+}

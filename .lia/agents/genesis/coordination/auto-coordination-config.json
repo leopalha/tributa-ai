@@ -1,0 +1,153 @@
+{
+  "auto_coordination_system": {
+    "enabled": true,
+    "mode": "LIA_SUPERVISED_AUTONOMOUS",
+    "activation_timestamp": "2025-09-27T16:43:00.000Z",
+    "coordination_intelligence": "high"
+  },
+
+  "agent_coordination_matrix": {
+    "EXECUTOR": {
+      "specialization": "Frontend connections & UI functionality",
+      "current_capacity": "100%",
+      "auto_assignment": "enabled",
+      "priority_tasks": ["UI-service integration", "real functionality implementation"],
+      "coordination_rules": {
+        "works_independently": true,
+        "requires_validation": "after each major connection",
+        "escalates_when": "service integration fails",
+        "reports_to": "GENESIS → LIA"
+      }
+    },
+
+    "THANOS": {
+      "specialization": "Code cleanup & optimization",
+      "current_capacity": "100%",
+      "auto_assignment": "dependency_based",
+      "priority_tasks": ["service consolidation", "duplicate removal"],
+      "coordination_rules": {
+        "depends_on": ["EXECUTOR stable"],
+        "works_parallel_with": [],
+        "cleanup_scope": "maintain_functionality",
+        "validation_required": "comprehensive_testing"
+      }
+    },
+
+    "HELIOS": {
+      "specialization": "Build optimization & security",
+      "current_capacity": "100%",
+      "auto_assignment": "parallel_enabled",
+      "priority_tasks": ["build warnings", "production optimization"],
+      "coordination_rules": {
+        "works_parallel_with": ["ATLAS"],
+        "independent_execution": true,
+        "validation_focus": "production_readiness"
+      }
+    },
+
+    "ATLAS": {
+      "specialization": "UI/UX Bloomberg-level design",
+      "current_capacity": "100%",
+      "auto_assignment": "parallel_enabled",
+      "priority_tasks": ["visual consistency", "professional polish"],
+      "coordination_rules": {
+        "works_parallel_with": ["HELIOS"],
+        "independent_execution": true,
+        "validation_focus": "investor_impression"
+      }
+    }
+  },
+
+  "coordination_workflows": {
+    "critical_path": {
+      "phase_1": {
+        "agents": ["EXECUTOR"],
+        "tasks": ["EXECUTOR_001", "EXECUTOR_002"],
+        "duration": "5h",
+        "success_criteria": "Core functionality working",
+        "auto_next": "phase_2"
+      },
+      "phase_2": {
+        "agents": ["THANOS"],
+        "tasks": ["THANOS_001"],
+        "duration": "4h",
+        "success_criteria": "Optimized performance",
+        "depends_on": "phase_1_complete",
+        "auto_next": "phase_3"
+      },
+      "phase_3": {
+        "agents": ["HELIOS", "ATLAS"],
+        "tasks": ["HELIOS_001", "ATLAS_001"],
+        "duration": "3h",
+        "execution": "parallel",
+        "success_criteria": "Production ready + beautiful UI"
+      }
+    }
+  },
+
+  "automation_intelligence": {
+    "task_distribution": {
+      "algorithm": "priority_capacity_matching",
+      "auto_start": true,
+      "dependency_resolution": "automatic",
+      "conflict_resolution": "escalate_to_coordinator"
+    },
+
+    "progress_monitoring": {
+      "real_time_tracking": "enabled",
+      "performance_metrics": "automatic",
+      "success_validation": "continuous",
+      "failure_detection": "immediate"
+    },
+
+    "escalation_system": {
+      "level_1": "GENESIS auto-resolution",
+      "level_2": "LIA coordinator intervention",
+      "level_3": "Human oversight required",
+      "triggers": {
+        "task_blocked": "2h → level_1",
+        "critical_failure": "immediate → level_2",
+        "system_conflict": "immediate → level_2"
+      }
+    }
+  },
+
+  "coordination_commands": {
+    "genesis_commands": {
+      "delegate_task": "auto-assign based on specialization",
+      "monitor_progress": "real-time status tracking",
+      "resolve_conflicts": "intelligent conflict resolution",
+      "validate_completion": "automated success verification",
+      "escalate_issues": "smart escalation to LIA"
+    },
+
+    "agent_communication": {
+      "task_assignment": "JSON-based instruction delivery",
+      "progress_updates": "automated status reporting",
+      "completion_notification": "success/failure reporting",
+      "issue_escalation": "immediate coordinator notification"
+    }
+  },
+
+  "success_orchestration": {
+    "business_goals": {
+      "primary": "TRIBUTA.AI investment-ready platform",
+      "timeline": "6-8 hours total completion",
+      "success_score": "95% functionality + Bloomberg-level UI"
+    },
+
+    "coordination_success_metrics": {
+      "task_completion_rate": "target 100%",
+      "agent_efficiency": "target >90%",
+      "escalation_rate": "target <10%",
+      "investor_readiness": "target Grade A+"
+    },
+
+    "automatic_reporting": {
+      "frequency": "every task completion",
+      "stakeholders": ["LIA", "GENESIS", "HUMAN_OVERSIGHT"],
+      "format": "JSON status + human-readable summary",
+      "escalation_alerts": "immediate for critical issues"
+    }
+  }
+}

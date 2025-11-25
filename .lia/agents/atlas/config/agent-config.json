@@ -1,0 +1,45 @@
+{
+  "atlas": {
+    "version": "1.0.0",
+    "mode": "ui_ux_optimization",
+    "role": "UI/UX Perfectionist",
+    "environment": "development",
+    "execution": {
+      "enabled": true,
+      "interval_seconds": 240,
+      "max_concurrent_tasks": 3,
+      "timeout_minutes": 45
+    },
+    "capabilities": [
+      "bloomberg_level_design",
+      "ux_optimization",
+      "responsive_design",
+      "accessibility_enhancement",
+      "visual_consistency",
+      "interaction_design",
+      "performance_optimization",
+      "demo_preparation",
+      "user_flow_optimization",
+      "design_system_maintenance"
+    ],
+    "restrictions": [
+      "no_functionality_changes",
+      "maintain_enterprise_standards",
+      "bloomberg_level_only",
+      "accessibility_compliance"
+    ],
+    "design_focus": {
+      "primary_standard": "Bloomberg Terminal Level",
+      "design_system": "Enterprise Professional",
+      "accessibility": "WCAG 2.1 AA",
+      "responsiveness": "Mobile-first Enterprise"
+    },
+    "priorities": [
+      "Bloomberg-level presentation polish",
+      "Demo script preparation for investors",
+      "Marketplace UX optimization",
+      "Loading states professionalization",
+      "Visual consistency enforcement"
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "task_queue": {
+    "coordination_tasks": [],
+    "delegation_tasks": [],
+    "monitoring_tasks": [],
+    "architecture_tasks": []
+  },
+  "completed_tasks": [],
+  "failed_tasks": [],
+  "task_templates": {
+    "delegation": {
+      "id": "template_delegation",
+      "type": "delegation",
+      "agent_target": "",
+      "task_description": "",
+      "priority": "medium",
+      "estimated_duration": 30,
+      "validation_criteria": [],
+      "dependencies": [],
+      "deadline": null
+    },
+    "coordination": {
+      "id": "template_coordination",
+      "type": "coordination",
+      "agents_involved": [],
+      "coordination_goal": "",
+      "priority": "medium",
+      "conflict_resolution": false,
+      "resource_allocation": false
+    },
+    "architecture": {
+      "id": "template_architecture",
+      "type": "architecture",
+      "decision_required": "",
+      "impact_level": "medium",
+      "stakeholders": [],
+      "technical_analysis": "",
+      "recommendation": ""
+    }
+  },
+  "queue_stats": {
+    "total_tasks": 0,
+    "pending_tasks": 0,
+    "in_progress_tasks": 0,
+    "completed_today": 0,
+    "average_completion_time": 0
+  }
+}
