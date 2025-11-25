@@ -157,12 +157,18 @@ class PostgresClient extends EventEmitter {
             context = {}
         } = task;
 
+        // Validação: title é obrigatório, usar description como fallback
+        const taskTitle = title || description || 'Tarefa sem título';
+
+        // Garantir que description não seja null
+        const taskDescription = description || title || 'Sem descrição';
+
         const result = await this.query(`
             INSERT INTO agent_tasks
                 (title, description, type, priority, expected_output, assigned_agent, context)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
-        `, [title, description, type, priority, expectedOutput, assignedAgent, JSON.stringify(context)]);
+        `, [taskTitle, taskDescription, type, priority, expectedOutput, assignedAgent, JSON.stringify(context)]);
 
         const newTask = result.rows[0];
 
@@ -309,6 +315,14 @@ class PostgresClient extends EventEmitter {
      * Obtém tarefa por ID
      */
     async getTask(taskId) {
+        // Validar formato UUID
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+        if (!taskId || !uuidRegex.test(taskId)) {
+            console.error(`❌ UUID inválido recebido: "${taskId}"`);
+            return null;
+        }
+
         const result = await this.query('SELECT * FROM agent_tasks WHERE id = $1', [taskId]);
         return result.rows[0] || null;
     }
