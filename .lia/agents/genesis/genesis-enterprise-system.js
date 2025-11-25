@@ -261,7 +261,6 @@ class GenesisEnterpriseSystem extends EventEmitter {
         }
 
         // NOTA: HTTP Server já inicializado no passo 2
-        }
 
         // 6. TaskProcessor - Integração com PostgreSQL
         if (process.env.DATABASE_URL) {
