@@ -16,6 +16,7 @@ const AgentBus = require('./src/communication/AgentBus.js');
 const RealTimeMetrics = require('./src/monitoring/RealTimeMetrics.js');
 const AutoOptimizer = require('./src/optimization/AutoOptimizer.js');
 const TaskProcessor = require('./src/db/task-processor.js');
+const IntelligentHandlers = require('./src/handlers/intelligent-handlers.js');
 const EventEmitter = require('events');
 const fs = require('fs').promises;
 const path = require('path');
@@ -43,7 +44,8 @@ class GenesisEnterpriseSystem extends EventEmitter {
         this.realTimeMetrics = null;
         this.autoOptimizer = null;
         this.httpServer = null;
-        this.taskProcessor = null; // Novo: Processador de tarefas PostgreSQL
+        this.taskProcessor = null; // Processador de tarefas PostgreSQL
+        this.intelligentHandlers = null; // Handlers inteligentes com LLM
 
         // Estado do sistema
         this.isRunning = false;
@@ -1096,6 +1098,7 @@ class GenesisEnterpriseSystem extends EventEmitter {
 
     /**
      * Registra handlers para processar tarefas do PostgreSQL
+     * Usa IntelligentHandlers com LLM real via OpenRouter
      */
     registerAgentHandlers() {
         if (!this.taskProcessor) {
@@ -1103,46 +1106,54 @@ class GenesisEnterpriseSystem extends EventEmitter {
             return;
         }
 
-        console.log('🤖 Registrando handlers dos agentes no TaskProcessor...');
+        console.log('🧠 Inicializando Intelligent Handlers com OpenRouter...');
 
-        // Handler genérico para todos os agentes
-        const createAgentHandler = (agentId) => {
-            return async (task) => {
-                console.log(`🎯 ${agentId} processando: ${task.title}`);
+        // Inicializa handlers inteligentes com LLM
+        this.intelligentHandlers = new IntelligentHandlers({
+            projectPath: this.config.projectPath,
+            openRouterApiKey: this.config.openRouterApiKey
+        });
 
-                try {
-                    // Executa via workflow engine
-                    const result = await this.executeAgentTask(agentId, {
-                        name: task.title,
-                        type: task.type,
-                        context: task.context || {}
-                    });
+        console.log('🤖 Registrando handlers inteligentes no TaskProcessor...');
 
-                    return {
-                        success: true,
-                        result: result,
-                        filesModified: result?.filesModified || [],
-                        commitHash: result?.commitHash || null,
-                        tokensUsed: result?.tokensUsed || 0,
-                        costUsd: result?.costUsd || 0
-                    };
-
-                } catch (error) {
-                    console.error(`❌ Erro no agente ${agentId}:`, error.message);
-                    throw error;
-                }
-            };
-        };
-
-        // Registra handler para cada agente
+        // Registra handler para cada agente usando os handlers inteligentes
         for (const [agentId] of this.agentConfigurations) {
-            this.taskProcessor.registerAgentHandler(
-                agentId.toUpperCase(),
-                createAgentHandler(agentId)
-            );
+            const agentName = agentId.toUpperCase();
+            const handler = this.intelligentHandlers.getHandler(agentName);
+
+            if (handler) {
+                this.taskProcessor.registerAgentHandler(agentName, async (task) => {
+                    console.log(`🧠 ${agentName} processando com LLM: ${task.title}`);
+
+                    try {
+                        // Usa handler inteligente com LLM
+                        const result = await handler(task);
+
+                        console.log(`✅ ${agentName} completou tarefa: ${task.title}`);
+                        console.log(`   📊 Tokens: ${result.tokensUsed || 0}, Custo: $${(result.costUsd || 0).toFixed(4)}`);
+
+                        return {
+                            success: true,
+                            result: result.result,
+                            filesModified: result.filesModified || [],
+                            commitHash: result.commitHash || null,
+                            tokensUsed: result.tokensUsed || 0,
+                            costUsd: result.costUsd || 0
+                        };
+
+                    } catch (error) {
+                        console.error(`❌ ${agentName} falhou:`, error.message);
+                        throw error;
+                    }
+                });
+
+                console.log(`   ✅ ${agentName}: Handler inteligente registrado`);
+            } else {
+                console.log(`   ⚠️ ${agentName}: Handler não encontrado`);
+            }
         }
 
-        console.log(`✅ ${this.agentConfigurations.size} handlers registrados`);
+        console.log(`🎉 ${this.agentConfigurations.size} handlers inteligentes registrados com LLM!`);
     }
 
     // ==========================================
