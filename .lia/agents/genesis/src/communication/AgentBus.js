@@ -29,6 +29,7 @@ class AgentBus extends EventEmitter {
             messageTimeout: config.messageTimeout || 10000, // 10s
             maxRetries: config.maxRetries || 3,
             enableEncryption: config.enableEncryption || false,
+            httpServer: config.httpServer || null, // Servidor HTTP externo para compartilhar porta
             ...config
         };
 
@@ -153,11 +154,21 @@ class AgentBus extends EventEmitter {
         }
 
         try {
-            // Cria servidor WebSocket
-            this.server = new WebSocket.Server({
-                port: this.config.port,
-                host: this.config.host
-            });
+            // Se tiver servidor HTTP externo, usa ele (compartilha porta)
+            if (this.config.httpServer) {
+                this.server = new WebSocket.Server({
+                    server: this.config.httpServer,
+                    path: '/ws'
+                });
+                console.log(`🚀 AgentBus iniciado em ws://${this.config.host}:${this.config.port}/ws (compartilhando porta HTTP)`);
+            } else {
+                // Cria servidor WebSocket standalone
+                this.server = new WebSocket.Server({
+                    port: this.config.port,
+                    host: this.config.host
+                });
+                console.log(`🚀 AgentBus iniciado em ws://${this.config.host}:${this.config.port}`);
+            }
 
             this.setupServerHandlers();
             this.startHeartbeat();
@@ -165,7 +176,6 @@ class AgentBus extends EventEmitter {
 
             this.isRunning = true;
 
-            console.log(`🚀 AgentBus iniciado em ws://${this.config.host}:${this.config.port}`);
             console.log(`📡 ${this.channels.size} canais disponíveis`);
 
             this.emit('bus:started', {

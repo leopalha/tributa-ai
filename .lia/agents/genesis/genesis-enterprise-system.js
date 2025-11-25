@@ -212,11 +212,17 @@ class GenesisEnterpriseSystem extends EventEmitter {
             startTime: null
         });
 
-        // 2. AgentBus - Comunicação real-time
+        // 2. HTTP Server para Dashboard (criar ANTES do AgentBus para compartilhar porta)
+        if (this.config.enableDashboard) {
+            await this.initializeHttpServer();
+        }
+
+        // 3. AgentBus - Comunicação real-time (usa HTTP server para compartilhar porta)
         this.agentBus = new AgentBus({
             port: this.config.port,
             host: this.config.host,
-            projectPath: this.config.projectPath
+            projectPath: this.config.projectPath,
+            httpServer: this.httpServer // Passa o servidor HTTP para compartilhar porta
         });
 
         this.components.set('agentBus', {
@@ -225,7 +231,7 @@ class GenesisEnterpriseSystem extends EventEmitter {
             startTime: null
         });
 
-        // 3. RealTimeMetrics - Monitoramento
+        // 4. RealTimeMetrics - Monitoramento
         if (this.config.enableMetrics) {
             this.realTimeMetrics = new RealTimeMetrics({
                 projectPath: this.config.projectPath,
@@ -239,7 +245,7 @@ class GenesisEnterpriseSystem extends EventEmitter {
             });
         }
 
-        // 4. AutoOptimizer - Otimização inteligente
+        // 5. AutoOptimizer - Otimização inteligente
         if (this.config.enableOptimization) {
             this.autoOptimizer = new AutoOptimizer({
                 projectPath: this.config.projectPath,
@@ -254,9 +260,7 @@ class GenesisEnterpriseSystem extends EventEmitter {
             });
         }
 
-        // 5. HTTP Server para Dashboard
-        if (this.config.enableDashboard) {
-            await this.initializeHttpServer();
+        // NOTA: HTTP Server já inicializado no passo 2
         }
 
         // 6. TaskProcessor - Integração com PostgreSQL
@@ -385,6 +389,11 @@ class GenesisEnterpriseSystem extends EventEmitter {
             this.startTime = Date.now();
 
             // Inicia componentes em ordem específica
+            // IMPORTANTE: HTTP Server primeiro, depois AgentBus (usa mesmo servidor)
+            if (this.config.enableDashboard) {
+                await this.startComponent('httpServer');
+            }
+
             await this.startComponent('agentBus');
             await this.startComponent('workflowEngine');
 
@@ -394,10 +403,6 @@ class GenesisEnterpriseSystem extends EventEmitter {
 
             if (this.config.enableOptimization) {
                 await this.startComponent('autoOptimizer');
-            }
-
-            if (this.config.enableDashboard) {
-                await this.startComponent('httpServer');
             }
 
             // Inicia TaskProcessor se disponível
