@@ -1,0 +1,169 @@
+{
+  "productionAgents": {
+    "description": "Agentes que devem rodar 24/7 em produção para atender clientes",
+    "agents": [
+      {
+        "id": "aria",
+        "name": "ARIA Conversational Expert",
+        "role": "customer_service",
+        "enabled": true,
+        "model": "claude-3-sonnet",
+        "priority": 1,
+        "purpose": "Atendimento conversacional 24/7 aos clientes",
+        "capabilities": [
+          "customer_support",
+          "conversational_ai",
+          "query_resolution",
+          "onboarding",
+          "education"
+        ],
+        "costLimit": 10.0,
+        "maxConcurrency": 5,
+        "required": true
+      },
+      {
+        "id": "oracle",
+        "name": "ORACLE Quality Guardian",
+        "role": "validation",
+        "enabled": true,
+        "model": "gpt-4",
+        "priority": 2,
+        "purpose": "Validação automática de créditos tributários",
+        "capabilities": [
+          "credit_validation",
+          "tax_analysis",
+          "compliance_check",
+          "report_generation",
+          "quality_assurance"
+        ],
+        "costLimit": 15.0,
+        "maxConcurrency": 3,
+        "required": true
+      },
+      {
+        "id": "themis",
+        "name": "THEMIS Compliance Master",
+        "role": "compliance",
+        "enabled": true,
+        "model": "gpt-4",
+        "priority": 2,
+        "purpose": "Garantir compliance LGPD e regulamentações fiscais",
+        "capabilities": [
+          "lgpd_compliance",
+          "legal_validation",
+          "audit_trail",
+          "regulatory_monitoring",
+          "risk_assessment"
+        ],
+        "costLimit": 8.0,
+        "maxConcurrency": 2,
+        "required": true
+      },
+      {
+        "id": "aether",
+        "name": "AETHER Performance Guru",
+        "role": "optimization",
+        "enabled": true,
+        "model": "claude-3-haiku",
+        "priority": 3,
+        "purpose": "Monitorar e otimizar performance do sistema em tempo real",
+        "capabilities": [
+          "performance_monitoring",
+          "auto_optimization",
+          "bottleneck_detection",
+          "resource_management",
+          "caching"
+        ],
+        "costLimit": 5.0,
+        "maxConcurrency": 2,
+        "required": true
+      },
+      {
+        "id": "nexus",
+        "name": "NEXUS Coordinator",
+        "role": "orchestration",
+        "enabled": true,
+        "model": "claude-3-sonnet",
+        "priority": 1,
+        "purpose": "Coordenar todos os agentes de produção",
+        "capabilities": [
+          "agent_coordination",
+          "task_routing",
+          "load_balancing",
+          "priority_management",
+          "system_health"
+        ],
+        "costLimit": 12.0,
+        "maxConcurrency": 1,
+        "required": true
+      }
+    ]
+  },
+  "developmentAgents": {
+    "description": "Agentes para desenvolvimento - rodam apenas localmente",
+    "agents": [
+      {
+        "id": "executor",
+        "name": "EXECUTOR Frontend Specialist",
+        "role": "development",
+        "enabled": false,
+        "purpose": "Correções rápidas de código (desenvolvimento)"
+      },
+      {
+        "id": "helios",
+        "name": "HELIOS Security Master",
+        "role": "development",
+        "enabled": false,
+        "purpose": "Build validation e segurança (CI/CD)"
+      },
+      {
+        "id": "atlas",
+        "name": "ATLAS UI/UX Perfectionist",
+        "role": "development",
+        "enabled": false,
+        "purpose": "Design de interfaces (desenvolvimento)"
+      },
+      {
+        "id": "thanos",
+        "name": "THANOS Code Cleaner",
+        "role": "development",
+        "enabled": false,
+        "purpose": "Limpeza e refatoração (desenvolvimento)"
+      },
+      {
+        "id": "genesis",
+        "name": "GENESIS Code Architect",
+        "role": "development",
+        "enabled": false,
+        "purpose": "Geração de código (desenvolvimento)"
+      },
+      {
+        "id": "lia",
+        "name": "LIA Supreme Coordinator",
+        "role": "development",
+        "enabled": false,
+        "purpose": "Coordenação geral (desenvolvimento)"
+      }
+    ]
+  },
+  "environment": {
+    "production": {
+      "enabledAgents": ["aria", "oracle", "themis", "aether", "nexus"],
+      "autoStart": true,
+      "monitoring": true,
+      "optimization": true
+    },
+    "development": {
+      "enabledAgents": ["executor", "helios", "atlas", "thanos", "genesis", "lia"],
+      "autoStart": false,
+      "monitoring": false,
+      "optimization": false
+    }
+  },
+  "resourceLimits": {
+    "maxConcurrentTasks": 20,
+    "maxDailyCost": 50.0,
+    "maxTokensPerRequest": 8000,
+    "requestTimeout": 120000
+  }
+}
