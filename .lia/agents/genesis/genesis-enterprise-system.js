@@ -539,9 +539,10 @@ class GenesisEnterpriseSystem extends EventEmitter {
      */
     async serveDashboard(res) {
         try {
+            // Usa caminho relativo ao diretório do script (funciona em produção)
             const dashboardPath = path.join(
-                this.config.projectPath,
-                '.lia/agents/genesis/dashboard/advanced-dashboard.html'
+                __dirname,
+                'dashboard/advanced-dashboard.html'
             );
 
             const dashboardContent = await fs.readFile(dashboardPath, 'utf8');
