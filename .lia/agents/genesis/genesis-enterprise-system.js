@@ -3,7 +3,7 @@
  * Sistema enterprise completo integrando todos os componentes avançados da Fase 2
  *
  * COMPONENTES INTEGRADOS:
- * - WorkflowEngine: Coordenação automática entre os 9 agentes
+ * - WorkflowEngine: Coordenação automática entre os 11 agentes
  * - AgentBus: Comunicação real-time via WebSocket
  * - RealTimeMetrics: Monitoramento enterprise com alertas
  * - AutoOptimizer: Auto-otimização inteligente com ML
@@ -143,6 +143,26 @@ class GenesisEnterpriseSystem extends EventEmitter {
                 systemPrompt: 'Você é THANOS, o limpador supremo. Remova código desnecessário com precisão.',
                 capabilities: ['cleanup', 'dead_code_removal', 'imports', 'refactoring', 'optimization'],
                 costLimit: 1.0
+            }],
+            ['aria', {
+                name: 'ARIA Conversational Expert',
+                role: 'customer_service',
+                model: 'claude-3-sonnet',
+                maxConcurrency: 5,
+                priority: 1,
+                systemPrompt: 'Você é ARIA, especialista em atendimento conversacional. Ajude clientes com empatia, clareza e eficiência. Responda dúvidas sobre créditos tributários, processos de recuperação e funcionalidades da plataforma Tributa.AI.',
+                capabilities: ['customer_support', 'conversational_ai', 'query_resolution', 'onboarding', 'tax_education', 'empathy'],
+                costLimit: 10.0
+            }],
+            ['themis', {
+                name: 'THEMIS Compliance Master',
+                role: 'compliance',
+                model: 'gpt-4',
+                maxConcurrency: 2,
+                priority: 2,
+                systemPrompt: 'Você é THEMIS, guardiã da conformidade legal. Garanta compliance com LGPD, regulamentações fiscais e padrões de auditoria. Monitore e valide todas as operações para conformidade legal.',
+                capabilities: ['lgpd_compliance', 'legal_validation', 'audit_trail', 'regulatory_monitoring', 'risk_assessment', 'data_privacy'],
+                costLimit: 8.0
             }]
         ]);
 

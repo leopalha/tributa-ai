@@ -819,9 +819,8 @@
                 const response = await fetch('/api/agents');
                 const agents = await response.json();
 
-                // Filtra apenas agentes de PRODUÇÃO (que existem no sistema)
-                // NOTA: ARIA e THEMIS serão adicionados em breve
-                const productionAgents = ['nexus', 'aether', 'oracle'];
+                // Filtra apenas agentes de PRODUÇÃO (5 agentes 24/7)
+                const productionAgents = ['nexus', 'aether', 'oracle', 'aria', 'themis'];
 
                 agentsData.clear();
 
