@@ -819,8 +819,9 @@
                 const response = await fetch('/api/agents');
                 const agents = await response.json();
 
-                // Filtra apenas agentes de PRODUÇÃO
-                const productionAgents = ['aria', 'oracle', 'themis', 'aether', 'nexus'];
+                // Filtra apenas agentes de PRODUÇÃO (que existem no sistema)
+                // NOTA: ARIA e THEMIS serão adicionados em breve
+                const productionAgents = ['nexus', 'aether', 'oracle'];
 
                 agentsData.clear();
 
@@ -876,11 +877,9 @@
         // Fallback se API falhar
         function loadFallbackData() {
             const productionAgents = [
-                { id: 'aria', name: 'ARIA Atendimento', role: 'customer_service' },
-                { id: 'oracle', name: 'ORACLE Validação', role: 'validation' },
-                { id: 'themis', name: 'THEMIS Compliance', role: 'compliance' },
-                { id: 'aether', name: 'AETHER Performance', role: 'optimization' },
-                { id: 'nexus', name: 'NEXUS Coordenação', role: 'orchestration' }
+                { id: 'nexus', name: 'NEXUS CTO-AI Coordenador', role: 'coordinator' },
+                { id: 'aether', name: 'AETHER Performance Guru', role: 'performance' },
+                { id: 'oracle', name: 'ORACLE Quality Guardian', role: 'testing' }
             ];
 
             productionAgents.forEach(agent => {
