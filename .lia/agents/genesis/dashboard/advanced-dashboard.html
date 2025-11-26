@@ -693,19 +693,19 @@
 
         // 🔧 Configuração dinâmica - detecta se está em produção ou local
         function getServerUrl() {
-            // Se estiver rodando em localhost, usa localhost
+            // Se estiver rodando em localhost, usa localhost:3000
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 return {
-                    http: 'http://localhost:3003',
-                    ws: 'ws://localhost:3003'
+                    http: 'http://localhost:3000',
+                    ws: 'ws://localhost:3000/ws'
                 };
             }
-            // Em produção (Railway), usa a URL atual
+            // Em produção (Railway), usa a URL atual com path /ws
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const httpProtocol = window.location.protocol;
             return {
                 http: `${httpProtocol}//${window.location.host}`,
-                ws: `${protocol}//${window.location.host}`
+                ws: `${protocol}//${window.location.host}/ws`
             };
         }
 
