@@ -1,0 +1,35 @@
+{
+  "name": "genesis-enterprise-system",
+  "version": "4.1.0",
+  "description": "GENESIS Enterprise AI Agent System - Production Backend",
+  "type": "commonjs",
+  "main": "genesis-enterprise-system.js",
+  "scripts": {
+    "start": "node genesis-enterprise-system.js",
+    "dev": "NODE_ENV=development node genesis-enterprise-system.js",
+    "test": "node test-enterprise-system.js"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "pg": "^8.13.1",
+    "express": "^5.0.1",
+    "cors": "^2.8.5",
+    "axios": "^1.12.2",
+    "ws": "^8.18.0",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "ai",
+    "agents",
+    "genesis",
+    "tributa-ai",
+    "production"
+  ],
+  "author": "Leonardo Palha",
+  "license": "UNLICENSED",
+  "private": true
+}
