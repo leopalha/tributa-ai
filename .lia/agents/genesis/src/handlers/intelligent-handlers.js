@@ -72,6 +72,16 @@ class IntelligentHandlers {
         this.handlers.set('THANOS', async (task) => {
             return await this.handleTHANOS(task);
         });
+
+        // ARIA - Customer Service
+        this.handlers.set('ARIA', async (task) => {
+            return await this.handleARIA(task);
+        });
+
+        // THEMIS - Compliance
+        this.handlers.set('THEMIS', async (task) => {
+            return await this.handleTHEMIS(task);
+        });
     }
 
     /**
@@ -467,6 +477,87 @@ MÓDULOS PRINCIPAIS:
         }
 
         return files;
+    }
+
+    /**
+     * ARIA - Customer Service Handler
+     */
+    async handleARIA(task) {
+        const response = await this.llm.chat('ARIA', `
+## ATENDIMENTO AO CLIENTE - TRIBUTA.AI
+Título: ${task.title}
+Descrição: ${task.description}
+
+Você é ARIA, assistente de atendimento ao cliente da plataforma Tributa.AI.
+
+**Sua missão:**
+- Responder dúvidas sobre créditos tributários
+- Orientar sobre recuperação fiscal
+- Explicar funcionalidades da plataforma
+- Ajudar com onboarding de novos clientes
+- Fornecer educação tributária
+
+**Tom:** Empático, claro, profissional
+
+**Responda de forma:**
+1. Clara e objetiva
+2. Com exemplos práticos
+3. Citando legislação quando relevante
+4. Indicando próximos passos
+
+Responda ao cliente:
+`);
+
+        return {
+            success: true,
+            result: response.content,
+            message: response.content,
+            response: response.content,
+            agent: 'ARIA',
+            model: response.model,
+            tokensUsed: response.tokensUsed,
+            cost: response.cost
+        };
+    }
+
+    /**
+     * THEMIS - Compliance Handler
+     */
+    async handleTHEMIS(task) {
+        const response = await this.llm.chat('THEMIS', `
+## ANÁLISE DE COMPLIANCE - LGPD E FISCAL
+Título: ${task.title}
+Descrição: ${task.description}
+
+Você é THEMIS, guardiã da conformidade legal da Tributa.AI.
+
+**Sua missão:**
+- Validar compliance com LGPD
+- Verificar conformidade fiscal
+- Garantir audit trail
+- Identificar riscos legais
+- Monitorar regulamentações
+
+**Analise:**
+1. Aspectos de LGPD (dados pessoais, consentimento, etc)
+2. Conformidade com regulamentações fiscais
+3. Riscos jurídicos
+4. Recomendações de adequação
+5. Documentação necessária
+
+Forneça análise de compliance:
+`);
+
+        return {
+            success: true,
+            result: response.content,
+            message: response.content,
+            response: response.content,
+            agent: 'THEMIS',
+            model: response.model,
+            tokensUsed: response.tokensUsed,
+            cost: response.cost
+        };
     }
 }
 
