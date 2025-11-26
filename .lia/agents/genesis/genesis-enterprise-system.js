@@ -29,7 +29,7 @@ class GenesisEnterpriseSystem extends EventEmitter {
         this.config = {
             projectPath: config.projectPath || "D:/tributa-ai",
             port: config.port || process.env.PORT || 3003,
-            host: config.host || 'localhost',
+            host: config.host || process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost'),
             openRouterApiKey: config.openRouterApiKey || process.env.OPENROUTER_API_KEY,
             enableMetrics: config.enableMetrics !== false,
             enableOptimization: config.enableOptimization !== false,
@@ -1134,11 +1134,14 @@ class GenesisEnterpriseSystem extends EventEmitter {
 
                         return {
                             success: true,
-                            result: result.result,
+                            result: result.content || result.result, // content vem do LLM
+                            agent: result.agent || agentName,
+                            type: result.type,
                             filesModified: result.filesModified || [],
                             commitHash: result.commitHash || null,
                             tokensUsed: result.tokensUsed || 0,
-                            costUsd: result.costUsd || 0
+                            costUsd: result.costUsd || 0,
+                            processingTimeMs: result.processingTimeMs || 0
                         };
 
                     } catch (error) {
