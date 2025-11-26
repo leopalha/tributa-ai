@@ -812,37 +812,89 @@
             });
         }
 
-        // 🔄 Load Initial Data
-        function loadInitialData() {
-            // Initialize agents data
-            const agents = [
-                { id: 'lia', name: 'LIA Coordenadora', role: 'orchestrator', status: 'active' },
-                { id: 'nexus', name: 'NEXUS CTO-AI', role: 'coordinator', status: 'active' },
-                { id: 'executor', name: 'EXECUTOR Frontend', role: 'frontend', status: 'active' },
-                { id: 'helios', name: 'HELIOS Security', role: 'security', status: 'active' },
-                { id: 'atlas', name: 'ATLAS UI/UX', role: 'design', status: 'active' },
-                { id: 'genesis', name: 'GENESIS Architect', role: 'generation', status: 'active' },
-                { id: 'aether', name: 'AETHER Performance', role: 'performance', status: 'active' },
-                { id: 'oracle', name: 'ORACLE Quality', role: 'testing', status: 'active' },
-                { id: 'thanos', name: 'THANOS Cleaner', role: 'cleanup', status: 'active' }
+        // 🔄 Load Initial Data - BUSCA DADOS REAIS DA API
+        async function loadInitialData() {
+            try {
+                // Busca agentes reais da API
+                const response = await fetch('/api/agents');
+                const agents = await response.json();
+
+                // Filtra apenas agentes de PRODUÇÃO
+                const productionAgents = ['aria', 'oracle', 'themis', 'aether', 'nexus'];
+
+                agentsData.clear();
+
+                for (const [agentId, agentInfo] of Object.entries(agents)) {
+                    // Ignora agentes de desenvolvimento
+                    if (!productionAgents.includes(agentId)) continue;
+
+                    agentsData.set(agentId, {
+                        id: agentId,
+                        name: agentInfo.name,
+                        role: agentInfo.role,
+                        status: agentInfo.status || 'ready',
+                        tasks: 0, // Será atualizado via WebSocket
+                        responseTime: 0,
+                        successRate: 0,
+                        cost: 0
+                    });
+                }
+
+                updateAgentsDisplay();
+                updatePerformanceMetrics();
+                updateCostDisplay();
+                loadSampleAlerts();
+                loadSampleOptimizations();
+                updateCommunicationStatus();
+
+                // Busca métricas reais se disponível
+                fetchRealMetrics();
+
+            } catch (error) {
+                console.error('❌ Erro ao carregar dados:', error);
+                // Fallback para dados básicos se API falhar
+                loadFallbackData();
+            }
+        }
+
+        // Busca métricas reais do sistema
+        async function fetchRealMetrics() {
+            try {
+                const healthResponse = await fetch('/api/health');
+                const health = await healthResponse.json();
+
+                if (health.uptime) {
+                    const hours = Math.floor(health.uptime / (1000 * 60 * 60));
+                    const minutes = Math.floor((health.uptime % (1000 * 60 * 60)) / (1000 * 60));
+                    document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
+                }
+            } catch (error) {
+                console.error('❌ Erro ao buscar métricas:', error);
+            }
+        }
+
+        // Fallback se API falhar
+        function loadFallbackData() {
+            const productionAgents = [
+                { id: 'aria', name: 'ARIA Atendimento', role: 'customer_service' },
+                { id: 'oracle', name: 'ORACLE Validação', role: 'validation' },
+                { id: 'themis', name: 'THEMIS Compliance', role: 'compliance' },
+                { id: 'aether', name: 'AETHER Performance', role: 'optimization' },
+                { id: 'nexus', name: 'NEXUS Coordenação', role: 'orchestration' }
             ];
 
-            agents.forEach(agent => {
+            productionAgents.forEach(agent => {
                 agentsData.set(agent.id, {
                     ...agent,
-                    tasks: Math.floor(Math.random() * 100),
-                    responseTime: Math.floor(Math.random() * 500) + 100,
-                    successRate: 95 + Math.random() * 5,
-                    cost: Math.random() * 5
+                    status: 'ready',
+                    tasks: 0,
+                    responseTime: 0,
+                    successRate: 0,
+                    cost: 0
                 });
             });
 
             updateAgentsDisplay();
-            updatePerformanceMetrics();
-            updateCostDisplay();
-            loadSampleAlerts();
-            loadSampleOptimizations();
-            updateCommunicationStatus();
         }
 
         // 🤖 Update Agents Display
